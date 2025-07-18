@@ -143,10 +143,8 @@ class PancakeStackGame {
                 1 Pancake
               </div>
             </div>
-          </div>
 
-          <div>
-            <div class="top-stat">
+             <div class="top-stat">
               <h3>💰 Earnings</h3>
               <div class="top-stat-value money-display" id="moneyDisplay">$0</div>
             </div>
