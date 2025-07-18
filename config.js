@@ -21,11 +21,11 @@ const GAME_CONFIG = {
       burntTime: 6000, // 6 seconds to 100%
       timeLimit: 60000, // 60 seconds
       orders: [1, 2, 1, 3], // sequence that repeats
-      starThresholds: [5, 15, 35], // thresholds for 1, 2, 3 stars
-      initialBatter: 10,
+      starThresholds: [3, 8, 12], // thresholds for 1, 2, 3 stars
+      initialBatter: 0,
       initialMoney: 0,
-      batterCost: 1,
-      batterPurchaseAmount: 10,
+      batterCost: 0,
+      batterPurchaseAmount: 3,
       pancakeReward: 1, // $ per correct pancake
       pancakePenalty: 1, // $ penalty per extra pancake
     },
@@ -40,13 +40,13 @@ const GAME_CONFIG = {
         "plate",
         "grill",
         "plate",
-        "plate",
         "grill",
         "plate",
+        "grill",
         "grill",
       ],
-      cookingTime: 2500, // 2.5 seconds to 80%
-      burntTime: 5000, // 5 seconds to 100%
+      cookingTime: 3000, // 2.5 seconds to 80%
+      burntTime: 5500, // 5 seconds to 100%
       timeLimit: 90000, // 90 seconds
       orders: [2, 3, 4, 2, 5], // sequence that repeats
       starThresholds: [15, 40, 80], // thresholds for 1, 2, 3 stars
@@ -66,9 +66,9 @@ const GAME_CONFIG = {
         "grill",
         "plate",
         "grill",
-        "plate",
         "grill",
-        "plate",
+        "grill",
+        "grill",
         "grill",
         "plate",
         "grill",

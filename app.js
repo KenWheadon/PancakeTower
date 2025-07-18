@@ -21,9 +21,56 @@ class PancakeStackGame {
           <h1 class="level-select-title">🥞 Pancake Stack Game</h1>
           <p class="level-select-subtitle">Choose your cooking challenge!</p>
           
+          <div class="level-select-buttons">
+            <button class="htp-button" id="htpButton">❓ How to Play</button>
+          </div>
+          
           <div class="levels-grid" id="levelsGrid">
             <!-- Level cards will be injected here -->
           </div>
+        </div>
+      </div>
+
+      <!-- How to Play Popup -->
+      <div id="htpPopup" class="htp-popup hidden">
+        <div class="htp-content">
+          <button class="htp-close-button" id="htpCloseButton">×</button>
+          <h2 class="htp-title">🥞 How to Play</h2>
+          <div class="htp-instructions">
+            <div class="htp-instruction">
+              <div class="htp-instruction-number">1</div>
+              <div class="htp-instruction-text">BUY BATTER TO COOK PANCAKES</div>
+            </div>
+            <div class="htp-instruction">
+              <div class="htp-instruction-number">2</div>
+              <div class="htp-instruction-text">Click an empty grill to add pancake batter</div>
+            </div>
+            <div class="htp-instruction">
+              <div class="htp-instruction-number">3</div>
+              <div class="htp-instruction-text">Wait for the pancake to become cooked and then drag it to a plate</div>
+            </div>
+            <div class="htp-instruction">
+              <div class="htp-instruction-number">4</div>
+              <div class="htp-instruction-text">Don't let the bar fill completely or your pancake will get burnt and be thrown away</div>
+            </div>
+            <div class="htp-instruction">
+              <div class="htp-instruction-number">5</div>
+              <div class="htp-instruction-text">Drag pancakes between plates to create different sized stacks</div>
+            </div>
+            <div class="htp-instruction">
+              <div class="htp-instruction-number">6</div>
+              <div class="htp-instruction-text">Complete orders perfectly to earn money</div>
+            </div>
+            <div class="htp-instruction">
+              <div class="htp-instruction-number">7</div>
+              <div class="htp-instruction-text">Lose money for each incorrect pancake in an order</div>
+            </div>
+            <div class="htp-instruction">
+              <div class="htp-instruction-number">8</div>
+              <div class="htp-instruction-text">Make as much money as you can in the time limit and aim for 3 stars!</div>
+            </div>
+          </div>
+          <button class="htp-got-it-button" id="htpGotItButton">Got it!</button>
         </div>
       </div>
 
@@ -88,8 +135,17 @@ class PancakeStackGame {
     document.getElementById("levelSelectScreen").classList.remove("hidden");
     document.getElementById("gameScreen").classList.add("hidden");
     document.getElementById("gameOverScreen").classList.add("hidden");
+    document.getElementById("htpPopup").classList.add("hidden");
 
     this.createLevelCards();
+  }
+
+  showHowToPlay() {
+    document.getElementById("htpPopup").classList.remove("hidden");
+  }
+
+  hideHowToPlay() {
+    document.getElementById("htpPopup").classList.add("hidden");
   }
 
   createLevelCards() {
@@ -142,6 +198,7 @@ class PancakeStackGame {
     // Hide level select and show game
     document.getElementById("levelSelectScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.remove("hidden");
+    document.getElementById("htpPopup").classList.add("hidden");
 
     // Initialize game for this level
     this.initializeGame();
@@ -754,7 +811,7 @@ class PancakeStackGame {
     // Score popup
     const scorePopup = document.createElement("div");
     scorePopup.className = "score-popup";
-    scorePopup.textContent = `+$${payment}`;
+    scorePopup.textContent = `+${payment}`;
     cellDiv.appendChild(scorePopup);
 
     setTimeout(() => scorePopup.remove(), GAME_CONFIG.animations.scorePopup);
@@ -896,6 +953,17 @@ class PancakeStackGame {
   }
 
   setupEventListeners() {
+    // HTP popup buttons
+    document
+      .getElementById("htpButton")
+      .addEventListener("click", () => this.showHowToPlay());
+    document
+      .getElementById("htpCloseButton")
+      .addEventListener("click", () => this.hideHowToPlay());
+    document
+      .getElementById("htpGotItButton")
+      .addEventListener("click", () => this.hideHowToPlay());
+
     // Game buttons
     document
       .getElementById("buyBatter")
@@ -909,6 +977,13 @@ class PancakeStackGame {
     document
       .getElementById("backToMenuButton")
       .addEventListener("click", () => this.backToMenu());
+
+    // Close HTP popup when clicking outside
+    document.getElementById("htpPopup").addEventListener("click", (e) => {
+      if (e.target.id === "htpPopup") {
+        this.hideHowToPlay();
+      }
+    });
   }
 }
 
