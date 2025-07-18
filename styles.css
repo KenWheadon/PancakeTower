@@ -32,7 +32,7 @@ body::before {
 
 #topBar {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   background: linear-gradient(145deg, #ffffff, #f0f0f0);
   padding: 20px 30px;
@@ -89,6 +89,7 @@ body::before {
   gap: 20px;
   z-index: 2;
   position: relative;
+  justify-content: center;
 }
 
 #gameGrid {
