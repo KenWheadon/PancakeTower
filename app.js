@@ -69,8 +69,7 @@ class PancakeStackGame {
       <!-- Level Selection Screen -->
       <div id="levelSelectScreen" class="level-select-screen hidden">
         <div class="level-select-content">
-          <h1 class="level-select-title">🥞 Choose Your Challenge</h1>
-          <p class="level-select-subtitle">Select your cooking challenge!</p>
+          <h1 class="level-select-title">Choose Your Challenge</h1>
           
           <div class="level-select-buttons">
             <button class="htp-button" id="htpButton">❓ How to Play</button>
@@ -155,12 +154,14 @@ class PancakeStackGame {
           <div id="gameGrid"></div>
           <div id="sidebar">
             <div class="sidebar-section store-section" id="storeSection">
-              <h3>🏪 Batter Store</h3>
+              <h3>🏪 Store</h3>
               <div class="resource-item">
+                <div class="resource-name">Batter</div>
                 <div class="resource-display">
-                  🥞 Batter: <span id="batterCount">10</span>
+                  <span class="resource-cost">Cost: $<span id="batterCost">1</span></span>
+                  <span class="resource-amount">Have: <span id="batterCount">10</span></span>
                 </div>
-                <button class="buy-button" id="buyBatter">Buy More ($1)</button>
+                <button class="buy-button" id="buyBatter">Buy More</button>
               </div>
             </div>
           </div>
@@ -431,7 +432,7 @@ class PancakeStackGame {
         cellDiv.innerHTML = "🍽️";
         const serveButton = document.createElement("button");
         serveButton.className = "serve-button";
-        serveButton.textContent = "Serve Order";
+        serveButton.innerHTML = `<span class="stack-count">0</span>Sell`;
         serveButton.addEventListener("click", (e) => {
           e.stopPropagation();
           this.servePlate(index);
@@ -579,8 +580,19 @@ class PancakeStackGame {
         const particleEl = document.createElement("div");
         particleEl.className = "particle";
         particleEl.textContent = particle;
-        particleEl.style.left = Math.random() * 100 + "%";
-        particleEl.style.top = Math.random() * 100 + "%";
+
+        // Center particles around the middle of the cell with small random offset
+        const centerX = 50;
+        const centerY = 50;
+        const offsetRange = 25; // pixels from center
+
+        particleEl.style.left = `calc(${centerX}% + ${
+          (Math.random() - 0.5) * offsetRange
+        }px)`;
+        particleEl.style.top = `calc(${centerY}% + ${
+          (Math.random() - 0.5) * offsetRange
+        }px)`;
+
         cellDiv.appendChild(particleEl);
 
         setTimeout(
@@ -599,14 +611,22 @@ class PancakeStackGame {
       const pancake = cell.cookingPancake;
       const progress = pancake.progress;
 
+      // Hide fire emoji when cooking
+      cellDiv.classList.add("cooking");
+
+      // Calculate the actual cooking threshold from level config
+      const cookingThreshold =
+        (this.levelConfig.cookingTime / this.levelConfig.burntTime) * 100;
+
       // Update progress bar
       let progressBar = cellDiv.querySelector(".progress-bar");
       if (!progressBar) {
         progressBar = document.createElement("div");
         progressBar.className = "progress-bar";
+
         progressBar.innerHTML = `
           <div class="progress-fill"></div>
-          <div class="progress-marker done"></div>
+          <div class="progress-marker done" style="left: ${cookingThreshold}%"></div>
         `;
         cellDiv.appendChild(progressBar);
       }
@@ -623,8 +643,8 @@ class PancakeStackGame {
         cellDiv.appendChild(pancakeEmoji);
       }
 
-      // Update pancake appearance based on progress
-      if (progress < GAME_CONFIG.mechanics.cookingProgressThreshold) {
+      // Update pancake appearance based on progress using the actual cooking threshold
+      if (progress < cookingThreshold) {
         pancakeEmoji.innerHTML = "🍞"; // Uncooked bread
         pancakeEmoji.draggable = false;
         pancakeEmoji.style.cursor = "not-allowed";
@@ -645,37 +665,43 @@ class PancakeStackGame {
         pancakeEmoji.addEventListener("dragstart", (e) => e.preventDefault());
       }
     } else if (cell.type === "grill") {
-      // Clear grill display when no pancake
+      // Clear grill display when no pancake and show fire emoji
+      cellDiv.classList.remove("cooking");
       const progressBar = cellDiv.querySelector(".progress-bar");
       const pancakeEmoji = cellDiv.querySelector(".pancake");
       if (progressBar) progressBar.remove();
       if (pancakeEmoji) pancakeEmoji.remove();
     } else if (cell.type === "plate") {
+      // Update serve button with stack count
+      const serveButton = cellDiv.querySelector(".serve-button");
+      const stackCount = serveButton.querySelector(".stack-count");
+
+      if (stackCount) {
+        stackCount.textContent = cell.pancakes.length;
+      }
+
       // Update plate display with stacked pancakes
       const existingStack = cellDiv.querySelector(".pancake-stack");
-      const existingCount = cellDiv.querySelector(".stack-count");
       if (existingStack) existingStack.remove();
-      if (existingCount) existingCount.remove();
 
       if (cell.pancakes.length > 0) {
-        // Add stack count
-        const countDiv = document.createElement("div");
-        countDiv.className = "stack-count";
-        countDiv.textContent = cell.pancakes.length;
-        cellDiv.appendChild(countDiv);
-
         const stackDiv = document.createElement("div");
         stackDiv.className = "pancake-stack";
 
+        // Create visual stacking effect
         cell.pancakes.forEach((pancake, index) => {
           const pancakeDiv = document.createElement("div");
-          pancakeDiv.className = "pancake";
+          pancakeDiv.className = "pancake stacked-pancake";
           pancakeDiv.innerHTML = "🥞";
           pancakeDiv.dataset.pancakeId = pancake.id;
+
+          // Apply stacking transform
+          pancakeDiv.style.zIndex = index + 10;
 
           // Only top pancake is draggable
           if (index === cell.pancakes.length - 1) {
             pancakeDiv.draggable = false; // Disable HTML5 drag
+            pancakeDiv.classList.add("top-pancake");
 
             // Remove any existing event listeners
             pancakeDiv.removeEventListener("mousedown", this.handleMouseDown);
@@ -687,6 +713,10 @@ class PancakeStackGame {
               this.handleMouseDown.bind(this)
             );
             pancakeDiv.addEventListener("dragstart", (e) => e.preventDefault());
+          } else {
+            // Lower pancakes in stack are not interactive
+            pancakeDiv.style.cursor = "default";
+            pancakeDiv.style.opacity = "0.9";
           }
 
           stackDiv.appendChild(pancakeDiv);
@@ -843,6 +873,10 @@ class PancakeStackGame {
     const targetCell = this.grid[targetCellIndex];
     if (targetCell.type !== "plate") return;
 
+    // Calculate the actual cooking threshold from level config
+    const cookingThreshold =
+      (this.levelConfig.cookingTime / this.levelConfig.burntTime) * 100;
+
     // Find source of pancake
     let sourcePancake = null;
     let sourceCell = null;
@@ -851,9 +885,7 @@ class PancakeStackGame {
     // Check if it's a cooking pancake
     if (this.cookingPancakes.has(pancakeId)) {
       sourcePancake = this.cookingPancakes.get(pancakeId);
-      if (
-        sourcePancake.progress < GAME_CONFIG.mechanics.cookingProgressThreshold
-      ) {
+      if (sourcePancake.progress < cookingThreshold) {
         // Discard unfinished pancake
         sourceCell = this.grid[sourcePancake.cellIndex];
         sourceCell.cookingPancake = null;
@@ -913,8 +945,19 @@ class PancakeStackGame {
         const particleEl = document.createElement("div");
         particleEl.className = "particle";
         particleEl.textContent = particle;
-        particleEl.style.left = Math.random() * 100 + "%";
-        particleEl.style.top = Math.random() * 100 + "%";
+
+        // Center particles around the middle of the cell with small random offset
+        const centerX = 50;
+        const centerY = 50;
+        const offsetRange = 20; // pixels from center
+
+        particleEl.style.left = `calc(${centerX}% + ${
+          (Math.random() - 0.5) * offsetRange
+        }px)`;
+        particleEl.style.top = `calc(${centerY}% + ${
+          (Math.random() - 0.5) * offsetRange
+        }px)`;
+
         cellDiv.appendChild(particleEl);
 
         setTimeout(
@@ -941,14 +984,28 @@ class PancakeStackGame {
 
     // Penalty for extra pancakes
     if (servedPancakes > currentOrder) {
-      payment -=
-        (servedPancakes - currentOrder) * this.levelConfig.pancakePenalty;
+      const extraPancakes = servedPancakes - currentOrder;
+      payment -= extraPancakes * this.levelConfig.pancakePenalty;
+
+      // Add penalty animation for each extra pancake
+      for (let i = 0; i < extraPancakes; i++) {
+        setTimeout(() => {
+          this.addPenaltyAnimation();
+        }, i * 200);
+      }
     }
 
     // Ensure payment is not negative
     payment = Math.max(0, payment);
 
     this.money += payment;
+
+    // Add coin animations for correct pancakes
+    for (let i = 0; i < correctPancakes; i++) {
+      setTimeout(() => {
+        this.addCoinAnimation(cellIndex);
+      }, i * 150);
+    }
 
     // Add success effects
     this.addSuccessEffect(cellIndex, payment);
@@ -964,6 +1021,70 @@ class PancakeStackGame {
     this.totalOrdersCompleted++;
 
     this.updateUI();
+  }
+
+  addCoinAnimation(cellIndex) {
+    const cellDiv = document.querySelector(`[data-cell-index="${cellIndex}"]`);
+    const moneyDisplay = document.getElementById("moneyDisplay");
+
+    if (!cellDiv || !moneyDisplay) return;
+
+    const coin = document.createElement("div");
+    coin.className = "coin-animation";
+    coin.textContent = "🪙";
+
+    // Get positions
+    const cellRect = cellDiv.getBoundingClientRect();
+    const moneyRect = moneyDisplay.getBoundingClientRect();
+
+    // Set initial position
+    coin.style.position = "fixed";
+    coin.style.left = cellRect.left + cellRect.width / 2 + "px";
+    coin.style.top = cellRect.top + cellRect.height / 2 + "px";
+    coin.style.zIndex = "1000";
+
+    document.body.appendChild(coin);
+
+    // Animate to money display
+    setTimeout(() => {
+      coin.style.left = moneyRect.left + moneyRect.width / 2 + "px";
+      coin.style.top = moneyRect.top + moneyRect.height / 2 + "px";
+    }, 10);
+
+    // Remove after animation
+    setTimeout(() => {
+      if (coin.parentNode) {
+        coin.remove();
+      }
+    }, 1000);
+  }
+
+  addPenaltyAnimation() {
+    const moneyDisplay = document.getElementById("moneyDisplay");
+    if (!moneyDisplay) return;
+
+    // Add red glow to money display
+    moneyDisplay.classList.add("penalty-glow");
+    setTimeout(() => {
+      moneyDisplay.classList.remove("penalty-glow");
+    }, 800);
+
+    // Add -1 animation
+    const penalty = document.createElement("div");
+    penalty.className = "penalty-animation";
+    penalty.textContent = "-1";
+
+    const moneyRect = moneyDisplay.getBoundingClientRect();
+    penalty.style.left = moneyRect.left + moneyRect.width / 2 + "px";
+    penalty.style.top = moneyRect.top + "px";
+
+    moneyDisplay.appendChild(penalty);
+
+    setTimeout(() => {
+      if (penalty.parentNode) {
+        penalty.remove();
+      }
+    }, 1500);
   }
 
   addSuccessEffect(cellIndex, payment) {
@@ -1018,6 +1139,7 @@ class PancakeStackGame {
 
   buyBatter() {
     if (this.gameState !== "playing" || !this.gameRunning) return;
+    if (this.money < this.levelConfig.batterCost) return;
 
     this.money -= this.levelConfig.batterCost;
     this.batter += this.levelConfig.batterPurchaseAmount;
@@ -1051,6 +1173,8 @@ class PancakeStackGame {
       this.getCurrentOrder() > 1 ? "s" : ""
     }`;
     document.getElementById("batterCount").textContent = this.batter;
+    document.getElementById("batterCost").textContent =
+      this.levelConfig.batterCost;
     document.getElementById("moneyDisplay").textContent = `${this.money}`;
 
     // Update store section styling based on batter count
@@ -1063,9 +1187,8 @@ class PancakeStackGame {
       storeSection.classList.remove("out-of-stock");
     }
 
-    // Update buy button text and cost
-    buyButton.textContent = `Buy More (${this.levelConfig.batterCost})`;
-    buyButton.disabled = false;
+    // Update buy button availability
+    buyButton.disabled = this.money < this.levelConfig.batterCost;
   }
 
   gameLoop() {

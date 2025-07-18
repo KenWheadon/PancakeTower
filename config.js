@@ -26,8 +26,8 @@ const GAME_CONFIG = {
       orders: [1, 2, 1, 3], // sequence that repeats
       starThresholds: [3, 8, 12], // thresholds for 1, 2, 3 stars
       initialBatter: 0,
-      initialMoney: 0,
-      batterCost: 0,
+      initialMoney: 5,
+      batterCost: 1,
       batterPurchaseAmount: 3,
       pancakeReward: 1, // $ per correct pancake
       pancakePenalty: 1, // $ penalty per extra pancake
@@ -54,7 +54,7 @@ const GAME_CONFIG = {
       orders: [2, 3, 4, 2, 5], // sequence that repeats
       starThresholds: [15, 40, 80], // thresholds for 1, 2, 3 stars
       initialBatter: 15,
-      initialMoney: 0,
+      initialMoney: 10,
       batterCost: 2,
       batterPurchaseAmount: 10,
       pancakeReward: 2, // $ per correct pancake
@@ -82,7 +82,7 @@ const GAME_CONFIG = {
       orders: [3, 4, 5, 6, 4, 7], // sequence that repeats
       starThresholds: [30, 80, 150], // thresholds for 1, 2, 3 stars
       initialBatter: 20,
-      initialMoney: 0,
+      initialMoney: 15,
       batterCost: 3,
       batterPurchaseAmount: 15,
       pancakeReward: 3, // $ per correct pancake
