@@ -1,0 +1,705 @@
+#topBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 30px;
+  border-radius: 20px;
+  z-index: 2;
+  position: relative;
+}
+
+#topBar > div {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.top-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 25px;
+  background: linear-gradient(145deg, #fafafa, #f5f5f5);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  position: relative;
+}
+
+.top-stat:hover {
+  border-color: #ffb347;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.top-stat h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: "Fredoka One", cursive;
+  text-align: center;
+}
+
+.top-stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #444;
+  text-align: center;
+  font-family: "Fredoka One", cursive;
+}
+
+#gameContainer {
+  display: flex;
+  gap: 20px;
+  z-index: 2;
+  position: relative;
+  justify-content: center;
+}
+
+#gameGrid {
+  width: 650px;
+  height: 650px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8px;
+  background: linear-gradient(145deg, #4a4a4a, #2a2a2a);
+  padding: 15px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  font-size: 48px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.cell.grill {
+  background: linear-gradient(145deg, #d2691e, #8b4513);
+  border: 3px solid #a0522d;
+  position: relative;
+}
+
+.cell.grill::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(0, 0, 0, 0.1) 10px,
+    rgba(0, 0, 0, 0.1) 20px
+  );
+  pointer-events: none;
+}
+
+.cell.grill:active {
+  transform: scale(0.95);
+}
+
+/* Hide fire emoji when cooking */
+.cell.grill.cooking {
+  font-size: 0;
+}
+
+.cell.grill.cooking::after {
+  content: none;
+}
+
+.cell.plate {
+  background: linear-gradient(145deg, #f8f8ff, #e6e6fa);
+  border: 3px solid #d8bfd8;
+  padding-bottom: 60px; /* Space for serve button */
+}
+
+.cell.drag-over {
+  border-color: #00ff7f;
+  border-width: 4px;
+  box-shadow: 0 0 20px rgba(0, 255, 127, 0.5);
+  animation: dragPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes dragPulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.02);
+  }
+}
+
+.progress-bar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  height: 12px;
+  background: linear-gradient(90deg, #333, #555);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+  transition: width 0.1s ease;
+  position: relative;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+.progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: 6px 6px 0 0;
+}
+
+.progress-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #fff, #e0e0e0);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+.progress-marker.done {
+  background: linear-gradient(180deg, #00ff7f, #32cd32);
+  box-shadow: 0 0 8px rgba(0, 255, 127, 0.8);
+}
+
+.progress-marker.burnt {
+  left: 100%;
+  background: linear-gradient(180deg, #ff4444, #cc0000);
+}
+
+.pancake {
+  font-size: 48px;
+  cursor: grab;
+  margin: 2px;
+  position: relative;
+  z-index: 10;
+  transition: transform 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: auto;
+  padding: 8px;
+}
+
+.pancake:hover {
+  transform: scale(1.1);
+}
+
+.pancake:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.pancake-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  position: absolute;
+  bottom: 118px; /* Above serve button */
+  left: 50%;
+  transform: translateX(-50%);
+  height: auto;
+}
+
+.pancake-stack .pancake {
+  margin: 0;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.pancake-stack .stacked-pancake {
+  margin-bottom: -75px; /* Overlap pancakes for stacking effect */
+}
+
+.pancake-stack .top-pancake {
+  cursor: grab;
+}
+
+.pancake-stack .top-pancake:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.serve-button {
+  position: absolute;
+  bottom: 10px;
+  background: linear-gradient(145deg, #ff6b6b, #ff4444);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Fredoka", sans-serif;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.serve-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+  background: linear-gradient(145deg, #ff8e53, #ff6b6b);
+}
+
+.serve-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(255, 107, 107, 0.4);
+}
+
+.serve-button:disabled {
+  background: linear-gradient(145deg, #ccc, #999);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.serve-button .stack-count {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+#sidebar {
+  width: 250px;
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+.sidebar-section {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: linear-gradient(145deg, #fafafa, #f5f5f5);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.sidebar-section:hover {
+  border-color: #ffb347;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-section h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: "Fredoka One", cursive;
+  text-align: center;
+}
+
+.store-section {
+  border-color: #4caf50;
+  background: linear-gradient(145deg, #f8fff8, #f0fff0);
+}
+
+.store-section h3 {
+  color: #2e7d32;
+}
+
+.store-section.out-of-stock {
+  animation: intenseBuyAlert 1s ease-in-out infinite;
+  border-color: #ff6b6b;
+  background: linear-gradient(145deg, #fff8f8, #fff0f0);
+  position: relative;
+}
+
+.store-section.out-of-stock::before {
+  content: "👈";
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 32px;
+  animation: pointingArrow 0.5s ease-in-out infinite alternate;
+  z-index: 100;
+}
+
+.store-section.out-of-stock h3 {
+  color: #d32f2f;
+}
+
+@keyframes intenseBuyAlert {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  }
+  25% {
+    transform: rotate(-3deg) scale(1.02);
+    box-shadow: 0 6px 25px rgba(255, 107, 107, 0.7);
+  }
+  50% {
+    transform: rotate(0deg) scale(1.05);
+    box-shadow: 0 8px 30px rgba(255, 107, 107, 0.9);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.02);
+    box-shadow: 0 6px 25px rgba(255, 107, 107, 0.7);
+  }
+}
+
+@keyframes pointingArrow {
+  from {
+    transform: translateY(-50%) translateX(0px);
+  }
+  to {
+    transform: translateY(-50%) translateX(-10px);
+  }
+}
+
+.resource-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: linear-gradient(145deg, #ffffff, #f8f8f8);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.resource-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  font-family: "Fredoka One", cursive;
+  margin-bottom: 5px;
+}
+
+.resource-display {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.resource-cost {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.resource-amount {
+  font-weight: 600;
+  color: #333;
+}
+
+.buy-button {
+  background: linear-gradient(145deg, #4caf50, #45a049);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Fredoka", sans-serif;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 120px;
+}
+
+.buy-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+  background: linear-gradient(145deg, #5cbf60, #4caf50);
+}
+
+.buy-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(76, 175, 80, 0.4);
+}
+
+.buy-button:disabled {
+  background: linear-gradient(145deg, #ccc, #999);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.timer {
+  font-size: 36px;
+  font-weight: bold;
+  color: #ff6b6b;
+  text-align: center;
+  font-family: "Fredoka One", cursive;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  animation: timerPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes timerPulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+.timer.urgent {
+  color: #ff4444;
+  animation: urgentPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes urgentPulse {
+  from {
+    transform: scale(1);
+    text-shadow: 2px 2px 4px rgba(255, 68, 68, 0.5);
+  }
+  to {
+    transform: scale(1.1);
+    text-shadow: 2px 2px 8px rgba(255, 68, 68, 0.8);
+  }
+}
+
+.money-display {
+  font-size: 28px;
+  font-weight: bold;
+  color: #4caf50;
+  text-align: center;
+  font-family: "Fredoka One", cursive;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.money-display.penalty-glow {
+  animation: penaltyGlow 0.8s ease-in-out;
+}
+
+@keyframes penaltyGlow {
+  0%,
+  100% {
+    color: #4caf50;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    color: #ff4444;
+    text-shadow: 0 0 15px rgba(255, 68, 68, 0.8);
+  }
+}
+
+.current-order {
+  font-size: 20px;
+  font-weight: 600;
+  color: #444;
+  text-align: center;
+  padding: 15px;
+  background: linear-gradient(145deg, #ffe5b4, #ffcc70);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(255, 204, 112, 0.3);
+  animation: orderPulse 2s ease-in-out infinite alternate;
+  font-family: "Fredoka One", cursive;
+}
+
+@keyframes orderPulse {
+  from {
+    box-shadow: 0 4px 15px rgba(255, 204, 112, 0.3);
+  }
+  to {
+    box-shadow: 0 6px 20px rgba(255, 204, 112, 0.5);
+  }
+}
+
+/* Dragged pancake visual */
+.dragged-pancake {
+  position: fixed;
+  font-size: 48px;
+  pointer-events: none;
+  z-index: 1001;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  animation: dragFloat 0.5s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+
+@keyframes dragFloat {
+  from {
+    transform: rotate(-2deg) scale(1.1);
+  }
+  to {
+    transform: rotate(2deg) scale(1.2);
+  }
+}
+
+/* Dragging states */
+.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg) scale(0.9);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.cell.plate.drag-target {
+  background: linear-gradient(145deg, #e6ffe6, #ccffcc);
+  border-color: #4caf50;
+}
+
+/* Cooking pause visual indicator - only for specific pancake */
+.cooking-paused-specific .progress-fill {
+  animation: pausedPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pausedPulse {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Prevent text selection during drag */
+.cell {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.cell * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.game-over-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.game-over-content {
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  padding: 50px;
+  border-radius: 25px;
+  text-align: center;
+  max-width: 450px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: gameOverAppear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes gameOverAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.game-over-content h2 {
+  font-family: "Fredoka One", cursive;
+  font-size: 32px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.stars {
+  font-size: 56px;
+  margin: 30px 0;
+  animation: starsSpin 2s ease-in-out infinite;
+}
+
+@keyframes starsSpin {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+.restart-button {
+  background: linear-gradient(145deg, #4caf50, #45a049);
+  color: white;
+  border: none;
+  padding: 20px 40px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: "Fredoka", sans-serif;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 25px;
+}
+
+.restart-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+  background: linear-gradient(145deg, #5cbf60, #4caf50);
+}
+
+.restart-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
