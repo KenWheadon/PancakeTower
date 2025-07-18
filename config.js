@@ -1,29 +1,90 @@
 // Game Configuration
 const GAME_CONFIG = {
-  // Level 1 configuration
-  level1: {
-    gridLayout: [
-      "plate",
-      "grill",
-      "plate",
-      "grill",
-      "plate",
-      "grill",
-      "plate",
-      "grill",
-      "plate",
-    ],
-    cookingTime: 3000, // 3 seconds to 80%
-    burntTime: 6000, // 6 seconds to 100%
-    timeLimit: 60000, // 60 seconds
-    orders: [1, 2, 1, 3], // sequence that repeats
-    starThresholds: [3, 10, 30], // thresholds for 1, 2, 3 stars
-    initialBatter: 10,
-    initialMoney: 0,
-    batterCost: 1,
-    batterPurchaseAmount: 10,
-    pancakeReward: 1, // $ per correct pancake
-    pancakePenalty: 1, // $ penalty per extra pancake
+  // Level configurations
+  levels: {
+    1: {
+      name: "Breakfast Rush",
+      description: "Learn the basics of pancake cooking!",
+      difficulty: "Easy",
+      gridLayout: [
+        "plate",
+        "grill",
+        "plate",
+        "grill",
+        "plate",
+        "grill",
+        "plate",
+        "grill",
+        "plate",
+      ],
+      cookingTime: 3000, // 3 seconds to 80%
+      burntTime: 6000, // 6 seconds to 100%
+      timeLimit: 60000, // 60 seconds
+      orders: [1, 2, 1, 3], // sequence that repeats
+      starThresholds: [5, 15, 35], // thresholds for 1, 2, 3 stars
+      initialBatter: 10,
+      initialMoney: 0,
+      batterCost: 1,
+      batterPurchaseAmount: 10,
+      pancakeReward: 1, // $ per correct pancake
+      pancakePenalty: 1, // $ penalty per extra pancake
+    },
+
+    2: {
+      name: "Lunch Time Madness",
+      description: "Faster cooking, bigger orders!",
+      difficulty: "Medium",
+      gridLayout: [
+        "grill",
+        "grill",
+        "plate",
+        "grill",
+        "plate",
+        "plate",
+        "grill",
+        "plate",
+        "grill",
+      ],
+      cookingTime: 2500, // 2.5 seconds to 80%
+      burntTime: 5000, // 5 seconds to 100%
+      timeLimit: 90000, // 90 seconds
+      orders: [2, 3, 4, 2, 5], // sequence that repeats
+      starThresholds: [15, 40, 80], // thresholds for 1, 2, 3 stars
+      initialBatter: 15,
+      initialMoney: 0,
+      batterCost: 2,
+      batterPurchaseAmount: 10,
+      pancakeReward: 2, // $ per correct pancake
+      pancakePenalty: 2, // $ penalty per extra pancake
+    },
+
+    3: {
+      name: "Dinner Rush Chaos",
+      description: "Master level challenge!",
+      difficulty: "Hard",
+      gridLayout: [
+        "grill",
+        "plate",
+        "grill",
+        "plate",
+        "grill",
+        "plate",
+        "grill",
+        "plate",
+        "grill",
+      ],
+      cookingTime: 2000, // 2 seconds to 80%
+      burntTime: 4000, // 4 seconds to 100%
+      timeLimit: 120000, // 120 seconds
+      orders: [3, 4, 5, 6, 4, 7], // sequence that repeats
+      starThresholds: [30, 80, 150], // thresholds for 1, 2, 3 stars
+      initialBatter: 20,
+      initialMoney: 0,
+      batterCost: 3,
+      batterPurchaseAmount: 15,
+      pancakeReward: 3, // $ per correct pancake
+      pancakePenalty: 3, // $ penalty per extra pancake
+    },
   },
 
   // Game mechanics constants

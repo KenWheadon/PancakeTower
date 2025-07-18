@@ -1,82 +1,183 @@
 class PancakeStackGame {
   constructor() {
+    this.currentLevel = null;
+    this.gameState = "menu"; // 'menu', 'playing', 'gameOver'
+
     // First inject HTML to create DOM structure
     this.injectHTML();
 
     // Small delay to ensure DOM is ready
     setTimeout(() => {
-      this.initializeGame();
+      this.showLevelSelect();
       this.setupEventListeners();
-      this.gameLoop();
     }, 10);
   }
 
   injectHTML() {
     document.body.innerHTML = `
-      <div id="topBar">
-        <div>
-          <div class="top-stat">
-            <h3>⏰ Time Left</h3>
-            <div class="top-stat-value timer" id="timer">60</div>
-          </div>
-
-          <div class="top-stat">
-            <h3>🎯 Current Order</h3>
-            <div class="top-stat-value current-order" id="currentOrder">
-              1 Pancake
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="top-stat">
-            <h3>💰 Earnings</h3>
-            <div class="top-stat-value money-display" id="moneyDisplay">$0</div>
+      <!-- Level Selection Screen -->
+      <div id="levelSelectScreen" class="level-select-screen">
+        <div class="level-select-content">
+          <h1 class="level-select-title">🥞 Pancake Stack Game</h1>
+          <p class="level-select-subtitle">Choose your cooking challenge!</p>
+          
+          <div class="levels-grid" id="levelsGrid">
+            <!-- Level cards will be injected here -->
           </div>
         </div>
       </div>
 
-      <div id="gameContainer">
-        <div id="gameGrid"></div>
-        <div id="sidebar">
-          <div class="sidebar-section store-section" id="storeSection">
-            <h3>🏪 Batter Store</h3>
-            <div class="resource-item">
-              <div class="resource-display">
-                🥞 Batter: <span id="batterCount">10</span>
+      <!-- Game Screen -->
+      <div id="gameScreen" class="hidden">
+        <button class="back-to-menu-button" id="backToMenuButton">← Back to Menu</button>
+        
+        <div id="topBar">
+          <div>
+            <div class="top-stat">
+              <h3>⏰ Time Left</h3>
+              <div class="top-stat-value timer" id="timer">60</div>
+            </div>
+
+            <div class="top-stat">
+              <h3>🎯 Current Order</h3>
+              <div class="top-stat-value current-order" id="currentOrder">
+                1 Pancake
               </div>
-              <button class="buy-button" id="buyBatter">Buy More ($1)</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="top-stat">
+              <h3>💰 Earnings</h3>
+              <div class="top-stat-value money-display" id="moneyDisplay">$0</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="gameContainer">
+          <div id="gameGrid"></div>
+          <div id="sidebar">
+            <div class="sidebar-section store-section" id="storeSection">
+              <h3>🏪 Batter Store</h3>
+              <div class="resource-item">
+                <div class="resource-display">
+                  🥞 Batter: <span id="batterCount">10</span>
+                </div>
+                <button class="buy-button" id="buyBatter">Buy More ($1)</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Game Over Screen -->
       <div id="gameOverScreen" class="game-over-screen hidden">
         <div class="game-over-content">
           <h2>Level Complete!</h2>
           <div class="stars" id="starsDisplay">⭐⭐⭐</div>
           <div id="finalScore">Final Score: $0</div>
           <button class="restart-button" id="restartButton">Play Again</button>
+          <button class="restart-button" id="backToLevelsButton" style="margin-left: 10px;">Choose Level</button>
         </div>
       </div>
     `;
   }
 
+  showLevelSelect() {
+    this.gameState = "menu";
+    document.getElementById("levelSelectScreen").classList.remove("hidden");
+    document.getElementById("gameScreen").classList.add("hidden");
+    document.getElementById("gameOverScreen").classList.add("hidden");
+
+    this.createLevelCards();
+  }
+
+  createLevelCards() {
+    const levelsGrid = document.getElementById("levelsGrid");
+    levelsGrid.innerHTML = "";
+
+    Object.entries(GAME_CONFIG.levels).forEach(([levelNum, levelConfig]) => {
+      const levelCard = document.createElement("div");
+      levelCard.className = `level-card ${levelConfig.difficulty.toLowerCase()}`;
+      levelCard.dataset.levelNum = levelNum;
+
+      const timeInSeconds = Math.ceil(levelConfig.timeLimit / 1000);
+      const maxOrder = Math.max(...levelConfig.orders);
+
+      levelCard.innerHTML = `
+        <div class="level-number">${levelNum}</div>
+        <div class="level-name">${levelConfig.name}</div>
+        <div class="level-description">${levelConfig.description}</div>
+        <div class="level-difficulty ${levelConfig.difficulty.toLowerCase()}">${
+        levelConfig.difficulty
+      }</div>
+        <div class="level-stats">
+          <div class="level-stat">
+            <div class="level-stat-value">${timeInSeconds}s</div>
+            <div class="level-stat-label">Time</div>
+          </div>
+          <div class="level-stat">
+            <div class="level-stat-value">${maxOrder}</div>
+            <div class="level-stat-label">Max Order</div>
+          </div>
+          <div class="level-stat">
+            <div class="level-stat-value">${levelConfig.starThresholds[2]}</div>
+            <div class="level-stat-label">3 Stars</div>
+          </div>
+        </div>
+      `;
+
+      levelCard.addEventListener("click", () =>
+        this.startLevel(parseInt(levelNum))
+      );
+      levelsGrid.appendChild(levelCard);
+    });
+  }
+
+  startLevel(levelNum) {
+    this.currentLevel = levelNum;
+    this.levelConfig = GAME_CONFIG.levels[levelNum];
+    this.gameState = "playing";
+
+    // Hide level select and show game
+    document.getElementById("levelSelectScreen").classList.add("hidden");
+    document.getElementById("gameScreen").classList.remove("hidden");
+
+    // Initialize game for this level
+    this.initializeGame();
+    this.gameLoop();
+  }
+
+  backToMenu() {
+    // Stop any running game
+    this.gameState = "menu";
+
+    // Reset any game state
+    if (this.cookingPancakes) {
+      this.cookingPancakes.clear();
+    }
+
+    // Show level select
+    this.showLevelSelect();
+  }
+
   initializeGame() {
-    // Use configuration from config.js
-    this.levelConfig = GAME_CONFIG.level1;
+    // Use configuration from the selected level
+    if (!this.levelConfig) {
+      console.error("No level configuration found!");
+      return;
+    }
 
     // Game state
-    this.gameState = {
-      timeRemaining: this.levelConfig.timeLimit,
-      gameRunning: true,
-      batter: this.levelConfig.initialBatter,
-      money: this.levelConfig.initialMoney,
-      currentOrderIndex: 0,
-      totalOrdersCompleted: 0,
-      isDragging: false,
-      draggedPancakeId: null,
-    };
+    this.gameState = "playing";
+    this.gameRunning = true;
+    this.timeRemaining = this.levelConfig.timeLimit;
+    this.batter = this.levelConfig.initialBatter;
+    this.money = this.levelConfig.initialMoney;
+    this.currentOrderIndex = 0;
+    this.totalOrdersCompleted = 0;
+    this.isDragging = false;
+    this.draggedPancakeId = null;
 
     // Grid state
     this.grid = new Array(9).fill(null).map((_, index) => ({
@@ -155,14 +256,14 @@ class PancakeStackGame {
   }
 
   startCooking(cellIndex) {
-    if (!this.gameState.gameRunning) return;
+    if (this.gameState !== "playing" || !this.gameRunning) return;
 
     const cell = this.grid[cellIndex];
     if (cell.type !== "grill" || cell.cookingPancake) return;
-    if (this.gameState.batter <= 0) return;
+    if (this.batter <= 0) return;
 
     // Consume batter
-    this.gameState.batter--;
+    this.batter--;
 
     // Create pancake
     const pancakeId = this.pancakeIdCounter++;
@@ -199,8 +300,7 @@ class PancakeStackGame {
     this.cookingPancakes.forEach((pancake, id) => {
       // Check if this specific pancake is being dragged
       const isDraggedPancake =
-        this.gameState.isDragging &&
-        this.gameState.draggedPancakeId === id.toString();
+        this.isDragging && this.draggedPancakeId === id.toString();
 
       const cellDiv = document.querySelector(
         `[data-cell-index="${pancake.cellIndex}"]`
@@ -387,8 +487,8 @@ class PancakeStackGame {
     if (!pancakeId) return;
 
     // Set dragging state
-    this.gameState.isDragging = true;
-    this.gameState.draggedPancakeId = pancakeId;
+    this.isDragging = true;
+    this.draggedPancakeId = pancakeId;
 
     // Add visual feedback to original pancake
     e.target.classList.add("dragging");
@@ -418,7 +518,7 @@ class PancakeStackGame {
 
     const handleMouseUp = (upEvent) => {
       // Reset dragging state
-      this.gameState.isDragging = false;
+      this.isDragging = false;
 
       // Remove dragged pancake visual
       const draggedElement = document.getElementById("draggedPancakeVisual");
@@ -452,15 +552,12 @@ class PancakeStackGame {
       );
       const plateCell = elementUnderMouse?.closest(".cell.plate");
 
-      if (plateCell && this.gameState.draggedPancakeId) {
+      if (plateCell && this.draggedPancakeId) {
         const targetCellIndex = parseInt(plateCell.dataset.cellIndex);
-        this.movePancake(
-          parseInt(this.gameState.draggedPancakeId),
-          targetCellIndex
-        );
+        this.movePancake(parseInt(this.draggedPancakeId), targetCellIndex);
       }
 
-      this.gameState.draggedPancakeId = null;
+      this.draggedPancakeId = null;
 
       // Remove event listeners
       document.removeEventListener("mousemove", handleMouseMove);
@@ -611,7 +708,7 @@ class PancakeStackGame {
   }
 
   servePlate(cellIndex) {
-    if (!this.gameState.gameRunning) return;
+    if (this.gameState !== "playing" || !this.gameRunning) return;
 
     const cell = this.grid[cellIndex];
     if (cell.type !== "plate" || cell.pancakes.length === 0) return;
@@ -633,7 +730,7 @@ class PancakeStackGame {
     // Ensure payment is not negative
     payment = Math.max(0, payment);
 
-    this.gameState.money += payment;
+    this.money += payment;
 
     // Add success effects
     this.addSuccessEffect(cellIndex, payment);
@@ -644,9 +741,9 @@ class PancakeStackGame {
     this.updateCellDisplay(cellIndex);
 
     // Move to next order
-    this.gameState.currentOrderIndex =
-      (this.gameState.currentOrderIndex + 1) % this.levelConfig.orders.length;
-    this.gameState.totalOrdersCompleted++;
+    this.currentOrderIndex =
+      (this.currentOrderIndex + 1) % this.levelConfig.orders.length;
+    this.totalOrdersCompleted++;
 
     this.updateUI();
   }
@@ -698,14 +795,14 @@ class PancakeStackGame {
   }
 
   getCurrentOrder() {
-    return this.levelConfig.orders[this.gameState.currentOrderIndex];
+    return this.levelConfig.orders[this.currentOrderIndex];
   }
 
   buyBatter() {
-    if (!this.gameState.gameRunning) return;
+    if (this.gameState !== "playing" || !this.gameRunning) return;
 
-    this.gameState.money -= this.levelConfig.batterCost;
-    this.gameState.batter += this.levelConfig.batterPurchaseAmount;
+    this.money -= this.levelConfig.batterCost;
+    this.batter += this.levelConfig.batterPurchaseAmount;
 
     // Add purchase effect
     const buyButton = document.getElementById("buyBatter");
@@ -719,7 +816,7 @@ class PancakeStackGame {
   }
 
   updateUI() {
-    const timeSeconds = Math.ceil(this.gameState.timeRemaining / 1000);
+    const timeSeconds = Math.ceil(this.timeRemaining / 1000);
     const timerEl = document.getElementById("timer");
     timerEl.textContent = timeSeconds;
 
@@ -735,32 +832,31 @@ class PancakeStackGame {
     ).textContent = `${this.getCurrentOrder()} Pancake${
       this.getCurrentOrder() > 1 ? "s" : ""
     }`;
-    document.getElementById("batterCount").textContent = this.gameState.batter;
-    document.getElementById(
-      "moneyDisplay"
-    ).textContent = `${this.gameState.money}`;
+    document.getElementById("batterCount").textContent = this.batter;
+    document.getElementById("moneyDisplay").textContent = `${this.money}`;
 
     // Update store section styling based on batter count
     const storeSection = document.getElementById("storeSection");
     const buyButton = document.getElementById("buyBatter");
 
-    if (this.gameState.batter === 0) {
+    if (this.batter === 0) {
       storeSection.classList.add("out-of-stock");
     } else {
       storeSection.classList.remove("out-of-stock");
     }
 
-    // Update buy button (allow going into debt)
+    // Update buy button text and cost
+    buyButton.textContent = `Buy More (${this.levelConfig.batterCost})`;
     buyButton.disabled = false;
   }
 
   gameLoop() {
-    if (!this.gameState.gameRunning) return;
+    if (this.gameState !== "playing" || !this.gameRunning) return;
 
     this.updateCooking();
-    this.gameState.timeRemaining -= GAME_CONFIG.mechanics.gameLoopInterval;
+    this.timeRemaining -= GAME_CONFIG.mechanics.gameLoopInterval;
 
-    if (this.gameState.timeRemaining <= 0) {
+    if (this.timeRemaining <= 0) {
       this.endGame();
       return;
     }
@@ -771,10 +867,11 @@ class PancakeStackGame {
   }
 
   endGame() {
-    this.gameState.gameRunning = false;
+    this.gameState = "gameOver";
+    this.gameRunning = false;
 
     // Calculate stars
-    const finalScore = this.gameState.money;
+    const finalScore = this.money;
     let stars = 0;
 
     if (finalScore >= this.levelConfig.starThresholds[2]) stars = 3;
@@ -787,7 +884,7 @@ class PancakeStackGame {
     const finalScoreDisplay = document.getElementById("finalScore");
 
     starsDisplay.textContent = "⭐".repeat(stars) + "☆".repeat(3 - stars);
-    finalScoreDisplay.textContent = `Final Score: $${finalScore}`;
+    finalScoreDisplay.textContent = `Final Score: ${finalScore}`;
 
     gameOverScreen.classList.remove("hidden");
   }
@@ -795,15 +892,23 @@ class PancakeStackGame {
   restart() {
     document.getElementById("gameOverScreen").classList.add("hidden");
     this.initializeGame();
+    this.gameLoop();
   }
 
   setupEventListeners() {
+    // Game buttons
     document
       .getElementById("buyBatter")
       .addEventListener("click", () => this.buyBatter());
     document
       .getElementById("restartButton")
       .addEventListener("click", () => this.restart());
+    document
+      .getElementById("backToLevelsButton")
+      .addEventListener("click", () => this.backToMenu());
+    document
+      .getElementById("backToMenuButton")
+      .addEventListener("click", () => this.backToMenu());
   }
 }
 
