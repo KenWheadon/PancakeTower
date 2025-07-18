@@ -1,5 +1,8 @@
 // Game Configuration
 const GAME_CONFIG = {
+  // Loading configuration
+  MINIMUM_LOADING_TIME: 3000, // Minimum time in milliseconds for loading screen
+
   // Level configurations
   levels: {
     1: {
@@ -84,6 +87,20 @@ const GAME_CONFIG = {
       batterPurchaseAmount: 15,
       pancakeReward: 3, // $ per correct pancake
       pancakePenalty: 3, // $ penalty per extra pancake
+    },
+  },
+
+  // Screen configurations
+  screens: {
+    loading: {
+      messages: [
+        "Heating up the grill...",
+        "Mixing pancake batter...",
+        "Preparing plates...",
+        "Loading recipes...",
+        "Setting up kitchen...",
+        "Almost ready to cook!",
+      ],
     },
   },
 

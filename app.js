@@ -1,28 +1,80 @@
 class PancakeStackGame {
   constructor() {
     this.currentLevel = null;
-    this.gameState = "menu"; // 'menu', 'playing', 'gameOver'
+    this.gameState = "loading"; // 'loading', 'start', 'menu', 'playing', 'gameOver'
+    this.assetsLoaded = 0;
+    this.assetsToLoad = 0;
+    this.loadingComplete = false;
 
     // First inject HTML to create DOM structure
     this.injectHTML();
 
     // Small delay to ensure DOM is ready
     setTimeout(() => {
-      this.showLevelSelect();
+      this.showLoadingScreen();
       this.setupEventListeners();
     }, 10);
   }
 
   injectHTML() {
     document.body.innerHTML = `
+      <!-- Loading Screen -->
+      <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+          <div class="loading-logo">🥞</div>
+          <h1 class="loading-title">Pancake Stack Game</h1>
+          <div class="loading-text" id="loadingText">Loading pancakes...</div>
+          <div class="loading-bar-container">
+            <div class="loading-bar" id="loadingBar"></div>
+          </div>
+          <div class="loading-percentage" id="loadingPercentage">0%</div>
+        </div>
+      </div>
+
+      <!-- Start Screen -->
+      <div id="startScreen" class="start-screen hidden">
+        <div class="start-content">
+          <div class="game-logo-section">
+            <div class="game-logo">🥞</div>
+            <h1 class="game-title">Pancake Stack Game</h1>
+            <p class="game-subtitle">Master the art of pancake cooking!</p>
+          </div>
+          
+          <div class="game-instructions">
+            <div class="instruction-item">
+              <span class="instruction-icon">🔥</span>
+              <span class="instruction-text">Cook pancakes on the grill</span>
+            </div>
+            <div class="instruction-item">
+              <span class="instruction-icon">🥞</span>
+              <span class="instruction-text">Stack them perfectly</span>
+            </div>
+            <div class="instruction-item">
+              <span class="instruction-icon">💰</span>
+              <span class="instruction-text">Complete orders for money</span>
+            </div>
+          </div>
+          
+          <div class="start-buttons">
+            <button class="start-button primary" id="playButton">
+              <span class="button-text">🍳 Start Cooking</span>
+            </button>
+            <button class="start-button secondary" id="howToPlayFromStart">
+              <span class="button-text">❓ How to Play</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Level Selection Screen -->
-      <div id="levelSelectScreen" class="level-select-screen">
+      <div id="levelSelectScreen" class="level-select-screen hidden">
         <div class="level-select-content">
-          <h1 class="level-select-title">🥞 Pancake Stack Game</h1>
-          <p class="level-select-subtitle">Choose your cooking challenge!</p>
+          <h1 class="level-select-title">🥞 Choose Your Challenge</h1>
+          <p class="level-select-subtitle">Select your cooking challenge!</p>
           
           <div class="level-select-buttons">
             <button class="htp-button" id="htpButton">❓ How to Play</button>
+            <button class="back-button" id="backToStartButton">← Back to Menu</button>
           </div>
           
           <div class="levels-grid" id="levelsGrid">
@@ -130,14 +182,123 @@ class PancakeStackGame {
     `;
   }
 
+  showLoadingScreen() {
+    this.gameState = "loading";
+    document.getElementById("loadingScreen").classList.remove("hidden");
+    document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("levelSelectScreen").classList.add("hidden");
+    document.getElementById("gameScreen").classList.add("hidden");
+    document.getElementById("gameOverScreen").classList.add("hidden");
+    document.getElementById("htpPopup").classList.add("hidden");
+
+    // Start loading process
+    this.startLoading();
+  }
+
+  startLoading() {
+    // Simulate loading assets
+    this.assetsToLoad = 10; // Simulate 10 assets to load
+    this.assetsLoaded = 0;
+    this.loadingComplete = false;
+
+    const loadingMessages = [
+      "Heating up the grill...",
+      "Mixing pancake batter...",
+      "Preparing plates...",
+      "Loading recipes...",
+      "Setting up kitchen...",
+      "Almost ready to cook!",
+    ];
+
+    let messageIndex = 0;
+    const loadingTextElement = document.getElementById("loadingText");
+
+    // Update loading messages
+    const messageInterval = setInterval(() => {
+      if (loadingTextElement && messageIndex < loadingMessages.length) {
+        loadingTextElement.textContent = loadingMessages[messageIndex];
+        messageIndex++;
+      }
+    }, 800);
+
+    // Simulate asset loading
+    const loadingInterval = setInterval(() => {
+      if (this.assetsLoaded < this.assetsToLoad) {
+        this.assetsLoaded++;
+        this.updateLoadingProgress();
+      } else {
+        clearInterval(loadingInterval);
+        clearInterval(messageInterval);
+        setTimeout(() => {
+          this.completeLoading();
+        }, 500);
+      }
+    }, 300);
+  }
+
+  updateLoadingProgress() {
+    const percentage = Math.floor(
+      (this.assetsLoaded / this.assetsToLoad) * 100
+    );
+
+    const loadingBar = document.getElementById("loadingBar");
+    const loadingPercentage = document.getElementById("loadingPercentage");
+
+    if (loadingBar) {
+      loadingBar.style.width = percentage + "%";
+    }
+
+    if (loadingPercentage) {
+      loadingPercentage.textContent = percentage + "%";
+    }
+  }
+
+  completeLoading() {
+    this.loadingComplete = true;
+
+    const loadingText = document.getElementById("loadingText");
+    if (loadingText) {
+      loadingText.textContent = "Ready to cook!";
+    }
+
+    setTimeout(() => {
+      this.showStartScreen();
+    }, 1000);
+  }
+
+  showStartScreen() {
+    this.gameState = "start";
+    document.getElementById("loadingScreen").classList.add("hidden");
+    document.getElementById("startScreen").classList.remove("hidden");
+    document.getElementById("levelSelectScreen").classList.add("hidden");
+    document.getElementById("gameScreen").classList.add("hidden");
+    document.getElementById("gameOverScreen").classList.add("hidden");
+    document.getElementById("htpPopup").classList.add("hidden");
+  }
+
   showLevelSelect() {
     this.gameState = "menu";
+    document.getElementById("loadingScreen").classList.add("hidden");
+    document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("levelSelectScreen").classList.remove("hidden");
     document.getElementById("gameScreen").classList.add("hidden");
     document.getElementById("gameOverScreen").classList.add("hidden");
     document.getElementById("htpPopup").classList.add("hidden");
 
     this.createLevelCards();
+  }
+
+  backToStart() {
+    // Stop any running game
+    this.gameState = "start";
+
+    // Reset any game state
+    if (this.cookingPancakes) {
+      this.cookingPancakes.clear();
+    }
+
+    // Show start screen
+    this.showStartScreen();
   }
 
   showHowToPlay() {
@@ -195,7 +356,9 @@ class PancakeStackGame {
     this.levelConfig = GAME_CONFIG.levels[levelNum];
     this.gameState = "playing";
 
-    // Hide level select and show game
+    // Hide all screens and show game
+    document.getElementById("loadingScreen").classList.add("hidden");
+    document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("levelSelectScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.remove("hidden");
     document.getElementById("htpPopup").classList.add("hidden");
@@ -953,35 +1116,56 @@ class PancakeStackGame {
   }
 
   setupEventListeners() {
+    // Start screen buttons
+    document
+      .getElementById("playButton")
+      ?.addEventListener("click", () => this.showLevelSelect());
+    document
+      .getElementById("howToPlayFromStart")
+      ?.addEventListener("click", () => this.showHowToPlay());
+    document
+      .getElementById("backToStartButton")
+      ?.addEventListener("click", () => this.backToStart());
+
     // HTP popup buttons
     document
       .getElementById("htpButton")
-      .addEventListener("click", () => this.showHowToPlay());
+      ?.addEventListener("click", () => this.showHowToPlay());
     document
       .getElementById("htpCloseButton")
-      .addEventListener("click", () => this.hideHowToPlay());
+      ?.addEventListener("click", () => this.hideHowToPlay());
     document
       .getElementById("htpGotItButton")
-      .addEventListener("click", () => this.hideHowToPlay());
+      ?.addEventListener("click", () => this.hideHowToPlay());
 
     // Game buttons
     document
       .getElementById("buyBatter")
-      .addEventListener("click", () => this.buyBatter());
+      ?.addEventListener("click", () => this.buyBatter());
     document
       .getElementById("restartButton")
-      .addEventListener("click", () => this.restart());
+      ?.addEventListener("click", () => this.restart());
     document
       .getElementById("backToLevelsButton")
-      .addEventListener("click", () => this.backToMenu());
+      ?.addEventListener("click", () => this.backToMenu());
     document
       .getElementById("backToMenuButton")
-      .addEventListener("click", () => this.backToMenu());
+      ?.addEventListener("click", () => this.backToMenu());
 
     // Close HTP popup when clicking outside
-    document.getElementById("htpPopup").addEventListener("click", (e) => {
+    document.getElementById("htpPopup")?.addEventListener("click", (e) => {
       if (e.target.id === "htpPopup") {
         this.hideHowToPlay();
+      }
+    });
+
+    // Loading screen skip (for testing)
+    document.addEventListener("keydown", (e) => {
+      if (
+        this.gameState === "loading" &&
+        (e.code === "Enter" || e.code === "Space")
+      ) {
+        this.completeLoading();
       }
     });
   }
