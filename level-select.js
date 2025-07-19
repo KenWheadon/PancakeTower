@@ -44,29 +44,26 @@ class LevelSelectScreen {
       <div class="level-title">${config.name}</div>
       <div class="level-description">${config.description}</div>
       
-      <div class="level-stars">
-        <div class="stars-label">Best Score:</div>
-        <div class="stars-display">
-          ${this.generateStarsDisplay(earnedStars)}
+      <div class="level-stats">
+        <div class="level-stat">
+          <span class="level-stat-icon">⏰</span>
+          <span class="level-stat-value">${config.timeLimit / 1000}s</span>
+          <span class="level-stat-label">Time</span>
+        </div>
+        <div class="level-stat">
+          <span class="level-stat-icon">🥞</span>
+          <span class="level-stat-value">${Math.max(...config.orders)}</span>
+          <span class="level-stat-label">Max Stack</span>
         </div>
       </div>
       
-      <div class="level-details">
-        <div class="level-detail">
-          <span class="detail-icon">⏰</span>
-          <span class="detail-text">${config.timeLimit / 1000}s</span>
-        </div>
-        <div class="level-detail">
-          <span class="detail-icon">🎯</span>
-          <span class="detail-text">Max ${Math.max(
-            ...config.orders
-          )} stack</span>
-        </div>
+      <div class="level-stars">
+        ${this.generateStarsDisplay(earnedStars)}
       </div>
       
       <button class="level-play-button ${isCompleted ? "completed" : "new"}" 
               data-level="${levelNum}">
-        ${isCompleted ? "🔄 Play Again" : "▶️ Play"}
+        ${isCompleted ? "▶️ Replay" : "▶️ Start"}
       </button>
     `;
 
