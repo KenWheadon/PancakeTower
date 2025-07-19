@@ -10,6 +10,7 @@ class PancakeStackGame {
     this.levelSelectScreen = null;
     this.levelManager = null;
     this.starManager = new StarManager();
+    this.creditsGallery = null;
 
     // First inject HTML to create DOM structure
     this.injectHTML();
@@ -65,8 +66,8 @@ class PancakeStackGame {
             <button class="start-button primary" id="playButton">
               <span class="button-text">🍳 Start Cooking</span>
             </button>
-            <button class="start-button secondary" id="howToPlayFromStart">
-              <span class="button-text">❓ How to Play</span>
+            <button class="start-button secondary" id="creditsButton">
+              <span class="button-text">👥 Credits</span>
             </button>
           </div>
         </div>
@@ -193,6 +194,7 @@ class PancakeStackGame {
     this.startScreen = new StartScreen(this);
     this.levelSelectScreen = new LevelSelectScreen(this);
     this.levelManager = new LevelManager(this);
+    this.creditsGallery = null; // Initialize as null, create when needed
   }
 
   // Navigation methods
@@ -235,6 +237,14 @@ class PancakeStackGame {
 
   hideHowToPlay() {
     document.getElementById("htpPopup").classList.add("hidden");
+  }
+
+  showCredits() {
+    // Lazy-load the credits gallery when first needed
+    if (!this.creditsGallery) {
+      this.creditsGallery = new CreditsGallery();
+    }
+    this.creditsGallery.openGallery();
   }
 
   endGame(finalScore) {
@@ -282,8 +292,8 @@ class PancakeStackGame {
       .getElementById("playButton")
       ?.addEventListener("click", () => this.showLevelSelect());
     document
-      .getElementById("howToPlayFromStart")
-      ?.addEventListener("click", () => this.showHowToPlay());
+      .getElementById("creditsButton")
+      ?.addEventListener("click", () => this.showCredits());
     document
       .getElementById("backToStartButton")
       ?.addEventListener("click", () => this.backToStart());
