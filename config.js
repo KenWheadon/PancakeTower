@@ -23,6 +23,10 @@ const GAME_CONFIG = {
       buttonClick: "audio/button-click.mp3",
       buttonHover: "audio/button-hover.mp3",
       placePancake: "audio/place-pancake-on-plate.mp3",
+      comboEarned: "audio/combo-earned.mp3",
+      earnMoney: "audio/earn-money.mp3",
+      timeWarning15: "audio/15-second-time-warning.mp3",
+      timeTicking: "audio/last-10-seconds-ticking.mp3",
     },
     defaultVolumes: {
       music: 0.7,

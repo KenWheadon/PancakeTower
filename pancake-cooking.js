@@ -70,6 +70,9 @@ class PancakeCooking {
 
     pancake.type = ingredientType;
 
+    // Play sound when ingredient is successfully added
+    this.levelManager.game.audioManager.playSfx("buttonClick");
+
     this.levelManager.levelUI.updateCellDisplay(pancake.cellIndex);
     this.levelManager.levelUI.updateUI();
 

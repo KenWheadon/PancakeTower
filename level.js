@@ -19,6 +19,9 @@ class LevelManager {
     this.eventListeners = [];
     this.cachedElements = {};
 
+    this.timeWarning15Played = false;
+    this.timeTickingStarted = false;
+
     this.pancakeCooking = new PancakeCooking(this);
     this.levelUI = new LevelUI(this);
     this.dragDrop = new DragDrop(this);
@@ -90,6 +93,9 @@ class LevelManager {
     this.currentOrderIndex = 0;
     this.totalOrdersCompleted = 0;
     this.combo = 0;
+
+    this.timeWarning15Played = false;
+    this.timeTickingStarted = false;
 
     this.grid = new Array(9).fill(null).map((_, index) => ({
       type: this.levelConfig.gridLayout[index],
@@ -291,6 +297,7 @@ class LevelManager {
     }
 
     if (comboBonus > 0) {
+      this.game.audioManager.playSfx("comboEarned");
       this.levelUI.addComboEffect(cellIndex, this.combo, comboBonus);
       this.levelUI.addComboMoneyAnimation(comboBonus);
     }
@@ -328,6 +335,10 @@ class LevelManager {
 
     this.game.audioManager.playSfx("orderServed");
 
+    if (totalPayment > 0) {
+      this.game.audioManager.playSfx("earnMoney");
+    }
+
     this.addPaymentAnimations(
       correctPancakes,
       extraPancakes,
@@ -353,11 +364,27 @@ class LevelManager {
     this.levelUI.updateUI();
   }
 
+  handleTimeWarnings() {
+    const timeInSeconds = this.timeRemaining / 1000;
+
+    if (timeInSeconds <= 15 && !this.timeWarning15Played) {
+      this.timeWarning15Played = true;
+      this.game.audioManager.playSfx("timeWarning15");
+    }
+
+    if (timeInSeconds <= 10 && !this.timeTickingStarted) {
+      this.timeTickingStarted = true;
+      this.game.audioManager.playSfx("timeTicking");
+    }
+  }
+
   gameLoop() {
     if (this.game.gameState !== "playing" || !this.gameRunning) return;
 
     this.pancakeCooking.updateCooking();
     this.timeRemaining -= GAME_CONFIG.mechanics.gameLoopInterval;
+
+    this.handleTimeWarnings();
 
     if (this.timeRemaining <= 0) {
       this.endGame();

@@ -2,7 +2,6 @@ class LevelManager {
   constructor(gameInstance) {
     this.game = gameInstance;
 
-    // Game state
     this.gameRunning = false;
     this.timeRemaining = 0;
     this.batter = 0;
@@ -11,66 +10,99 @@ class LevelManager {
     this.money = 0;
     this.currentOrderIndex = 0;
     this.totalOrdersCompleted = 0;
-    this.combo = 0; // NEW: Track combo counter
+    this.combo = 0;
 
-    // Grid state
     this.grid = [];
     this.levelConfig = null;
 
-    // Initialize sub-managers
+    this.activeTimeouts = new Set();
+    this.eventListeners = [];
+    this.cachedElements = {};
+
+    this.timeWarning15Played = false;
+    this.timeTickingStarted = false;
+
     this.pancakeCooking = new PancakeCooking(this);
     this.levelUI = new LevelUI(this);
     this.dragDrop = new DragDrop(this);
   }
 
+  cacheElement(id) {
+    if (!this.cachedElements[id]) {
+      this.cachedElements[id] = document.getElementById(id);
+    }
+    return this.cachedElements[id];
+  }
+
+  addTimeout(callback, delay) {
+    const timeoutId = setTimeout(() => {
+      callback();
+      this.activeTimeouts.delete(timeoutId);
+    }, delay);
+    this.activeTimeouts.add(timeoutId);
+    return timeoutId;
+  }
+
+  addEventListener(element, event, handler) {
+    const listener = { element, event, handler };
+    element.addEventListener(event, handler);
+    this.eventListeners.push(listener);
+  }
+
   startLevel(levelNum, levelConfig) {
     this.levelConfig = levelConfig;
 
-    // Hide all screens and show game
-    document.getElementById("loadingScreen").classList.add("hidden");
-    document.getElementById("startScreen").classList.add("hidden");
-    document.getElementById("levelSelectScreen").classList.add("hidden");
-    document.getElementById("gameScreen").classList.remove("hidden");
-    document.getElementById("htpPopup").classList.add("hidden");
+    this.cacheElement("loadingScreen").classList.add("hidden");
+    this.cacheElement("startScreen").classList.add("hidden");
+    this.cacheElement("levelSelectScreen").classList.add("hidden");
+    this.cacheElement("gameScreen").classList.remove("hidden");
+    this.cacheElement("htpPopup").classList.add("hidden");
 
-    // Initialize game for this level
     this.initializeGame();
     this.gameLoop();
   }
 
   stopGame() {
     this.gameRunning = false;
+    this.cleanup();
+  }
+
+  cleanup() {
+    this.activeTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
+    this.activeTimeouts.clear();
+
+    this.eventListeners.forEach(({ element, event, handler }) => {
+      element.removeEventListener(event, handler);
+    });
+    this.eventListeners = [];
+
     this.pancakeCooking.cleanup();
     this.levelUI.stopTutorialCycling();
+
+    this.cachedElements = {};
   }
 
   initializeGame() {
-    // Use configuration from the selected level
-    if (!this.levelConfig) {
-      console.error("No level configuration found!");
-      return;
-    }
-
-    // Game state
     this.game.gameState = "playing";
     this.gameRunning = true;
     this.timeRemaining = this.levelConfig.timeLimit;
     this.batter = this.levelConfig.initialBatter;
-    this.butter = this.levelConfig.initialButter || 0;
-    this.banana = this.levelConfig.initialBanana || 0;
+    this.butter = this.levelConfig.initialButter;
+    this.banana = this.levelConfig.initialBanana;
     this.money = this.levelConfig.initialMoney;
     this.currentOrderIndex = 0;
     this.totalOrdersCompleted = 0;
-    this.combo = 0; // NEW: Initialize combo
+    this.combo = 0;
 
-    // Grid state
+    this.timeWarning15Played = false;
+    this.timeTickingStarted = false;
+
     this.grid = new Array(9).fill(null).map((_, index) => ({
       type: this.levelConfig.gridLayout[index],
-      pancakes: [], // stack of pancakes
-      cookingPancake: null, // pancake being cooked (for grills)
+      pancakes: [],
+      cookingPancake: null,
     }));
 
-    // Initialize sub-managers
     this.pancakeCooking.initialize();
     this.levelUI.createGrid();
     this.levelUI.updateUI();
@@ -78,19 +110,80 @@ class LevelManager {
   }
 
   setupGameEventListeners() {
-    // Game buttons
-    document
-      .getElementById("buyBatter")
-      ?.addEventListener("click", () => this.buyBatter());
+    const buyBatterBtn = this.cacheElement("buyBatter");
+    const buyButterBtn = this.cacheElement("buyButter");
+    const buyBananaBtn = this.cacheElement("buyBanana");
 
-    // Add event listeners for ingredient purchases if they exist
-    document
-      .getElementById("buyButter")
-      ?.addEventListener("click", () => this.buyButter());
+    if (buyBatterBtn) {
+      this.addEventListener(buyBatterBtn, "click", () =>
+        this.buyIngredient("batter")
+      );
+      this.addEventListener(buyBatterBtn, "mouseenter", () =>
+        this.game.audioManager.playSfx("buttonHover")
+      );
+    }
+    if (buyButterBtn) {
+      this.addEventListener(buyButterBtn, "click", () =>
+        this.buyIngredient("butter")
+      );
+      this.addEventListener(buyButterBtn, "mouseenter", () =>
+        this.game.audioManager.playSfx("buttonHover")
+      );
+    }
+    if (buyBananaBtn) {
+      this.addEventListener(buyBananaBtn, "click", () =>
+        this.buyIngredient("banana")
+      );
+      this.addEventListener(buyBananaBtn, "mouseenter", () =>
+        this.game.audioManager.playSfx("buttonHover")
+      );
+    }
+  }
 
-    document
-      .getElementById("buyBanana")
-      ?.addEventListener("click", () => this.buyBanana());
+  buyIngredient(type) {
+    if (this.game.gameState !== "playing" || !this.gameRunning) return;
+
+    const config = this.getIngredientConfig(type);
+    if (this.money < config.cost) return;
+
+    this.money -= config.cost;
+    this[type] += config.purchaseAmount;
+
+    this.game.audioManager.playSfx("buttonClick");
+    this.addPurchaseEffect(config.buttonId);
+    this.levelUI.updateUI();
+  }
+
+  getIngredientConfig(type) {
+    const configs = {
+      batter: {
+        cost: this.levelConfig.batterCost,
+        purchaseAmount: this.levelConfig.batterPurchaseAmount,
+        buttonId: "buyBatter",
+      },
+      butter: {
+        cost: this.levelConfig.butterCost,
+        purchaseAmount: this.levelConfig.butterPurchaseAmount,
+        buttonId: "buyButter",
+      },
+      banana: {
+        cost: this.levelConfig.bananaCost,
+        purchaseAmount: this.levelConfig.bananaPurchaseAmount,
+        buttonId: "buyBanana",
+      },
+    };
+    return configs[type];
+  }
+
+  addPurchaseEffect(buttonId) {
+    const button = this.cacheElement(buttonId);
+    if (!button) return;
+
+    button.classList.add("success-glow");
+    this.addTimeout(
+      () => button.classList.remove("success-glow"),
+      GAME_CONFIG.animations.successGlow
+    );
   }
 
   getCurrentOrder() {
@@ -98,88 +191,40 @@ class LevelManager {
   }
 
   buyBatter() {
-    if (this.game.gameState !== "playing" || !this.gameRunning) return;
-    if (this.money < this.levelConfig.batterCost) return;
-
-    this.money -= this.levelConfig.batterCost;
-    this.batter += this.levelConfig.batterPurchaseAmount;
-
-    // Add purchase effect
-    const buyButton = document.getElementById("buyBatter");
-    buyButton.classList.add("success-glow");
-    setTimeout(
-      () => buyButton.classList.remove("success-glow"),
-      GAME_CONFIG.animations.successGlow
-    );
-
-    this.levelUI.updateUI();
+    this.buyIngredient("batter");
   }
 
   buyButter() {
-    if (this.game.gameState !== "playing" || !this.gameRunning) return;
-    if (this.money < this.levelConfig.butterCost) return;
-
-    this.money -= this.levelConfig.butterCost;
-    this.butter += this.levelConfig.butterPurchaseAmount;
-
-    // Add purchase effect
-    const buyButton = document.getElementById("buyButter");
-    buyButton?.classList.add("success-glow");
-    setTimeout(
-      () => buyButton?.classList.remove("success-glow"),
-      GAME_CONFIG.animations.successGlow
-    );
-
-    this.levelUI.updateUI();
+    this.buyIngredient("butter");
   }
 
   buyBanana() {
-    if (this.game.gameState !== "playing" || !this.gameRunning) return;
-    if (this.money < this.levelConfig.bananaCost) return;
-
-    this.money -= this.levelConfig.bananaCost;
-    this.banana += this.levelConfig.bananaPurchaseAmount;
-
-    // Add purchase effect
-    const buyButton = document.getElementById("buyBanana");
-    buyButton?.classList.add("success-glow");
-    setTimeout(
-      () => buyButton?.classList.remove("success-glow"),
-      GAME_CONFIG.animations.successGlow
-    );
-
-    this.levelUI.updateUI();
+    this.buyIngredient("banana");
   }
 
-  // Helper method to count served pancakes by type
   getServedPancakesByType(pancakes) {
     const counts = {};
     pancakes.forEach((pancake) => {
-      counts[pancake.type] = (counts[pancake.type] || 0) + 1;
+      counts[pancake.type] = counts[pancake.type] + 1 || 1;
     });
     return counts;
   }
 
-  // NEW: Check if order is perfectly fulfilled (exactly what's required, no more, no less)
   isOrderPerfectlyFulfilled(servedPancakes, currentOrder) {
-    // Check if served pancakes exactly match the order
     const orderTypes = Object.keys(currentOrder);
     const servedTypes = Object.keys(servedPancakes);
 
-    // Must have same number of types
     if (orderTypes.length !== servedTypes.length) {
       return false;
     }
 
-    // Check each type matches exactly
     for (const [type, required] of Object.entries(currentOrder)) {
-      const served = servedPancakes[type] || 0;
-      if (served !== required) {
+      const served = servedPancakes[type];
+      if (!served || served !== required) {
         return false;
       }
     }
 
-    // Check no extra types
     for (const type of servedTypes) {
       if (!(type in currentOrder)) {
         return false;
@@ -187,6 +232,75 @@ class LevelManager {
     }
 
     return true;
+  }
+
+  calculatePayment(servedPancakes, currentOrder) {
+    let payment = 0;
+    let correctPancakes = 0;
+    let extraPancakes = 0;
+
+    Object.keys(currentOrder).forEach((type) => {
+      const required = currentOrder[type];
+      const served = servedPancakes[type];
+      if (served) {
+        const correct = Math.min(served, required);
+        correctPancakes += correct;
+        payment += correct * this.levelConfig.pancakeReward;
+      }
+    });
+
+    Object.keys(servedPancakes).forEach((type) => {
+      const required = currentOrder[type];
+      const served = servedPancakes[type];
+      if (served > (required || 0)) {
+        const extra = served - (required || 0);
+        extraPancakes += extra;
+        payment -= extra * this.levelConfig.pancakePenalty;
+      }
+    });
+
+    return { payment, correctPancakes, extraPancakes };
+  }
+
+  calculateBonuses(isPerfectOrder, currentOrder) {
+    let orderFulfillmentBonus = 0;
+    let comboBonus = 0;
+
+    if (isPerfectOrder) {
+      const totalPancakesInOrder = Object.values(currentOrder).reduce(
+        (sum, count) => sum + count,
+        0
+      );
+      orderFulfillmentBonus = totalPancakesInOrder;
+      this.combo++;
+      comboBonus = this.combo * 5;
+    } else {
+      this.combo = 0;
+    }
+
+    return { orderFulfillmentBonus, comboBonus };
+  }
+
+  addPaymentAnimations(correctPancakes, extraPancakes, cellIndex, comboBonus) {
+    for (let i = 0; i < correctPancakes; i++) {
+      this.addTimeout(() => {
+        this.levelUI.addCoinAnimation(cellIndex);
+      }, i * 150);
+    }
+
+    if (extraPancakes > 0) {
+      for (let i = 0; i < extraPancakes; i++) {
+        this.addTimeout(() => {
+          this.levelUI.addPenaltyAnimation();
+        }, i * 200);
+      }
+    }
+
+    if (comboBonus > 0) {
+      this.game.audioManager.playSfx("comboEarned");
+      this.levelUI.addComboEffect(cellIndex, this.combo, comboBonus);
+      this.levelUI.addComboMoneyAnimation(comboBonus);
+    }
   }
 
   servePlate(cellIndex) {
@@ -197,101 +311,72 @@ class LevelManager {
 
     const currentOrder = this.getCurrentOrder();
     const servedPancakes = this.getServedPancakesByType(cell.pancakes);
-
-    // Check if order is perfectly fulfilled
     const isPerfectOrder = this.isOrderPerfectlyFulfilled(
       servedPancakes,
       currentOrder
     );
 
-    // Calculate payment based on type matching
-    let payment = 0;
-    let correctPancakes = 0;
-    let extraPancakes = 0;
-    let orderFulfillmentBonus = 0;
-    let comboBonus = 0;
+    const {
+      payment: basePayment,
+      correctPancakes,
+      extraPancakes,
+    } = this.calculatePayment(servedPancakes, currentOrder);
 
-    // Count correct pancakes by type
-    Object.keys(currentOrder).forEach((type) => {
-      const required = currentOrder[type];
-      const served = servedPancakes[type] || 0;
-      const correct = Math.min(served, required);
-      correctPancakes += correct;
-      payment += correct * this.levelConfig.pancakeReward;
-    });
+    const { orderFulfillmentBonus, comboBonus } = this.calculateBonuses(
+      isPerfectOrder,
+      currentOrder
+    );
 
-    // Count extra pancakes (any served beyond what's required)
-    Object.keys(servedPancakes).forEach((type) => {
-      const required = currentOrder[type] || 0;
-      const served = servedPancakes[type];
-      if (served > required) {
-        const extra = served - required;
-        extraPancakes += extra;
-        payment -= extra * this.levelConfig.pancakePenalty;
-      }
-    });
+    const totalPayment = Math.max(
+      0,
+      basePayment + orderFulfillmentBonus + comboBonus
+    );
+    this.money += totalPayment;
 
-    // NEW: Add order fulfillment bonus if order is perfectly fulfilled
-    if (isPerfectOrder) {
-      // $1 bonus per pancake in the order
-      const totalPancakesInOrder = Object.values(currentOrder).reduce(
-        (sum, count) => sum + count,
-        0
-      );
-      orderFulfillmentBonus = totalPancakesInOrder;
-      payment += orderFulfillmentBonus;
+    this.game.audioManager.playSfx("orderServed");
 
-      // NEW: Add combo and combo bonus
-      this.combo++;
-      comboBonus = this.combo * 5; // $5 per combo level
-      payment += comboBonus;
-
-      // Add combo effect and money animation
-      this.levelUI.addComboEffect(cellIndex, this.combo, comboBonus);
-    } else {
-      // Reset combo if order is not perfectly fulfilled
-      this.combo = 0;
+    // Play earnMoney sound for ANY positive payment (including bonuses)
+    if (totalPayment > 0) {
+      this.game.audioManager.playSfx("earnMoney");
     }
 
-    // Penalty animations for extra pancakes
-    if (extraPancakes > 0) {
-      for (let i = 0; i < extraPancakes; i++) {
-        setTimeout(() => {
-          this.levelUI.addPenaltyAnimation();
-        }, i * 200);
-      }
-    }
+    this.addPaymentAnimations(
+      correctPancakes,
+      extraPancakes,
+      cellIndex,
+      comboBonus
+    );
 
-    // Ensure payment is not negative
-    payment = Math.max(0, payment);
-    this.money += payment;
-
-    // Add coin animations for correct pancakes
-    for (let i = 0; i < correctPancakes; i++) {
-      setTimeout(() => {
-        this.levelUI.addCoinAnimation(cellIndex);
-      }, i * 150);
-    }
-
-    // Add success effects with bonus information
     this.levelUI.addSuccessEffect(
       cellIndex,
-      payment,
+      totalPayment,
       orderFulfillmentBonus,
       comboBonus
     );
     this.levelUI.screenShake();
 
-    // Clear the plate
     cell.pancakes = [];
     this.levelUI.updateCellDisplay(cellIndex);
 
-    // Move to next order
     this.currentOrderIndex =
       (this.currentOrderIndex + 1) % this.levelConfig.orders.length;
     this.totalOrdersCompleted++;
 
     this.levelUI.updateUI();
+  }
+
+  handleTimeWarnings() {
+    const timeInSeconds = this.timeRemaining / 1000;
+
+    if (timeInSeconds <= 15 && !this.timeWarning15Played) {
+      this.timeWarning15Played = true;
+      this.game.audioManager.playSfx("timeWarning15");
+    }
+
+    if (timeInSeconds <= 10 && !this.timeTickingStarted) {
+      this.timeTickingStarted = true;
+      this.game.audioManager.playSfx("timeTicking");
+    }
   }
 
   gameLoop() {
@@ -300,6 +385,8 @@ class LevelManager {
     this.pancakeCooking.updateCooking();
     this.timeRemaining -= GAME_CONFIG.mechanics.gameLoopInterval;
 
+    this.handleTimeWarnings();
+
     if (this.timeRemaining <= 0) {
       this.endGame();
       return;
@@ -307,7 +394,10 @@ class LevelManager {
 
     this.levelUI.updateUI();
 
-    setTimeout(() => this.gameLoop(), GAME_CONFIG.mechanics.gameLoopInterval);
+    this.addTimeout(
+      () => this.gameLoop(),
+      GAME_CONFIG.mechanics.gameLoopInterval
+    );
   }
 
   endGame() {
