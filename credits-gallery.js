@@ -43,7 +43,8 @@ class CreditsGallery {
     const header = document.createElement("div");
     header.className = "credits-gallery-header";
     header.innerHTML = `
-      <h2 class="credits-gallery-title">Game Credits</h2>
+      <h2 class="credits-gallery-title">Pancake Tower Credits</h2>
+      <h4>Company: Weird Demon Games</h4>
       <button class="credits-gallery-close">×</button>
     `;
 

@@ -125,7 +125,7 @@
 .credits-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--spacing-xl);
+  gap: var(--spacing-md);
   padding-top: var(--spacing-lg);
 }
 

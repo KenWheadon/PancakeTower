@@ -71,8 +71,8 @@ const GAME_CONFIG = {
       initialMoney: 0,
       batterCost: 1,
       batterPurchaseAmount: 2,
-      pancakeReward: 1,
-      pancakePenalty: 1,
+      pancakeReward: 2,
+      pancakePenalty: 0,
       availableIngredients: [],
     },
 
@@ -94,7 +94,7 @@ const GAME_CONFIG = {
       cookingTime: 6000,
       ingredientTime: 4500,
       burntTime: 8500,
-      timeLimit: 75000,
+      timeLimit: 90000,
       // UPDATED: Mixed orders with butter pancakes
       orders: [
         { plain: 2 },
@@ -110,7 +110,7 @@ const GAME_CONFIG = {
       batterCost: 2,
       batterPurchaseAmount: 4,
       pancakeReward: 2,
-      pancakePenalty: 3,
+      pancakePenalty: 0,
       availableIngredients: ["butter"],
       butterCost: 1,
       butterPurchaseAmount: 3,
@@ -135,7 +135,7 @@ const GAME_CONFIG = {
       cookingTime: 5500,
       ingredientTime: 4250,
       burntTime: 8000,
-      timeLimit: 90000,
+      timeLimit: 120000,
       orders: [
         { plain: 2, butter: 2 },
         { butter: 3, plain: 2 },
@@ -152,7 +152,7 @@ const GAME_CONFIG = {
       batterCost: 4,
       batterPurchaseAmount: 8,
       pancakeReward: 3,
-      pancakePenalty: 5,
+      pancakePenalty: 0,
       availableIngredients: ["butter"],
       butterCost: 2,
       butterPurchaseAmount: 6,
@@ -177,7 +177,7 @@ const GAME_CONFIG = {
       cookingTime: 5000,
       ingredientTime: 4000,
       burntTime: 7500,
-      timeLimit: 90000,
+      timeLimit: 180000,
       orders: [
         { banana: 2 },
         { banana: 3, butter: 1 },
@@ -194,7 +194,7 @@ const GAME_CONFIG = {
       batterCost: 5,
       batterPurchaseAmount: 10,
       pancakeReward: 5,
-      pancakePenalty: 10,
+      pancakePenalty: 0,
       availableIngredients: ["butter", "banana"],
       butterCost: 5,
       butterPurchaseAmount: 3,
@@ -222,7 +222,7 @@ const GAME_CONFIG = {
       cookingTime: 3750,
       ingredientTime: 3500,
       burntTime: 5250,
-      timeLimit: 45000,
+      timeLimit: 60000,
       orders: [
         { banana: 1, butter: 1, plain: 1 },
         { plain: 3, butter: 2, banana: 1 },
@@ -236,7 +236,7 @@ const GAME_CONFIG = {
       batterCost: 10,
       batterPurchaseAmount: 3,
       pancakeReward: 20, // High reward per pancake due to difficulty
-      pancakePenalty: 30, // High penalty to match
+      pancakePenalty: 0, // High penalty to match
       availableIngredients: ["butter", "banana"], // all ingredients available
       butterCost: 10,
       butterPurchaseAmount: 2,
