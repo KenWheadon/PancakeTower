@@ -27,7 +27,7 @@
   width: 90vw;
   height: 90vh;
   max-width: 1200px;
-  max-height: 800px;
+  max-height: 770px;
   background: linear-gradient(135deg, #2c3e50, #34495e);
   border-radius: var(--radius-md);
   border: 2px solid rgba(255, 215, 0, 0.3);
@@ -86,7 +86,7 @@
 
 .credits-gallery-content {
   flex: 1;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg);
   overflow-y: auto;
   position: relative;
   background: linear-gradient(135deg, #34495e, #2c3e50);
@@ -96,7 +96,6 @@
   display: flex;
   justify-content: center;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xl);
   flex-wrap: wrap;
 }
 
@@ -127,7 +126,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: var(--spacing-xl);
-  padding: var(--spacing-lg) 0;
+  padding-top: var(--spacing-lg);
 }
 
 .credits-card {
