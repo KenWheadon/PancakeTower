@@ -153,16 +153,17 @@ class LevelManager {
       
       <!-- Batter Resource -->
       <div class="resource-item">
-        <div class="draggable-item" data-item-type="batter">
-          <img src="images/item-batter.png" alt="Batter" class="draggable-item-image">
+        <div class="resource-left">
+            <div class="draggable-item" data-item-type="batter">
+                <img src="images/item-batter.png" alt="Batter" class="draggable-item-image">
+            </div>
         </div>
-        <div class="resource-display">
-          <div class="resource-name">Batter</div>
-          <span class="resource-cost">Cost: $<span id="batterCost">1</span></span>
-          <span class="resource-amount">Have: <span id="batterCount">10</span></span>
+    
+        <div class="resource-right">
+            <span class="resource-amount">Have: <span id="batterCount">10</span></span>
+            <button class="buy-button" id="buyBatter">Buy More $<span id="batterCost">1</span></button>
         </div>
-        <button class="buy-button" id="buyBatter">Buy More</button>
-      </div>
+    </div>
     `;
 
     // Add ingredients based on level config
@@ -172,30 +173,30 @@ class LevelManager {
           const butterItem = document.createElement("div");
           butterItem.className = "resource-item";
           butterItem.innerHTML = `
+            <div class="resource-left">
             <div class="draggable-item" data-item-type="butter">
               <img src="images/item-butter.png" alt="Butter" class="draggable-item-image">
             </div>
-            <div class="resource-name">Butter</div>
-            <div class="resource-display">
-              <span class="resource-cost">Cost: $<span id="butterCost">${this.levelConfig.butterCost}</span></span>
-              <span class="resource-amount">Have: <span id="butterCount">${this.butter}</span></span>
             </div>
-            <button class="buy-button" id="buyButter">Buy More</button>
+            <div class="resource-right">
+            <span class="resource-amount">Have: <span id="butterCount">${this.butter}</span></span>
+            <button class="buy-button" id="buyButter">Buy More $<span id="butterCost">${this.levelConfig.butterCost}</span></button>
+            </div>
           `;
           storeSection.appendChild(butterItem);
         } else if (ingredient === "banana") {
           const bananaItem = document.createElement("div");
           bananaItem.className = "resource-item";
           bananaItem.innerHTML = `
+          <div class="resource-left">
             <div class="draggable-item" data-item-type="banana">
               <img src="images/item-banana.png" alt="Banana" class="draggable-item-image">
             </div>
-            <div class="resource-name">Banana</div>
-            <div class="resource-display">
-              <span class="resource-cost">Cost: $<span id="bananaCost">${this.levelConfig.bananaCost}</span></span>
-              <span class="resource-amount">Have: <span id="bananaCount">${this.banana}</span></span>
             </div>
-            <button class="buy-button" id="buyBanana">Buy More</button>
+            <div class="resource-right">
+              <span class="resource-amount">Have: <span id="bananaCount">${this.banana}</span></span>
+            <button class="buy-button" id="buyBanana">Buy More $<span id="bananaCost">${this.levelConfig.bananaCost}</span></button>
+            </div>
           `;
           storeSection.appendChild(bananaItem);
         }
@@ -261,11 +262,10 @@ class LevelManager {
     const pancakeId = this.pancakeIdCounter++;
     const pancake = {
       id: pancakeId,
-      type: "plain",
+      type: "plain", // Start as plain, can be changed by ingredients
       progress: 0,
       startTime: Date.now(),
       cellIndex: cellIndex,
-      ingredients: [], // track added ingredients
       ingredientDeadlinePassed: false,
     };
 
@@ -279,6 +279,7 @@ class LevelManager {
     this.updateUI();
   }
 
+  // UPDATED: Now changes pancake type instead of adding ingredients
   addIngredientToPancake(pancakeId, ingredientType) {
     const pancake = this.cookingPancakes.get(pancakeId);
     if (!pancake || pancake.ingredientDeadlinePassed) return false;
@@ -287,12 +288,15 @@ class LevelManager {
     if (ingredientType === "butter" && this.butter <= 0) return false;
     if (ingredientType === "banana" && this.banana <= 0) return false;
 
+    // Can only change to butter or banana type once
+    if (pancake.type !== "plain") return false;
+
     // Consume ingredient
     if (ingredientType === "butter") this.butter--;
     if (ingredientType === "banana") this.banana--;
 
-    // Add to pancake
-    pancake.ingredients.push(ingredientType);
+    // Change pancake type
+    pancake.type = ingredientType;
 
     // Update display
     this.updateCellDisplay(pancake.cellIndex);
@@ -404,7 +408,8 @@ class LevelManager {
         );
         const pancakeImg = cellDiv?.querySelector(".pancake");
         if (pancakeImg) {
-          pancakeImg.src = "images/plain-pancake-burnt.png";
+          // UPDATED: Use type-specific burnt image
+          pancakeImg.src = `images/${pancake.type}-pancake-burnt.png`;
           pancakeImg.classList.add("burnt-fading");
           pancakeImg.draggable = false;
           pancakeImg.style.cursor = "not-allowed";
@@ -462,6 +467,7 @@ class LevelManager {
     });
   }
 
+  // UPDATED: Use type-specific images based on pancake type and progress
   updateCellDisplay(cellIndex) {
     const cell = this.grid[cellIndex];
     const cellDiv = document.querySelector(`[data-cell-index="${cellIndex}"]`);
@@ -508,25 +514,25 @@ class LevelManager {
         cellDiv.appendChild(pancakeImg);
       }
 
-      // Update pancake appearance based on progress using the actual thresholds
+      // UPDATED: Update pancake appearance based on type and progress
       if (progress < ingredientThreshold) {
-        pancakeImg.src = "images/plain-pancake-goo.png"; // Uncooked - can add ingredients
-        pancakeImg.alt = "Uncooked pancake";
+        pancakeImg.src = `images/${pancake.type}-pancake-goo.png`; // Uncooked - can add ingredients
+        pancakeImg.alt = `Uncooked ${pancake.type} pancake`;
         pancakeImg.draggable = false;
         pancakeImg.style.cursor = "not-allowed";
       } else if (progress < cookingThreshold) {
-        pancakeImg.src = "images/plain-pancake-solid.png"; // Solid - no more ingredients, still cooking
-        pancakeImg.alt = "Solid pancake";
+        pancakeImg.src = `images/${pancake.type}-pancake-solid.png`; // Solid - no more ingredients, still cooking
+        pancakeImg.alt = `Solid ${pancake.type} pancake`;
         pancakeImg.draggable = false;
         pancakeImg.style.cursor = "not-allowed";
       } else if (progress >= GAME_CONFIG.mechanics.burntThreshold) {
-        pancakeImg.src = "images/plain-pancake-burnt.png"; // Burnt
-        pancakeImg.alt = "Burnt pancake";
+        pancakeImg.src = `images/${pancake.type}-pancake-burnt.png`; // Burnt
+        pancakeImg.alt = `Burnt ${pancake.type} pancake`;
         pancakeImg.draggable = false;
         pancakeImg.style.cursor = "not-allowed";
       } else {
-        pancakeImg.src = "images/plain-pancake-cooked.png"; // Cooked
-        pancakeImg.alt = "Cooked pancake";
+        pancakeImg.src = `images/${pancake.type}-pancake-cooked.png`; // Cooked
+        pancakeImg.alt = `Cooked ${pancake.type} pancake`;
         pancakeImg.draggable = false; // Disable HTML5 drag
         pancakeImg.style.cursor = "grab";
 
@@ -561,12 +567,37 @@ class LevelManager {
       if (pancakeImg) pancakeImg.remove();
       cellDiv.classList.remove("ingredient-drop-zone");
     } else if (cell.type === "plate") {
-      // Update serve button with stack count
+      // UPDATED: Update serve button with type breakdown and total count
       const serveButton = cellDiv.querySelector(".serve-button");
       const stackCount = serveButton.querySelector(".stack-count");
 
       if (stackCount) {
         stackCount.textContent = cell.pancakes.length;
+      }
+
+      // Add type breakdown display
+      let existingBreakdown = cellDiv.querySelector(".pancake-type-breakdown");
+      if (existingBreakdown) existingBreakdown.remove();
+
+      if (cell.pancakes.length > 0) {
+        const breakdown = document.createElement("div");
+        breakdown.className = "pancake-type-breakdown";
+
+        const pancakeCounts = this.getServedPancakesByType(cell.pancakes);
+        const breakdownItems = [];
+
+        Object.entries(pancakeCounts).forEach(([type, count]) => {
+          if (count > 0) {
+            const icon =
+              type === "plain" ? "🥞" : type === "butter" ? "🧈" : "🍌";
+            breakdownItems.push(`${count}${icon}`);
+          }
+        });
+
+        breakdown.innerHTML = `<div class="type-counts">${breakdownItems.join(
+          " "
+        )}</div>`;
+        cellDiv.appendChild(breakdown);
       }
 
       // Update plate display with stacked pancakes
@@ -581,8 +612,9 @@ class LevelManager {
         cell.pancakes.forEach((pancake, index) => {
           const pancakeImg = document.createElement("img");
           pancakeImg.className = "pancake stacked-pancake large-pancake";
-          pancakeImg.src = "images/plain-pancake-cooked.png";
-          pancakeImg.alt = "Stacked pancake";
+          // UPDATED: Use type-specific image for cooked pancakes
+          pancakeImg.src = `images/${pancake.type}-pancake-cooked.png`;
+          pancakeImg.alt = `Stacked ${pancake.type} pancake`;
           pancakeImg.dataset.pancakeId = pancake.id;
 
           // Apply stacking transform - make pancakes visible with slight offset
@@ -657,10 +689,11 @@ class LevelManager {
     e.target.classList.add("dragging");
     e.target.style.cursor = "grabbing";
 
-    // Create dragged pancake visual
+    // Create dragged pancake visual - need to get the pancake type for correct image
+    const pancakeType = this.getPancakeType(pancakeId);
     const draggedPancake = document.createElement("img");
     draggedPancake.className = "dragged-pancake large-pancake";
-    draggedPancake.src = "images/plain-pancake-cooked.png";
+    draggedPancake.src = `images/${pancakeType}-pancake-cooked.png`;
     draggedPancake.alt = "Dragged pancake";
     draggedPancake.id = "draggedItemVisual";
     document.body.appendChild(draggedPancake);
@@ -671,6 +704,27 @@ class LevelManager {
     });
 
     this.setupDragEventListeners(e);
+  }
+
+  // Helper method to get pancake type by ID
+  getPancakeType(pancakeId) {
+    // Check cooking pancakes first
+    const cookingPancake = this.cookingPancakes.get(parseInt(pancakeId));
+    if (cookingPancake) {
+      return cookingPancake.type;
+    }
+
+    // Check plates
+    for (let cell of this.grid) {
+      if (cell.type === "plate" && cell.pancakes.length > 0) {
+        const pancake = cell.pancakes.find((p) => p.id === parseInt(pancakeId));
+        if (pancake) {
+          return pancake.type;
+        }
+      }
+    }
+
+    return "plain"; // fallback
   }
 
   startItemDrag(e, itemType) {
@@ -917,11 +971,10 @@ class LevelManager {
       sourceCell.cookingPancake = null;
       this.cookingPancakes.delete(pancakeId);
 
-      // Add to target plate
+      // Add to target plate with type information
       targetCell.pancakes.push({
         id: pancakeId,
-        type: "plain",
-        ingredients: sourcePancake.ingredients || [],
+        type: sourcePancake.type, // UPDATED: Preserve pancake type
       });
 
       // Add move effect
@@ -941,7 +994,7 @@ class LevelManager {
           // Remove from source plate
           cell.pancakes.pop();
 
-          // Add to target plate
+          // Add to target plate (already has type information)
           targetCell.pancakes.push(topPancake);
 
           // Add move effect
@@ -987,6 +1040,7 @@ class LevelManager {
     });
   }
 
+  // UPDATED: Now handles typed orders and matching
   servePlate(cellIndex) {
     if (this.game.gameState !== "playing" || !this.gameRunning) return;
 
@@ -994,19 +1048,35 @@ class LevelManager {
     if (cell.type !== "plate" || cell.pancakes.length === 0) return;
 
     const currentOrder = this.getCurrentOrder();
-    const servedPancakes = cell.pancakes.length;
+    const servedPancakes = this.getServedPancakesByType(cell.pancakes);
 
-    // Calculate payment
+    // Calculate payment based on type matching
     let payment = 0;
-    const correctPancakes = Math.min(servedPancakes, currentOrder);
-    payment += correctPancakes * this.levelConfig.pancakeReward;
+    let correctPancakes = 0;
+    let extraPancakes = 0;
 
-    // Penalty for extra pancakes
-    if (servedPancakes > currentOrder) {
-      const extraPancakes = servedPancakes - currentOrder;
-      payment -= extraPancakes * this.levelConfig.pancakePenalty;
+    // Count correct pancakes by type
+    Object.keys(currentOrder).forEach((type) => {
+      const required = currentOrder[type];
+      const served = servedPancakes[type] || 0;
+      const correct = Math.min(served, required);
+      correctPancakes += correct;
+      payment += correct * this.levelConfig.pancakeReward;
+    });
 
-      // Add penalty animation for each extra pancake
+    // Count extra pancakes (any served beyond what's required)
+    Object.keys(servedPancakes).forEach((type) => {
+      const required = currentOrder[type] || 0;
+      const served = servedPancakes[type];
+      if (served > required) {
+        const extra = served - required;
+        extraPancakes += extra;
+        payment -= extra * this.levelConfig.pancakePenalty;
+      }
+    });
+
+    // Penalty animations for extra pancakes
+    if (extraPancakes > 0) {
       for (let i = 0; i < extraPancakes; i++) {
         setTimeout(() => {
           this.addPenaltyAnimation();
@@ -1040,6 +1110,15 @@ class LevelManager {
     this.totalOrdersCompleted++;
 
     this.updateUI();
+  }
+
+  // Helper method to count served pancakes by type
+  getServedPancakesByType(pancakes) {
+    const counts = {};
+    pancakes.forEach((pancake) => {
+      counts[pancake.type] = (counts[pancake.type] || 0) + 1;
+    });
+    return counts;
   }
 
   addCoinAnimation(cellIndex) {
@@ -1222,11 +1301,22 @@ class LevelManager {
       timerEl.classList.remove("urgent");
     }
 
-    document.getElementById(
-      "currentOrder"
-    ).textContent = `${this.getCurrentOrder()} Pancake${
-      this.getCurrentOrder() > 1 ? "s" : ""
-    }`;
+    // UPDATED: Show typed order requirements
+    const currentOrder = this.getCurrentOrder();
+    let orderText = "";
+    const orderParts = [];
+
+    Object.entries(currentOrder).forEach(([type, count]) => {
+      if (count > 0) {
+        const typeIcon =
+          type === "plain" ? "🥞" : type === "butter" ? "🧈🥞" : "🍌🥞";
+        orderParts.push(`${count}${typeIcon}`);
+      }
+    });
+
+    document.getElementById("currentOrder").textContent =
+      orderParts.join(" + ");
+
     document.getElementById("batterCount").textContent = this.batter;
     document.getElementById("batterCost").textContent =
       this.levelConfig.batterCost;
