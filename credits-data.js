@@ -4,10 +4,8 @@ const CREDITS = {
     name: "Kenneth Wheadon",
     jobTitle: "Game Lead",
     department: "Game Development",
-    previewImage:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    fullImage:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    previewImage: "images/ken-head.png",
+    fullImage: "images/ken-head.png",
     description: "Ken ken ken",
   },
 
@@ -15,10 +13,8 @@ const CREDITS = {
     name: "Wyrmskin",
     jobTitle: "Lead Artist",
     department: "Art",
-    previewImage:
-      "https://images.unsplash.com/photo-1494790108755-2616b612b282?w=150&h=150&fit=crop&crop=face",
-    fullImage:
-      "https://images.unsplash.com/photo-1494790108755-2616b612b282?w=400&h=400&fit=crop&crop=face",
+    previewImage: "images/wyrmskin-head.png",
+    fullImage: "images/wyrmskin-head.png",
     description:
       "Jessy-Jean also known as Wyrmskin created the current company logo and helps with art as needed.",
   },
