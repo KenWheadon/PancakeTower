@@ -209,12 +209,12 @@ const GAME_CONFIG = {
     butter: {
       name: "Butter",
       icon: "🧈",
-      image: "images/ingredient-butter.png",
+      image: "images/item-butter.png",
     },
     banana: {
       name: "Banana",
       icon: "🍌",
-      image: "images/ingredient-banana.png",
+      image: "images/item-banana.png",
     },
   },
 

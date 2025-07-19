@@ -173,7 +173,7 @@ class LevelManager {
           butterItem.className = "resource-item";
           butterItem.innerHTML = `
             <div class="draggable-item" data-item-type="butter">
-              <img src="images/ingredient-butter.png" alt="Butter" class="draggable-item-image">
+              <img src="images/item-butter.png" alt="Butter" class="draggable-item-image">
             </div>
             <div class="resource-name">Butter</div>
             <div class="resource-display">
@@ -188,7 +188,7 @@ class LevelManager {
           bananaItem.className = "resource-item";
           bananaItem.innerHTML = `
             <div class="draggable-item" data-item-type="banana">
-              <img src="images/ingredient-banana.png" alt="Banana" class="draggable-item-image">
+              <img src="images/item-banana.png" alt="Banana" class="draggable-item-image">
             </div>
             <div class="resource-name">Banana</div>
             <div class="resource-display">
@@ -503,7 +503,7 @@ class LevelManager {
       let pancakeImg = cellDiv.querySelector(".pancake");
       if (!pancakeImg) {
         pancakeImg = document.createElement("img");
-        pancakeImg.className = "pancake";
+        pancakeImg.className = "pancake large-pancake";
         pancakeImg.dataset.pancakeId = pancake.id;
         cellDiv.appendChild(pancakeImg);
       }
@@ -580,18 +580,25 @@ class LevelManager {
         // Create visual stacking effect
         cell.pancakes.forEach((pancake, index) => {
           const pancakeImg = document.createElement("img");
-          pancakeImg.className = "pancake stacked-pancake";
+          pancakeImg.className = "pancake stacked-pancake large-pancake";
           pancakeImg.src = "images/plain-pancake-cooked.png";
           pancakeImg.alt = "Stacked pancake";
           pancakeImg.dataset.pancakeId = pancake.id;
 
-          // Apply stacking transform
-          pancakeImg.style.zIndex = index + 10;
+          // Apply stacking transform - make pancakes visible with slight offset
+          pancakeImg.style.zIndex = (index + 10).toString();
+          pancakeImg.style.position = "absolute";
+          pancakeImg.style.top = `${-index * 8}px`; // Stack them with 8px offset
+          pancakeImg.style.left = "50%";
+          pancakeImg.style.transform = "translateX(-50%)";
+          pancakeImg.style.visibility = "visible";
+          pancakeImg.style.display = "block";
 
           // Only top pancake is draggable
           if (index === cell.pancakes.length - 1) {
             pancakeImg.draggable = false; // Disable HTML5 drag
             pancakeImg.classList.add("top-pancake");
+            pancakeImg.style.cursor = "grab";
 
             // Remove any existing event listeners
             pancakeImg.removeEventListener("mousedown", this.handleMouseDown);
@@ -611,6 +618,13 @@ class LevelManager {
 
           stackDiv.appendChild(pancakeImg);
         });
+
+        // Ensure the stack div itself is visible and positioned correctly
+        stackDiv.style.position = "relative";
+        stackDiv.style.width = "100%";
+        stackDiv.style.height = "80px";
+        stackDiv.style.display = "block";
+        stackDiv.style.visibility = "visible";
 
         cellDiv.appendChild(stackDiv);
       }
@@ -645,7 +659,7 @@ class LevelManager {
 
     // Create dragged pancake visual
     const draggedPancake = document.createElement("img");
-    draggedPancake.className = "dragged-pancake";
+    draggedPancake.className = "dragged-pancake large-pancake";
     draggedPancake.src = "images/plain-pancake-cooked.png";
     draggedPancake.alt = "Dragged pancake";
     draggedPancake.id = "draggedItemVisual";
@@ -690,7 +704,7 @@ class LevelManager {
         }
       });
     } else if (itemType === "butter") {
-      draggedItem.src = "images/ingredient-butter.png";
+      draggedItem.src = "images/item-butter.png";
       draggedItem.alt = "Dragged butter";
       // Add drag effect to cooking pancakes that can still accept ingredients
       document
@@ -699,7 +713,7 @@ class LevelManager {
           grill.classList.add("drag-target");
         });
     } else if (itemType === "banana") {
-      draggedItem.src = "images/ingredient-banana.png";
+      draggedItem.src = "images/item-banana.png";
       draggedItem.alt = "Dragged banana";
       // Add drag effect to cooking pancakes that can still accept ingredients
       document
@@ -719,8 +733,14 @@ class LevelManager {
       // Update dragged item position
       const draggedElement = document.getElementById("draggedItemVisual");
       if (draggedElement) {
-        draggedElement.style.left = moveEvent.clientX - 24 + "px";
-        draggedElement.style.top = moveEvent.clientY - 24 + "px";
+        if (draggedElement.classList.contains("large-pancake")) {
+          // For large pancakes, center them properly
+          draggedElement.style.left = moveEvent.clientX - 32 + "px";
+          draggedElement.style.top = moveEvent.clientY - 32 + "px";
+        } else {
+          draggedElement.style.left = moveEvent.clientX - 24 + "px";
+          draggedElement.style.top = moveEvent.clientY - 24 + "px";
+        }
       }
     };
 
@@ -732,8 +752,13 @@ class LevelManager {
     const rect = e.target.getBoundingClientRect();
     const draggedElement = document.getElementById("draggedItemVisual");
     if (draggedElement) {
-      draggedElement.style.left = rect.left + rect.width / 2 - 24 + "px";
-      draggedElement.style.top = rect.top + rect.height / 2 - 24 + "px";
+      if (draggedElement.classList.contains("large-pancake")) {
+        draggedElement.style.left = rect.left + rect.width / 2 - 32 + "px";
+        draggedElement.style.top = rect.top + rect.height / 2 - 32 + "px";
+      } else {
+        draggedElement.style.left = rect.left + rect.width / 2 - 24 + "px";
+        draggedElement.style.top = rect.top + rect.height / 2 - 24 + "px";
+      }
     }
 
     // Add event listeners
