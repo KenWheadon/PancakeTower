@@ -11,6 +11,7 @@ class LevelManager {
     this.money = 0;
     this.currentOrderIndex = 0;
     this.totalOrdersCompleted = 0;
+    this.combo = 0; // NEW: Track combo counter
 
     // Grid state
     this.grid = [];
@@ -60,6 +61,7 @@ class LevelManager {
     this.money = this.levelConfig.initialMoney;
     this.currentOrderIndex = 0;
     this.totalOrdersCompleted = 0;
+    this.combo = 0; // NEW: Initialize combo
 
     // Grid state
     this.grid = new Array(9).fill(null).map((_, index) => ({
@@ -158,6 +160,35 @@ class LevelManager {
     return counts;
   }
 
+  // NEW: Check if order is perfectly fulfilled (exactly what's required, no more, no less)
+  isOrderPerfectlyFulfilled(servedPancakes, currentOrder) {
+    // Check if served pancakes exactly match the order
+    const orderTypes = Object.keys(currentOrder);
+    const servedTypes = Object.keys(servedPancakes);
+
+    // Must have same number of types
+    if (orderTypes.length !== servedTypes.length) {
+      return false;
+    }
+
+    // Check each type matches exactly
+    for (const [type, required] of Object.entries(currentOrder)) {
+      const served = servedPancakes[type] || 0;
+      if (served !== required) {
+        return false;
+      }
+    }
+
+    // Check no extra types
+    for (const type of servedTypes) {
+      if (!(type in currentOrder)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   servePlate(cellIndex) {
     if (this.game.gameState !== "playing" || !this.gameRunning) return;
 
@@ -167,10 +198,18 @@ class LevelManager {
     const currentOrder = this.getCurrentOrder();
     const servedPancakes = this.getServedPancakesByType(cell.pancakes);
 
+    // Check if order is perfectly fulfilled
+    const isPerfectOrder = this.isOrderPerfectlyFulfilled(
+      servedPancakes,
+      currentOrder
+    );
+
     // Calculate payment based on type matching
     let payment = 0;
     let correctPancakes = 0;
     let extraPancakes = 0;
+    let orderFulfillmentBonus = 0;
+    let comboBonus = 0;
 
     // Count correct pancakes by type
     Object.keys(currentOrder).forEach((type) => {
@@ -192,6 +231,28 @@ class LevelManager {
       }
     });
 
+    // NEW: Add order fulfillment bonus if order is perfectly fulfilled
+    if (isPerfectOrder) {
+      // $1 bonus per pancake in the order
+      const totalPancakesInOrder = Object.values(currentOrder).reduce(
+        (sum, count) => sum + count,
+        0
+      );
+      orderFulfillmentBonus = totalPancakesInOrder;
+      payment += orderFulfillmentBonus;
+
+      // NEW: Add combo and combo bonus
+      this.combo++;
+      comboBonus = this.combo * 5; // $5 per combo level
+      payment += comboBonus;
+
+      // Add combo effect and money animation
+      this.levelUI.addComboEffect(cellIndex, this.combo, comboBonus);
+    } else {
+      // Reset combo if order is not perfectly fulfilled
+      this.combo = 0;
+    }
+
     // Penalty animations for extra pancakes
     if (extraPancakes > 0) {
       for (let i = 0; i < extraPancakes; i++) {
@@ -212,8 +273,13 @@ class LevelManager {
       }, i * 150);
     }
 
-    // Add success effects
-    this.levelUI.addSuccessEffect(cellIndex, payment);
+    // Add success effects with bonus information
+    this.levelUI.addSuccessEffect(
+      cellIndex,
+      payment,
+      orderFulfillmentBonus,
+      comboBonus
+    );
     this.levelUI.screenShake();
 
     // Clear the plate

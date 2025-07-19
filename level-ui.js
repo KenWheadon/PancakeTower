@@ -778,16 +778,18 @@ class LevelUI {
       orderText.textContent = orderParts.join(" ");
     }
 
-    // NEW: Update combo display in the combo box
+    // UPDATED: Always show combo display and update content
     const comboBox = document.getElementById("comboBox");
     const comboText = document.getElementById("comboText");
     if (comboBox && comboText) {
+      // Always display the combo box
+      comboBox.style.display = "block";
+
       if (this.levelManager.combo > 0) {
         const nextComboBonus = (this.levelManager.combo + 1) * 5; // Show what next combo would earn
         comboText.textContent = `Combo: ${this.levelManager.combo}x (Next: +${nextComboBonus})`;
-        comboBox.style.display = "block";
       } else {
-        comboBox.style.display = "none";
+        comboText.textContent = `Combo: 0x (Next: +5)`;
       }
     }
 
@@ -814,25 +816,28 @@ class LevelUI {
       bananaCost.textContent = this.levelManager.levelConfig.bananaCost || 0;
     }
 
-    // NEW: Update batter wiggle animation
+    // UPDATED: Update batter wiggle animation and add left arrow
     const batterDraggable = document.getElementById("batterDraggable");
-    if (batterDraggable) {
+    const batterResourceItem = document.getElementById("batterResourceItem");
+    if (batterDraggable && batterResourceItem) {
       if (this.shouldBatterWiggle()) {
         batterDraggable.classList.add("batter-wiggle");
+        batterResourceItem.classList.add("batter-has-left-arrow");
       } else {
         batterDraggable.classList.remove("batter-wiggle");
+        batterResourceItem.classList.remove("batter-has-left-arrow");
       }
     }
 
-    // NEW: Check for insufficient ingredients and highlight them
+    // UPDATED: Check for insufficient ingredients and highlight individual items
     const insufficientItems = this.checkInsufficientIngredients();
 
-    // Remove previous highlighting
+    // Remove previous highlighting from all resource items
     document.querySelectorAll(".resource-item").forEach((item) => {
       item.classList.remove("insufficient-ingredient");
     });
 
-    // Add highlighting for insufficient items
+    // Add highlighting for insufficient items (individual items only)
     insufficientItems.forEach((itemType) => {
       const resourceItem = document.getElementById(`${itemType}ResourceItem`);
       if (resourceItem) {
@@ -840,17 +845,16 @@ class LevelUI {
       }
     });
 
-    // Update store section styling based on item counts
-    const storeSection = document.getElementById("storeSection");
-    const buyButton = document.getElementById("buyBatter");
-
-    if (this.levelManager.batter === 0) {
-      storeSection.classList.add("out-of-stock");
-    } else {
-      storeSection.classList.remove("out-of-stock");
-    }
+    // REMOVED: Store section styling based on batter count (no longer needed)
+    // const storeSection = document.getElementById("storeSection");
+    // if (this.levelManager.batter === 0) {
+    //   storeSection.classList.add("out-of-stock");
+    // } else {
+    //   storeSection.classList.remove("out-of-stock");
+    // }
 
     // Update buy button availability
+    const buyButton = document.getElementById("buyBatter");
     buyButton.disabled =
       this.levelManager.money < this.levelManager.levelConfig.batterCost;
 

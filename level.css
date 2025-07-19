@@ -614,56 +614,7 @@
   color: #2e7d32;
 }
 
-.store-section.out-of-stock {
-  animation: intenseBuyAlert 1s ease-in-out infinite;
-  border-color: var(--color-warning);
-  background: linear-gradient(145deg, #fff8f8, #fff0f0);
-  position: relative;
-}
-
-.store-section.out-of-stock::before {
-  content: "👈";
-  position: absolute;
-  right: -40px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 32px;
-  animation: pointingArrow 0.5s ease-in-out infinite alternate;
-  z-index: 100;
-}
-
-.store-section.out-of-stock h3 {
-  color: #d32f2f;
-}
-
-@keyframes intenseBuyAlert {
-  0%,
-  100% {
-    transform: rotate(0deg) scale(1);
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-  }
-  25% {
-    transform: rotate(-3deg) scale(1.02);
-    box-shadow: 0 6px 25px rgba(255, 107, 107, 0.7);
-  }
-  50% {
-    transform: rotate(0deg) scale(1.05);
-    box-shadow: 0 8px 30px rgba(255, 107, 107, 0.9);
-  }
-  75% {
-    transform: rotate(3deg) scale(1.02);
-    box-shadow: 0 6px 25px rgba(255, 107, 107, 0.7);
-  }
-}
-
-@keyframes pointingArrow {
-  from {
-    transform: translateY(-50%) translateX(0px);
-  }
-  to {
-    transform: translateY(-50%) translateX(-10px);
-  }
-}
+/* REMOVED: Store-wide out-of-stock styling since it's now individual */
 
 /* Resource Items */
 .resource-item {
@@ -676,6 +627,7 @@
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
   transition: var(--transition-normal);
+  position: relative; /* Added for arrow positioning */
 }
 
 /* Resource Item Highlighting for Insufficient Ingredients */
@@ -695,6 +647,27 @@
   50% {
     transform: scale(1.02);
     box-shadow: 0 0 25px rgba(255, 152, 0, 0.8);
+  }
+}
+
+/* NEW: Batter left arrow styling */
+.resource-item.batter-has-left-arrow::before {
+  content: "👉";
+  position: absolute;
+  left: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 32px;
+  animation: pointingArrowLeft 0.5s ease-in-out infinite alternate;
+  z-index: 100;
+}
+
+@keyframes pointingArrowLeft {
+  from {
+    transform: translateY(-50%) translateX(0px);
+  }
+  to {
+    transform: translateY(-50%) translateX(10px);
   }
 }
 
@@ -733,7 +706,7 @@
   transform: rotate(5deg) scale(0.9);
 }
 
-/* Batter Wiggle Animation - NEW */
+/* Batter Wiggle Animation - UPDATED */
 .draggable-item.batter-wiggle {
   animation: batterWiggle 2s ease-in-out infinite;
 }

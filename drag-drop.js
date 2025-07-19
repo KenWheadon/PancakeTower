@@ -218,23 +218,35 @@ class DragDrop {
       }
     }
 
+    // IMPROVED: Enhanced cleanup for dragged elements
+    this.cleanupDragState();
+  }
+
+  // NEW: Comprehensive cleanup method
+  cleanupDragState() {
     // Reset dragging state
     this.isDragging = false;
 
-    // Remove dragged item visual
-    const draggedElement = document.getElementById("draggedItemVisual");
-    if (draggedElement) {
-      draggedElement.remove();
-    }
+    // Remove ALL dragged item visuals (search for any that might exist)
+    const draggedElements = document.querySelectorAll(
+      "#draggedItemVisual, .dragged-pancake, .dragged-item"
+    );
+    draggedElements.forEach((element) => {
+      if (element.parentNode) {
+        element.remove();
+      }
+    });
 
-    // Clean up drag effects
+    // Clean up drag effects from all elements
     document.querySelectorAll(".dragging").forEach((item) => {
       item.classList.remove("dragging");
       item.style.cursor = "grab";
     });
+
     document.querySelectorAll(".drag-target").forEach((target) => {
       target.classList.remove("drag-target");
     });
+
     document.querySelectorAll(".drag-over").forEach((target) => {
       target.classList.remove("drag-over");
     });
@@ -246,6 +258,7 @@ class DragDrop {
         bar.classList.remove("cooking-paused-specific");
       });
 
+    // Reset drag state variables
     this.draggedItemType = null;
     this.draggedItemId = null;
 
