@@ -5,7 +5,6 @@ class LevelSelectScreen {
   }
 
   show() {
-    // Hide all screens and show level select
     document.getElementById("loadingScreen").classList.add("hidden");
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.add("hidden");
@@ -69,13 +68,16 @@ class LevelSelectScreen {
       </button>
     `;
 
-    // Add click handler
     const playButton = card.querySelector(".level-play-button");
     playButton.addEventListener("click", () => {
+      this.game.audioManager.playSfx("buttonClick");
       this.game.startLevel(levelNum);
     });
 
-    // Add completed styling if level has been played
+    playButton.addEventListener("mouseenter", () => {
+      this.game.audioManager.playSfx("buttonHover");
+    });
+
     if (isCompleted) {
       card.classList.add("completed");
     }
@@ -95,7 +97,6 @@ class LevelSelectScreen {
     return starsHTML;
   }
 
-  // Helper method to get max order size from new order format
   getMaxOrderSize(orders) {
     let maxSize = 0;
     orders.forEach((order) => {

@@ -798,6 +798,36 @@ class LevelUI {
     }, this.constants.VALUES.comboRemovalDelay);
   }
 
+  addComboMoneyAnimation(comboBonus) {
+    const moneyDisplay = document.querySelector(
+      this.constants.SELECTORS.moneyDisplay
+    );
+    if (!moneyDisplay) return;
+
+    const comboMoney = document.createElement("div");
+    comboMoney.className = "combo-money-animation";
+    comboMoney.textContent = `+${comboBonus}`;
+    comboMoney.style.cssText = `
+      position: fixed;
+      color: #4caf50;
+      font-weight: bold;
+      font-size: 18px;
+      pointer-events: none;
+      z-index: 1000;
+      animation: comboMoneyFloat 2s ease-out forwards;
+    `;
+
+    const moneyRect = moneyDisplay.getBoundingClientRect();
+    comboMoney.style.left = moneyRect.left + moneyRect.width + 10 + "px";
+    comboMoney.style.top = moneyRect.top + "px";
+
+    document.body.appendChild(comboMoney);
+
+    setTimeout(() => {
+      if (comboMoney.parentNode) comboMoney.remove();
+    }, this.constants.VALUES.comboRemovalDelay);
+  }
+
   createComboPopup(combo, comboBonus) {
     const comboPopup = document.createElement("div");
     comboPopup.className = "combo-popup";

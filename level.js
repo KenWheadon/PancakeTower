@@ -112,15 +112,24 @@ class LevelManager {
       this.addEventListener(buyBatterBtn, "click", () =>
         this.buyIngredient("batter")
       );
+      this.addEventListener(buyBatterBtn, "mouseenter", () =>
+        this.game.audioManager.playSfx("buttonHover")
+      );
     }
     if (buyButterBtn) {
       this.addEventListener(buyButterBtn, "click", () =>
         this.buyIngredient("butter")
       );
+      this.addEventListener(buyButterBtn, "mouseenter", () =>
+        this.game.audioManager.playSfx("buttonHover")
+      );
     }
     if (buyBananaBtn) {
       this.addEventListener(buyBananaBtn, "click", () =>
         this.buyIngredient("banana")
+      );
+      this.addEventListener(buyBananaBtn, "mouseenter", () =>
+        this.game.audioManager.playSfx("buttonHover")
       );
     }
   }
@@ -134,6 +143,7 @@ class LevelManager {
     this.money -= config.cost;
     this[type] += config.purchaseAmount;
 
+    this.game.audioManager.playSfx("buttonClick");
     this.addPurchaseEffect(config.buttonId);
     this.levelUI.updateUI();
   }
@@ -315,6 +325,8 @@ class LevelManager {
       basePayment + orderFulfillmentBonus + comboBonus
     );
     this.money += totalPayment;
+
+    this.game.audioManager.playSfx("orderServed");
 
     this.addPaymentAnimations(
       correctPancakes,

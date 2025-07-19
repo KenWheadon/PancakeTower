@@ -3,6 +3,33 @@ const GAME_CONFIG = {
   // Loading configuration
   MINIMUM_LOADING_TIME: 3000, // Minimum time in milliseconds for loading screen
 
+  // Audio configuration
+  audio: {
+    backgroundTracks: {
+      main: "audio/main.mp3",
+      level1: "audio/level1.mp3",
+      level2: "audio/level2.mp3",
+      level3: "audio/level3.mp3",
+      level4: "audio/level4.mp3",
+      level5: "audio/level5.mp3",
+      level6: "audio/level6.mp3",
+    },
+    soundEffects: {
+      levelComplete: "audio/level-complete.mp3",
+      orderServed: "audio/order-served.mp3",
+      batterDropped: "audio/batter-dropped-on-grill.mp3",
+      pancakeCooked: "audio/pancake-cooked.mp3",
+      startLevel: "audio/start-level.mp3",
+      buttonClick: "audio/button-click.mp3",
+      buttonHover: "audio/button-hover.mp3",
+      placePancake: "audio/place-pancake-on-plate.mp3",
+    },
+    defaultVolumes: {
+      music: 0.7,
+      sfx: 0.8,
+    },
+  },
+
   // Level configurations
   levels: {
     1: {

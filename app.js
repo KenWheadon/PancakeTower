@@ -12,16 +12,17 @@ class PancakeStackGame {
     this.levelManager = null;
     this.starManager = new StarManager();
     this.creditsGallery = null;
+    this.audioManager = new AudioManager();
 
     this.domElements = {};
 
     this.init();
   }
 
-  init() {
+  async init() {
     this.injectHTML();
     this.cacheDOMElements();
-    this.initializeComponents();
+    await this.initializeComponents();
     this.setupEventListeners();
     this.loadingManager.showLoadingScreen();
   }
@@ -78,6 +79,9 @@ class PancakeStackGame {
           </div>
 
         </div>
+        
+        <div class="audio-controls-container" id="audioControlsContainer">
+        </div>
       </div>
 
       <div id="levelSelectScreen" class="level-select-screen hidden">
@@ -90,6 +94,9 @@ class PancakeStackGame {
           
           <div class="levels-grid" id="levelsGrid">
           </div>
+        </div>
+        
+        <div class="audio-controls-container" id="levelSelectAudioControls">
         </div>
       </div>
 
@@ -185,6 +192,92 @@ class PancakeStackGame {
           <button class="restart-button" id="backToLevelsButton" style="margin-left: 10px;">Choose Level</button>
         </div>
       </div>
+
+      <style>
+        .audio-controls-container {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: rgba(255, 255, 255, 0.95);
+          border-radius: 15px;
+          padding: 15px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+          z-index: 1000;
+        }
+
+        .audio-controls {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          min-width: 200px;
+        }
+
+        .audio-control-group {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .audio-label {
+          font-family: 'Fredoka', sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          width: 60px;
+        }
+
+        .audio-mute-btn {
+          background: none;
+          border: none;
+          font-size: 16px;
+          cursor: pointer;
+          padding: 5px;
+          border-radius: 5px;
+          transition: background-color 0.3s ease;
+        }
+
+        .audio-mute-btn:hover {
+          background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .audio-slider {
+          flex: 1;
+          height: 5px;
+          border-radius: 5px;
+          background: #ddd;
+          outline: none;
+          -webkit-appearance: none;
+        }
+
+        .audio-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 15px;
+          height: 15px;
+          border-radius: 50%;
+          background: #ff6b6b;
+          cursor: pointer;
+        }
+
+        .audio-slider::-moz-range-thumb {
+          width: 15px;
+          height: 15px;
+          border-radius: 50%;
+          background: #ff6b6b;
+          cursor: pointer;
+          border: none;
+        }
+
+        @keyframes comboMoneyFloat {
+          0% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-50px);
+          }
+        }
+      </style>
     `;
   }
 
@@ -215,21 +308,43 @@ class PancakeStackGame {
     });
   }
 
-  initializeComponents() {
+  async initializeComponents() {
     this.loadingManager = new LoadingManager(this);
     this.startScreen = new StartScreen(this);
     this.levelSelectScreen = new LevelSelectScreen(this);
     this.levelManager = new LevelManager(this);
+
+    await this.audioManager.init();
+    this.setupAudioControls();
+  }
+
+  setupAudioControls() {
+    const startScreenContainer = document.getElementById(
+      "audioControlsContainer"
+    );
+    const levelSelectContainer = document.getElementById(
+      "levelSelectAudioControls"
+    );
+
+    if (startScreenContainer) {
+      startScreenContainer.appendChild(this.audioManager.createAudioControls());
+    }
+
+    if (levelSelectContainer) {
+      levelSelectContainer.appendChild(this.audioManager.createAudioControls());
+    }
   }
 
   showStartScreen() {
     this.gameState = "start";
     this.startScreen.show();
+    this.audioManager.playBackgroundMusic("main");
   }
 
   showLevelSelect() {
     this.gameState = "menu";
     this.levelSelectScreen.show();
+    this.audioManager.playBackgroundMusic("main");
   }
 
   startLevel(levelNum) {
@@ -237,6 +352,8 @@ class PancakeStackGame {
     this.levelConfig = GAME_CONFIG.levels[levelNum];
     this.gameState = "playing";
     this.levelManager.startLevel(levelNum, this.levelConfig);
+    this.audioManager.playSfx("startLevel");
+    this.audioManager.playBackgroundMusic(`level${levelNum}`);
   }
 
   backToMenu() {
@@ -245,6 +362,7 @@ class PancakeStackGame {
       this.levelManager.stopGame();
     }
     this.levelSelectScreen.show();
+    this.audioManager.playBackgroundMusic("main");
   }
 
   backToStart() {
@@ -253,6 +371,7 @@ class PancakeStackGame {
       this.levelManager.stopGame();
     }
     this.startScreen.show();
+    this.audioManager.playBackgroundMusic("main");
   }
 
   showHowToPlay() {
@@ -294,6 +413,8 @@ class PancakeStackGame {
     }
 
     this.domElements.gameOverScreen.classList.remove("hidden");
+    this.audioManager.playSfx("levelComplete");
+    this.audioManager.playBackgroundMusic("main");
   }
 
   restart() {
@@ -321,21 +442,51 @@ class PancakeStackGame {
 
   setupEventListeners() {
     const buttonHandlers = {
-      playButton: () => this.showLevelSelect(),
-      creditsButton: () => this.showCredits(),
-      backToStartButton: () => this.backToStart(),
-      htpButton: () => this.showHowToPlay(),
-      htpCloseButton: () => this.hideHowToPlay(),
-      htpGotItButton: () => this.hideHowToPlay(),
-      restartButton: () => this.restart(),
-      backToLevelsButton: () => this.backToMenu(),
-      backToMenuButton: () => this.backToMenu(),
+      playButton: () => {
+        this.audioManager.playSfx("buttonClick");
+        this.showLevelSelect();
+      },
+      creditsButton: () => {
+        this.audioManager.playSfx("buttonClick");
+        this.showCredits();
+      },
+      backToStartButton: () => {
+        this.audioManager.playSfx("buttonClick");
+        this.backToStart();
+      },
+      htpButton: () => {
+        this.audioManager.playSfx("buttonClick");
+        this.showHowToPlay();
+      },
+      htpCloseButton: () => {
+        this.audioManager.playSfx("buttonClick");
+        this.hideHowToPlay();
+      },
+      htpGotItButton: () => {
+        this.audioManager.playSfx("buttonClick");
+        this.hideHowToPlay();
+      },
+      restartButton: () => {
+        this.audioManager.playSfx("buttonClick");
+        this.restart();
+      },
+      backToLevelsButton: () => {
+        this.audioManager.playSfx("buttonClick");
+        this.backToMenu();
+      },
+      backToMenuButton: () => {
+        this.audioManager.playSfx("buttonClick");
+        this.backToMenu();
+      },
     };
 
     Object.entries(buttonHandlers).forEach(([buttonId, handler]) => {
       const button = this.domElements[buttonId];
       if (button) {
         this.addEventListener(button, "click", handler);
+        this.addEventListener(button, "mouseenter", () => {
+          this.audioManager.playSfx("buttonHover");
+        });
       }
     });
 
@@ -371,6 +522,9 @@ class PancakeStackGame {
     }
     if (this.creditsGallery) {
       this.creditsGallery.cleanup();
+    }
+    if (this.audioManager) {
+      this.audioManager.destroy();
     }
   }
 }
