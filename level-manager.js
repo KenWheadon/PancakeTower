@@ -20,7 +20,7 @@ class LevelManager {
     this.cachedElements = {};
 
     this.timeWarning15Played = false;
-    this.timeTickingStarted = false;
+    this.lastTickSecond = null;
 
     this.pancakeCooking = new PancakeCooking(this);
     this.levelUI = new LevelUI(this);
@@ -366,16 +366,19 @@ class LevelManager {
   }
 
   handleTimeWarnings() {
-    const timeInSeconds = this.timeRemaining / 1000;
+    const timeInSeconds = Math.ceil(this.timeRemaining / 1000);
 
     if (timeInSeconds <= 15 && !this.timeWarning15Played) {
       this.timeWarning15Played = true;
       this.game.audioManager.playSfx("timeWarning15");
     }
 
-    if (timeInSeconds <= 10 && !this.timeTickingStarted) {
-      this.timeTickingStarted = true;
-      this.game.audioManager.playSfx("timeTicking");
+    // Play tick sound each second from 10 seconds down to 1
+    if (timeInSeconds <= 10 && timeInSeconds > 0) {
+      if (!this.lastTickSecond || this.lastTickSecond !== timeInSeconds) {
+        this.lastTickSecond = timeInSeconds;
+        this.game.audioManager.playSfx("timeTicking");
+      }
     }
   }
 

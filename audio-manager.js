@@ -180,13 +180,25 @@ class AudioManager {
     }
   }
 
-  playSfx(effectKey) {
+  playSfx(effectKey, options = {}) {
     if (!this.isInitialized) return;
 
     const audio = this.soundEffects.get(effectKey);
     if (audio) {
-      audio.currentTime = 0;
-      audio.play().catch(() => {});
+      // Clone the audio for pitch variation if needed
+      let playAudio = audio;
+
+      // Add pitch variation for batter dropped sound
+      if (effectKey === "batterDropped") {
+        playAudio = audio.cloneNode();
+        // Random pitch between 0.9 and 1.1 (10% variation)
+        const pitchVariation = 0.9 + Math.random() * 0.2;
+        playAudio.playbackRate = pitchVariation;
+        playAudio.volume = this.sfxMuted ? 0 : this.sfxVolume;
+      }
+
+      playAudio.currentTime = 0;
+      playAudio.play().catch(() => {});
     }
   }
 
@@ -204,7 +216,7 @@ class AudioManager {
     audioSettings.style.display = "none";
     audioSettings.innerHTML = `
       <div class="audio-control-group">
-        <span class="audio-label">Music</span>
+        <span class="audio-label">🎵 Music</span>
         <button class="audio-mute-btn" id="musicMuteBtn">${
           this.musicMuted ? "🔇" : "🔊"
         }</button>
@@ -212,7 +224,7 @@ class AudioManager {
                min="0" max="1" step="0.1" value="${this.musicVolume}">
       </div>
       <div class="audio-control-group">
-        <span class="audio-label">Sound Effects</span>
+        <span class="audio-label">🔊 Effects</span>
         <button class="audio-mute-btn" id="sfxMuteBtn">${
           this.sfxMuted ? "🔇" : "🔊"
         }</button>
