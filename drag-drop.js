@@ -4,10 +4,9 @@ class DragDrop {
     this.isDragging = false;
     this.draggedItemType = null;
     this.draggedItemId = null;
-
-    // Store mouse event handlers for proper cleanup
     this.currentMouseMoveHandler = null;
     this.currentMouseUpHandler = null;
+    this.hoverHandlers = new Map();
   }
 
   handleMouseDown(e) {
@@ -15,28 +14,23 @@ class DragDrop {
     e.stopPropagation();
 
     const pancakeId = e.target.dataset.pancakeId;
-    const itemType = e.target.dataset.itemType; // for ingredients
+    const itemType = e.target.dataset.itemType;
 
     if (pancakeId) {
-      // Dragging a pancake
       this.startPancakeDrag(e, pancakeId);
     } else if (itemType) {
-      // Dragging an ingredient or batter
       this.startItemDrag(e, itemType);
     }
   }
 
   startPancakeDrag(e, pancakeId) {
-    // Set dragging state
     this.isDragging = true;
     this.draggedItemType = "pancake";
     this.draggedItemId = pancakeId;
 
-    // Add visual feedback to original pancake
     e.target.classList.add("dragging");
     e.target.style.cursor = "grabbing";
 
-    // Create dragged pancake visual - need to get the pancake type for correct image
     const pancakeType =
       this.levelManager.pancakeCooking.getPancakeType(pancakeId);
     const draggedPancake = document.createElement("img");
@@ -46,7 +40,6 @@ class DragDrop {
     draggedPancake.id = "draggedItemVisual";
     document.body.appendChild(draggedPancake);
 
-    // Add drag effect to valid drop zones (plates)
     document.querySelectorAll(".cell.plate").forEach((plate) => {
       plate.classList.add("drag-target");
     });
@@ -55,21 +48,17 @@ class DragDrop {
   }
 
   startItemDrag(e, itemType) {
-    // Check if we have the item
     if (itemType === "batter" && this.levelManager.batter <= 0) return;
     if (itemType === "butter" && this.levelManager.butter <= 0) return;
     if (itemType === "banana" && this.levelManager.banana <= 0) return;
 
-    // Set dragging state
     this.isDragging = true;
     this.draggedItemType = itemType;
     this.draggedItemId = null;
 
-    // Add visual feedback
     e.target.classList.add("dragging");
     e.target.style.cursor = "grabbing";
 
-    // Create dragged item visual
     const draggedItem = document.createElement("img");
     draggedItem.className = "dragged-item";
     draggedItem.id = "draggedItemVisual";
@@ -77,7 +66,6 @@ class DragDrop {
     if (itemType === "batter") {
       draggedItem.src = "images/item-batter.png";
       draggedItem.alt = "Dragged batter";
-      // Add drag effect to empty grills
       document.querySelectorAll(".cell.grill").forEach((grill) => {
         const cellIndex = parseInt(grill.dataset.cellIndex);
         if (!this.levelManager.grid[cellIndex].cookingPancake) {
@@ -87,7 +75,6 @@ class DragDrop {
     } else if (itemType === "butter") {
       draggedItem.src = "images/item-butter.png";
       draggedItem.alt = "Dragged butter";
-      // Add drag effect to cooking pancakes that can still accept ingredients
       document
         .querySelectorAll(".cell.grill.ingredient-drop-zone")
         .forEach((grill) => {
@@ -96,7 +83,6 @@ class DragDrop {
     } else if (itemType === "banana") {
       draggedItem.src = "images/item-banana.png";
       draggedItem.alt = "Dragged banana";
-      // Add drag effect to cooking pancakes that can still accept ingredients
       document
         .querySelectorAll(".cell.grill.ingredient-drop-zone")
         .forEach((grill) => {
@@ -109,9 +95,7 @@ class DragDrop {
   }
 
   setupDragEventListeners(e) {
-    // Create the event handlers as methods so they can be properly removed
     this.currentMouseMoveHandler = (moveEvent) => {
-      // Update dragged item position
       const draggedElement = document.getElementById("draggedItemVisual");
       if (draggedElement) {
         draggedElement.style.position = "fixed";
@@ -119,7 +103,6 @@ class DragDrop {
         draggedElement.style.zIndex = "9999";
 
         if (draggedElement.classList.contains("large-pancake")) {
-          // For large pancakes, center them properly
           draggedElement.style.left = moveEvent.clientX - 32 + "px";
           draggedElement.style.top = moveEvent.clientY - 32 + "px";
         } else {
@@ -133,7 +116,6 @@ class DragDrop {
       this.endDrag(upEvent);
     };
 
-    // Set initial position of dragged item
     const rect = e.target.getBoundingClientRect();
     const draggedElement = document.getElementById("draggedItemVisual");
     if (draggedElement) {
@@ -150,11 +132,9 @@ class DragDrop {
       }
     }
 
-    // Add event listeners
     document.addEventListener("mousemove", this.currentMouseMoveHandler);
     document.addEventListener("mouseup", this.currentMouseUpHandler);
 
-    // Add hover effects for drop targets
     document.querySelectorAll(".drag-target").forEach((target) => {
       const handleMouseEnter = () => target.classList.add("drag-over");
       const handleMouseLeave = () => target.classList.remove("drag-over");
@@ -162,20 +142,11 @@ class DragDrop {
       target.addEventListener("mouseenter", handleMouseEnter);
       target.addEventListener("mouseleave", handleMouseLeave);
 
-      // Clean up these listeners when drag ends
-      document.addEventListener(
-        "mouseup",
-        () => {
-          target.removeEventListener("mouseenter", handleMouseEnter);
-          target.removeEventListener("mouseleave", handleMouseLeave);
-        },
-        { once: true }
-      );
+      this.hoverHandlers.set(target, { handleMouseEnter, handleMouseLeave });
     });
   }
 
   endDrag(upEvent) {
-    // Find the drop target
     const elementUnderMouse = document.elementFromPoint(
       upEvent.clientX,
       upEvent.clientY
@@ -218,16 +189,12 @@ class DragDrop {
       }
     }
 
-    // IMPROVED: Enhanced cleanup for dragged elements
     this.cleanupDragState();
   }
 
-  // NEW: Comprehensive cleanup method
   cleanupDragState() {
-    // Reset dragging state
     this.isDragging = false;
 
-    // Remove ALL dragged item visuals (search for any that might exist)
     const draggedElements = document.querySelectorAll(
       "#draggedItemVisual, .dragged-pancake, .dragged-item"
     );
@@ -237,7 +204,6 @@ class DragDrop {
       }
     });
 
-    // Clean up drag effects from all elements
     document.querySelectorAll(".dragging").forEach((item) => {
       item.classList.remove("dragging");
       item.style.cursor = "grab";
@@ -251,18 +217,15 @@ class DragDrop {
       target.classList.remove("drag-over");
     });
 
-    // Clean up any remaining paused indicators
     document
       .querySelectorAll(".progress-bar.cooking-paused-specific")
       .forEach((bar) => {
         bar.classList.remove("cooking-paused-specific");
       });
 
-    // Reset drag state variables
     this.draggedItemType = null;
     this.draggedItemId = null;
 
-    // Remove event listeners using the stored references
     if (this.currentMouseMoveHandler) {
       document.removeEventListener("mousemove", this.currentMouseMoveHandler);
       this.currentMouseMoveHandler = null;
@@ -271,6 +234,12 @@ class DragDrop {
       document.removeEventListener("mouseup", this.currentMouseUpHandler);
       this.currentMouseUpHandler = null;
     }
+
+    this.hoverHandlers.forEach((handlers, target) => {
+      target.removeEventListener("mouseenter", handlers.handleMouseEnter);
+      target.removeEventListener("mouseleave", handlers.handleMouseLeave);
+    });
+    this.hoverHandlers.clear();
   }
 
   handleDragStart(e) {
