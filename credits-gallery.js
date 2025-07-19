@@ -85,8 +85,10 @@ class CreditsGallery {
     const header = this.createElement("div", this.CSS_CLASSES.HEADER);
     header.innerHTML = `
       <h2 class="${this.CSS_CLASSES.TITLE}">Pancake Tower Credits</h2>
+      <div class="credits-company">
       <h4>Company: Weird Demon Games</h4>
       <img class='credits-logo' src="images/company-logo.png">
+      </div>
       <button class="${this.CSS_CLASSES.CLOSE}">×</button>
     `;
     return header;

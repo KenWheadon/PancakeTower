@@ -45,7 +45,7 @@
 }
 
 .credits-gallery-header {
-  padding: var(--spacing-lg) var(--spacing-2xl);
+  padding: var(--spacing-md) var(--spacing-xl);
   background: linear-gradient(135deg, #f39c12, #e67e22);
   color: var(--text-white);
   display: flex;
@@ -60,6 +60,21 @@
   margin: 0;
   font-family: var(--font-display);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.credits-company {
+  display: flex;
+  align-items: end;
+  gap: 26px;
+}
+
+.credits-logo {
+  max-height: calc(100% - var(--spacing-md));
+  max-width: 60px;
+  height: auto;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .credits-gallery-close {
@@ -86,7 +101,7 @@
 
 .credits-gallery-content {
   flex: 1;
-  padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg) 0 var(--spacing-lg);
   overflow-y: auto;
   position: relative;
   background: linear-gradient(135deg, #34495e, #2c3e50);
@@ -126,7 +141,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: var(--spacing-md);
-  padding-top: var(--spacing-lg);
+  padding-top: var(--spacing-sm);
 }
 
 .credits-card {
@@ -400,6 +415,10 @@
 
   .credits-gallery-title {
     font-size: 22px;
+  }
+
+  .credits-logo {
+    max-width: 80px;
   }
 
   .credits-grid {
