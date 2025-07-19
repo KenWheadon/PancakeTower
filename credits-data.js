@@ -1,4 +1,3 @@
-// Credits Data Structure
 const CREDITS = {
   Ken: {
     name: "Kenneth Wheadon",
@@ -6,7 +5,8 @@ const CREDITS = {
     department: "Game Development",
     previewImage: "images/ken-head.png",
     fullImage: "images/ken-head.png",
-    description: "Ken ken ken",
+    description:
+      "Kenneth Wheadon serves as the Game Lead, overseeing the overall game development process and ensuring project coordination across all teams.",
   },
 
   Jessy: {
@@ -16,7 +16,7 @@ const CREDITS = {
     previewImage: "images/wyrmskin-head.png",
     fullImage: "images/wyrmskin-head.png",
     description:
-      "Jessy-Jean also known as Wyrmskin created the current company logo and helps with art as needed.",
+      "Jessy-Jean, also known as Wyrmskin, created the current company logo and provides artistic direction and support as needed.",
   },
 
   Freesounds: {
@@ -26,7 +26,7 @@ const CREDITS = {
     previewImage: "images/freesound-head.png",
     fullImage: "images/freesound-logo.png",
     description:
-      "Lots of differnet people contributed to free sounds where I gathered most of the sound effect from. They are: ......",
+      "Multiple contributors from FreeSounds.com provided the majority of sound effects used throughout the game experience.",
   },
 
   Gamesounds: {
@@ -36,7 +36,7 @@ const CREDITS = {
     previewImage: "images/px-head.png",
     fullImage: "images/px-head.png",
     description:
-      "Lots of differnet people contributed to free sounds where I gathered most of the sound effect from. They are: ......",
+      "Additional sound effects contributors from gamesounds.com helped expand the audio library for enhanced gameplay immersion.",
   },
 
   Suno: {
@@ -45,7 +45,8 @@ const CREDITS = {
     department: "Audio",
     previewImage: "images/suno35-head.png",
     fullImage: "images/suno35-head.png",
-    description: "Suno 3.5",
+    description:
+      "Suno 3.5 AI generated the atmospheric background music that enhances the gaming experience.",
   },
 
   Claude: {
@@ -55,7 +56,7 @@ const CREDITS = {
     previewImage: "images/sonnet4-head.png",
     fullImage: "images/sonnet4-head.png",
     description:
-      "David led the testing efforts to ensure the game runs smoothly across different devices and browsers. His meticulous testing approach identified edge cases and helped refine the gameplay balance, ensuring players have a polished cooking experience.",
+      "Claude Sonnet 4.0 led the programming efforts, implementing core game mechanics and ensuring robust, maintainable code architecture.",
   },
 
   Chatgpt: {
@@ -65,7 +66,7 @@ const CREDITS = {
     previewImage: "images/chatgpt4o-head.png",
     fullImage: "images/chatgpt4o-head.png",
     description:
-      "ChatGPT with it's ability to chat, include refernce and modify existing images makes it a powerhouse for quick graphic development.",
+      "ChatGPT GPT-4o contributed to rapid graphic development through its image generation and modification capabilities.",
   },
 
   Photoshop: {
@@ -75,7 +76,7 @@ const CREDITS = {
     previewImage: "images/psgen-head.png",
     fullImage: "images/psgen-head.png",
     description:
-      "While not up to the same quality level, genfill helps extend background, clean up noise, and can do a lot of the small cleanup that chatGPT isn't able to do.",
+      "Photoshop Generative Fill assisted with background extensions, noise cleanup, and detailed image refinements.",
   },
 
   Grok: {
@@ -85,15 +86,13 @@ const CREDITS = {
     previewImage: "images/grok-head.png",
     fullImage: "images/grok-head.png",
     description:
-      "Grok can help build initial prototypes - but only so that Claude doesn't spend their energy on the little stuff.",
+      "Grok contributed to initial prototype development, handling preliminary implementations and concept validation.",
   },
 };
 
-// Helper function to get all departments (similar to categories in character gallery)
 function getAllDepartments() {
-  const departments = new Set();
-  Object.values(CREDITS).forEach((person) => {
-    departments.add(person.department);
-  });
+  const departments = new Set(
+    Object.values(CREDITS).map((person) => person.department)
+  );
   return Array.from(departments).sort();
 }
