@@ -27,10 +27,8 @@ const CREDITS = {
     name: "FreeSounds.com",
     jobTitle: "Sound Effects",
     department: "Audio",
-    previewImage:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-    fullImage:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face",
+    previewImage: "images/freesound-head.png",
+    fullImage: "images/freesound-logo.png",
     description:
       "Lots of differnet people contributed to free sounds where I gathered most of the sound effect from. They are: ......",
   },
@@ -39,10 +37,8 @@ const CREDITS = {
     name: "gamesounds.com",
     jobTitle: "Sound Effects",
     department: "Audio",
-    previewImage:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-    fullImage:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face",
+    previewImage: "images/px-head.png",
+    fullImage: "images/px-head.png",
     description:
       "Lots of differnet people contributed to free sounds where I gathered most of the sound effect from. They are: ......",
   },
@@ -51,10 +47,8 @@ const CREDITS = {
     name: "Suno 3.5",
     jobTitle: "Background Music",
     department: "Audio",
-    previewImage:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-    fullImage:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
+    previewImage: "images/suno35-head.png",
+    fullImage: "images/suno35-head.png",
     description: "Suno 3.5",
   },
 
@@ -62,10 +56,8 @@ const CREDITS = {
     name: "Claude Sonnet 4.0",
     jobTitle: "Lead Programmer",
     department: "Game Development",
-    previewImage:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-    fullImage:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
+    previewImage: "images/sonnet4-head.png",
+    fullImage: "images/sonnet4-head.png",
     description:
       "David led the testing efforts to ensure the game runs smoothly across different devices and browsers. His meticulous testing approach identified edge cases and helped refine the gameplay balance, ensuring players have a polished cooking experience.",
   },
@@ -74,10 +66,8 @@ const CREDITS = {
     name: "ChatGPT GPT‑4o",
     jobTitle: "Artist",
     department: "Art",
-    previewImage:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
-    fullImage:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face",
+    previewImage: "images/chatgpt4o-head.png",
+    fullImage: "images/chatgpt4o-head.png",
     description:
       "ChatGPT with it's ability to chat, include refernce and modify existing images makes it a powerhouse for quick graphic development.",
   },
@@ -86,10 +76,8 @@ const CREDITS = {
     name: "Photoshop Genfill",
     jobTitle: "Junior Artist",
     department: "Art",
-    previewImage:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face",
-    fullImage:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face",
+    previewImage: "images/psgen-head.png",
+    fullImage: "images/psgen-head.png",
     description:
       "While not up to the same quality level, genfill helps extend background, clean up noise, and can do a lot of the small cleanup that chatGPT isn't able to do.",
   },
@@ -98,10 +86,8 @@ const CREDITS = {
     name: "Grok",
     jobTitle: "Prototyper",
     department: "Game Development",
-    previewImage:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-    fullImage:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face",
+    previewImage: "images/grok-head.png",
+    fullImage: "images/grok-head.png",
     description:
       "Grok can help build initial prototypes - but only so that Claude doesn't spend their energy on the little stuff.",
   },
