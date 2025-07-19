@@ -30,7 +30,7 @@
 
 .level-select-content {
   background: var(--bg-gradient-light);
-  padding: var(--spacing-2xl);
+  padding: 0 var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-xl);
   border: 2px solid rgba(255, 215, 0, 0.3);
   box-shadow: var(--shadow-xl);
@@ -65,7 +65,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-xl);
 }
 
 .htp-button,
@@ -102,7 +101,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
   gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
 }
 
 .level-card {

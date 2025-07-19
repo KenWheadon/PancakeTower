@@ -28,8 +28,8 @@ const GAME_CONFIG = {
       starThresholds: [1, 4, 10],
       initialBatter: 0,
       initialMoney: 1,
-      batterCost: 1,
-      batterPurchaseAmount: 3,
+      batterCost: 0,
+      batterPurchaseAmount: 1,
       pancakeReward: 1,
       pancakePenalty: 0,
       availableIngredients: [],
@@ -42,34 +42,38 @@ const GAME_CONFIG = {
       gridLayout: [
         "grill",
         "grill",
-        "plate",
         "grill",
         "plate",
-        "grill",
         "plate",
+        "plate",
+        "grill",
         "grill",
         "grill",
       ],
-      cookingTime: 3000, // 2.5 seconds to 80%
-      ingredientTime: 1500, // 1.5 seconds - deadline for adding ingredients
-      burntTime: 5500, // 5 seconds to 100%
-      timeLimit: 90000, // 90 seconds
-      // UPDATED: Orders now specify pancake types and quantities
+      cookingTime: 6500,
+      ingredientTime: 4500,
+      burntTime: 9500,
+      timeLimit: 60000,
       orders: [
         { plain: 2 },
         { plain: 3 },
-        { plain: 4 },
+        { plain: 1 },
         { plain: 2 },
+        { plain: 4 },
         { plain: 5 },
+        { plain: 3 },
+        { plain: 1 },
+        { plain: 2 },
+        { plain: 1 },
       ],
-      starThresholds: [15, 40, 80], // thresholds for 1, 2, 3 stars
-      initialBatter: 15,
-      initialMoney: 10,
-      batterCost: 2,
-      batterPurchaseAmount: 10,
-      pancakeReward: 2, // $ per correct pancake
-      pancakePenalty: 2, // $ penalty per extra pancake
-      availableIngredients: [], // no special ingredients in level 2
+      starThresholds: [5, 10, 20],
+      initialBatter: 2,
+      initialMoney: 0,
+      batterCost: 1,
+      batterPurchaseAmount: 2,
+      pancakeReward: 1,
+      pancakePenalty: 1,
+      availableIngredients: [],
     },
 
     3: {
@@ -77,40 +81,40 @@ const GAME_CONFIG = {
       description: "Master level challenge with butter!",
       difficulty: "Hard",
       gridLayout: [
+        "plate",
         "grill",
         "plate",
         "grill",
         "grill",
         "grill",
-        "grill",
-        "grill",
         "plate",
         "grill",
+        "plate",
       ],
-      cookingTime: 2000, // 2 seconds to 80%
-      ingredientTime: 1000, // 1 second - deadline for adding ingredients
-      burntTime: 4000, // 4 seconds to 100%
-      timeLimit: 120000, // 120 seconds
+      cookingTime: 6000,
+      ingredientTime: 4500,
+      burntTime: 8500,
+      timeLimit: 75000,
       // UPDATED: Mixed orders with butter pancakes
       orders: [
-        { plain: 2, butter: 1 },
-        { butter: 2, plain: 2 },
-        { plain: 3, butter: 2 },
-        { butter: 4, plain: 2 },
+        { plain: 2 },
+        { butter: 2 },
+        { plain: 1, butter: 1 },
+        { butter: 3, plain: 1 },
         { plain: 2, butter: 2 },
         { butter: 3, plain: 4 },
       ],
-      starThresholds: [30, 80, 150], // thresholds for 1, 2, 3 stars
-      initialBatter: 20,
-      initialMoney: 15,
-      batterCost: 3,
-      batterPurchaseAmount: 15,
-      pancakeReward: 3, // $ per correct pancake
-      pancakePenalty: 3, // $ penalty per extra pancake
-      availableIngredients: ["butter"], // butter available in level 3
-      butterCost: 2,
-      butterPurchaseAmount: 5,
-      initialButter: 5,
+      starThresholds: [8, 20, 42],
+      initialBatter: 4,
+      initialMoney: 0,
+      batterCost: 2,
+      batterPurchaseAmount: 4,
+      pancakeReward: 2,
+      pancakePenalty: 3,
+      availableIngredients: ["butter"],
+      butterCost: 1,
+      butterPurchaseAmount: 3,
+      initialButter: 0,
     },
 
     4: {
@@ -128,31 +132,31 @@ const GAME_CONFIG = {
         "grill",
         "grill",
       ],
-      cookingTime: 1800, // 1.8 seconds to 80%
-      ingredientTime: 900, // 0.9 seconds - deadline for adding ingredients
-      burntTime: 3600, // 3.6 seconds to 100%
-      timeLimit: 150000, // 150 seconds
-      // UPDATED: More complex butter orders
+      cookingTime: 5500,
+      ingredientTime: 4250,
+      burntTime: 8000,
+      timeLimit: 90000,
       orders: [
         { plain: 2, butter: 2 },
         { butter: 3, plain: 2 },
+        { plain: 2 },
         { plain: 3, butter: 3 },
-        { butter: 4, plain: 3 },
+        { butter: 4 },
         { plain: 2, butter: 3 },
         { butter: 5, plain: 3 },
-        { plain: 3, butter: 3 },
+        { plain: 1, butter: 6 },
       ],
-      starThresholds: [50, 120, 200], // thresholds for 1, 2, 3 stars
-      initialBatter: 25,
-      initialMoney: 20,
+      starThresholds: [20, 50, 80],
+      initialBatter: 4,
+      initialMoney: 0,
       batterCost: 4,
-      batterPurchaseAmount: 20,
-      pancakeReward: 4, // $ per correct pancake
-      pancakePenalty: 4, // $ penalty per extra pancake
-      availableIngredients: ["butter"], // butter available in level 4
-      butterCost: 3,
-      butterPurchaseAmount: 8,
-      initialButter: 8,
+      batterPurchaseAmount: 8,
+      pancakeReward: 3,
+      pancakePenalty: 5,
+      availableIngredients: ["butter"],
+      butterCost: 2,
+      butterPurchaseAmount: 6,
+      initialButter: 2,
     },
 
     5: {
@@ -161,44 +165,43 @@ const GAME_CONFIG = {
       difficulty: "Insane",
       gridLayout: [
         "grill",
-        "grill",
         "plate",
         "grill",
         "grill",
         "grill",
+        "grill",
         "plate",
         "grill",
-        "grill",
+        "plate",
       ],
-      cookingTime: 1500, // 1.5 seconds to 80%
-      ingredientTime: 750, // 0.75 seconds - deadline for adding ingredients
-      burntTime: 3000, // 3 seconds to 100%
-      timeLimit: 180000, // 180 seconds
-      // UPDATED: Mixed orders with all pancake types
+      cookingTime: 5000,
+      ingredientTime: 4000,
+      burntTime: 7500,
+      timeLimit: 90000,
       orders: [
-        { plain: 2, butter: 1, banana: 2 },
-        { banana: 3, plain: 2, butter: 1 },
-        { plain: 2, butter: 3, banana: 2 },
+        { banana: 2 },
+        { banana: 3, butter: 1 },
+        { plain: 1, butter: 2, banana: 1 },
         { banana: 4, butter: 2, plain: 2 },
         { plain: 3, butter: 1, banana: 2 },
         { banana: 2, butter: 4, plain: 3 },
         { plain: 3, butter: 2, banana: 2 },
         { banana: 5, butter: 2, plain: 3 },
       ],
-      starThresholds: [80, 180, 300], // thresholds for 1, 2, 3 stars
-      initialBatter: 30,
-      initialMoney: 25,
+      starThresholds: [30, 60, 120], // thresholds for 1, 2, 3 stars
+      initialBatter: 6,
+      initialMoney: 0,
       batterCost: 5,
-      batterPurchaseAmount: 25,
-      pancakeReward: 5, // $ per correct pancake
-      pancakePenalty: 5, // $ penalty per extra pancake
-      availableIngredients: ["butter", "banana"], // both ingredients available in level 5
-      butterCost: 4,
-      butterPurchaseAmount: 10,
-      initialButter: 10,
-      bananaCost: 3,
-      bananaPurchaseAmount: 8,
-      initialBanana: 8,
+      batterPurchaseAmount: 10,
+      pancakeReward: 5,
+      pancakePenalty: 10,
+      availableIngredients: ["butter", "banana"],
+      butterCost: 5,
+      butterPurchaseAmount: 3,
+      initialButter: 1,
+      bananaCost: 1,
+      bananaPurchaseAmount: 2,
+      initialBanana: 0,
     },
 
     6: {
@@ -216,43 +219,31 @@ const GAME_CONFIG = {
         "grill",
         "grill",
       ],
-      cookingTime: 800, // 0.8 seconds to 80% - EXTREMELY fast
-      ingredientTime: 400, // 0.4 seconds - very tight ingredient window
-      burntTime: 1600, // 1.6 seconds to 100% - burns quickly
-      timeLimit: 90000, // 90 seconds - shorter time but intense
-      // UPDATED: Extremely challenging mixed orders
+      cookingTime: 3750,
+      ingredientTime: 3500,
+      burntTime: 5250,
+      timeLimit: 45000,
       orders: [
-        { plain: 1 },
-        { butter: 1, plain: 1 },
-        { banana: 1, plain: 1, butter: 1 },
-        { plain: 2, butter: 2 },
-        { banana: 2, butter: 1, plain: 2 },
+        { banana: 1, butter: 1, plain: 1 },
         { plain: 3, butter: 2, banana: 1 },
-        { banana: 3, butter: 2, plain: 2 },
-        { plain: 4, butter: 2, banana: 2 },
-        { banana: 4, butter: 3, plain: 2 },
-        { plain: 5, butter: 3, banana: 2 },
-        { banana: 5, butter: 3, plain: 3 },
-        { plain: 6, butter: 4, banana: 3 },
-        { banana: 6, butter: 4, plain: 4 },
         { plain: 7, butter: 4, banana: 4 },
         { banana: 7, butter: 5, plain: 4 },
         { plain: 8, butter: 5, banana: 5 },
       ],
       starThresholds: [150, 400, 700], // extremely high thresholds for the intensity
-      initialBatter: 1,
+      initialBatter: 0,
       initialMoney: 50,
       batterCost: 10,
-      batterPurchaseAmount: 6,
-      pancakeReward: 10, // High reward per pancake due to difficulty
-      pancakePenalty: 10, // High penalty to match
+      batterPurchaseAmount: 3,
+      pancakeReward: 20, // High reward per pancake due to difficulty
+      pancakePenalty: 30, // High penalty to match
       availableIngredients: ["butter", "banana"], // all ingredients available
-      butterCost: 5,
-      butterPurchaseAmount: 3,
-      initialButter: 1,
-      bananaCost: 3,
+      butterCost: 10,
+      butterPurchaseAmount: 2,
+      initialButter: 0,
+      bananaCost: 20,
       bananaPurchaseAmount: 2,
-      initialBanana: 1,
+      initialBanana: 0,
     },
   },
 

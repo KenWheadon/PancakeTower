@@ -82,11 +82,10 @@ class PancakeStackGame {
       <!-- Level Selection Screen -->
       <div id="levelSelectScreen" class="level-select-screen hidden">
         <div class="level-select-content">
-          <h1 class="level-select-title">Choose Your Challenge</h1>
-          
           <div class="level-select-buttons">
-          <button class="back-button" id="backToStartButton">← Back to Menu</button>  
-          <button class="htp-button" id="htpButton">❓ How to Play</button>
+            <button class="back-button" id="backToStartButton">← Back to Menu</button>  
+            <h1 class="level-select-title">Choose Your Challenge</h1>
+            <button class="htp-button" id="htpButton">❓ How to Play</button>
           </div>
           
           <div class="levels-grid" id="levelsGrid">

@@ -406,17 +406,6 @@ body::before {
   z-index: var(--z-overlay);
 }
 
-.level-select-content {
-  background: var(--bg-gradient-light);
-  border-radius: var(--radius-2xl);
-  padding: var(--spacing-3xl);
-  box-shadow: var(--shadow-xl);
-  max-width: 900px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
 .level-select-title {
   font-family: var(--font-display);
   font-size: var(--font-size-2xl);
@@ -424,13 +413,6 @@ body::before {
   text-align: center;
   margin-bottom: var(--spacing-2xl);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.level-select-buttons {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-2xl);
 }
 
 .htp-button,
