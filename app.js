@@ -42,38 +42,41 @@ class PancakeStackGame {
       <div id="startScreen" class="start-screen hidden">
         <div class="start-content">
           <div class="game-logo-section">
-            <div class="game-logo">🥞</div>
-            <h1 class="game-title">Pancake Tower</h1>
+            <img class="game-logo" src="images/logo.png" alt="Pancake Tower Logo">
             <p class="game-subtitle">Master the art of pancake cooking!</p>
           </div>
           
-          <div class="game-instructions">
-            <div class="instruction-item">
-              <span class="instruction-icon">🔥</span>
-              <span class="instruction-text">Drag batter to grill to cook pancakes</span>
+        <div class="game-start-right">
+
+            <div class="game-instructions">
+                <div class="instruction-item">
+                <span class="instruction-icon">🔥</span>
+                <span class="instruction-text">Drag batter to grill to cook pancakes</span>
+                </div>
+                <div class="instruction-item">
+                <span class="instruction-icon">🧈</span>
+                <span class="instruction-text">Add ingredients before the deadline</span>
+                </div>
+                <div class="instruction-item">
+                <span class="instruction-icon">🥞</span>
+                <span class="instruction-text">Plate them before they burn</span>
+                </div>
+                <div class="instruction-item">
+                <span class="instruction-icon">💰</span>
+                <span class="instruction-text">Complete orders for money</span>
+                </div>
             </div>
-            <div class="instruction-item">
-              <span class="instruction-icon">🧈</span>
-              <span class="instruction-text">Add ingredients before the deadline</span>
-            </div>
-            <div class="instruction-item">
-              <span class="instruction-icon">🥞</span>
-              <span class="instruction-text">Plate them before they burn</span>
-            </div>
-            <div class="instruction-item">
-              <span class="instruction-icon">💰</span>
-              <span class="instruction-text">Complete orders for money</span>
+            
+            <div class="start-buttons">
+                <button class="start-button primary" id="playButton">
+                <span class="button-text">🍳 Start Cooking</span>
+                </button>
+                <button class="start-button secondary" id="creditsButton">
+                <span class="button-text">👥 Credits</span>
+                </button>
             </div>
           </div>
-          
-          <div class="start-buttons">
-            <button class="start-button primary" id="playButton">
-              <span class="button-text">🍳 Start Cooking</span>
-            </button>
-            <button class="start-button secondary" id="creditsButton">
-              <span class="button-text">👥 Credits</span>
-            </button>
-          </div>
+
         </div>
       </div>
 

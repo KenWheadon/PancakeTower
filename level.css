@@ -337,6 +337,29 @@
   transform: translateY(-2px) scale(1.05);
 }
 
+/* Pancake Type Breakdown */
+.pancake-type-breakdown {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
+  color: var(--text-primary);
+  z-index: 25;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.type-counts {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
 /* Serve Button - Hidden by default, shown on hover */
 .serve-button {
   position: absolute;

@@ -24,7 +24,8 @@ const GAME_CONFIG = {
       ingredientTime: 1500, // 1.5 seconds - deadline for adding ingredients
       burntTime: 6000, // 6 seconds to 100%
       timeLimit: 60000, // 60 seconds
-      orders: [1, 2, 1, 3], // sequence that repeats
+      // UPDATED: Orders now specify pancake types and quantities
+      orders: [{ plain: 1 }, { plain: 2 }, { plain: 1 }, { plain: 3 }],
       starThresholds: [3, 8, 12], // thresholds for 1, 2, 3 stars
       initialBatter: 0,
       initialMoney: 5,
@@ -54,7 +55,14 @@ const GAME_CONFIG = {
       ingredientTime: 1500, // 1.5 seconds - deadline for adding ingredients
       burntTime: 5500, // 5 seconds to 100%
       timeLimit: 90000, // 90 seconds
-      orders: [2, 3, 4, 2, 5], // sequence that repeats
+      // UPDATED: Orders now specify pancake types and quantities
+      orders: [
+        { plain: 2 },
+        { plain: 3 },
+        { plain: 4 },
+        { plain: 2 },
+        { plain: 5 },
+      ],
       starThresholds: [15, 40, 80], // thresholds for 1, 2, 3 stars
       initialBatter: 15,
       initialMoney: 10,
@@ -84,7 +92,15 @@ const GAME_CONFIG = {
       ingredientTime: 1000, // 1 second - deadline for adding ingredients
       burntTime: 4000, // 4 seconds to 100%
       timeLimit: 120000, // 120 seconds
-      orders: [3, 4, 5, 6, 4, 7], // sequence that repeats
+      // UPDATED: Mixed orders with butter pancakes
+      orders: [
+        { plain: 2, butter: 1 },
+        { butter: 2, plain: 2 },
+        { plain: 3, butter: 2 },
+        { butter: 4, plain: 2 },
+        { plain: 2, butter: 2 },
+        { butter: 3, plain: 4 },
+      ],
       starThresholds: [30, 80, 150], // thresholds for 1, 2, 3 stars
       initialBatter: 20,
       initialMoney: 15,
@@ -117,7 +133,16 @@ const GAME_CONFIG = {
       ingredientTime: 900, // 0.9 seconds - deadline for adding ingredients
       burntTime: 3600, // 3.6 seconds to 100%
       timeLimit: 150000, // 150 seconds
-      orders: [4, 5, 6, 7, 5, 8, 6], // sequence that repeats
+      // UPDATED: More complex butter orders
+      orders: [
+        { plain: 2, butter: 2 },
+        { butter: 3, plain: 2 },
+        { plain: 3, butter: 3 },
+        { butter: 4, plain: 3 },
+        { plain: 2, butter: 3 },
+        { butter: 5, plain: 3 },
+        { plain: 3, butter: 3 },
+      ],
       starThresholds: [50, 120, 200], // thresholds for 1, 2, 3 stars
       initialBatter: 25,
       initialMoney: 20,
@@ -150,7 +175,17 @@ const GAME_CONFIG = {
       ingredientTime: 750, // 0.75 seconds - deadline for adding ingredients
       burntTime: 3000, // 3 seconds to 100%
       timeLimit: 180000, // 180 seconds
-      orders: [5, 6, 7, 8, 6, 9, 7, 10], // sequence that repeats
+      // UPDATED: Mixed orders with all pancake types
+      orders: [
+        { plain: 2, butter: 1, banana: 2 },
+        { banana: 3, plain: 2, butter: 1 },
+        { plain: 2, butter: 3, banana: 2 },
+        { banana: 4, butter: 2, plain: 2 },
+        { plain: 3, butter: 1, banana: 2 },
+        { banana: 2, butter: 4, plain: 3 },
+        { plain: 3, butter: 2, banana: 2 },
+        { banana: 5, butter: 2, plain: 3 },
+      ],
       starThresholds: [80, 180, 300], // thresholds for 1, 2, 3 stars
       initialBatter: 30,
       initialMoney: 25,
@@ -186,7 +221,25 @@ const GAME_CONFIG = {
       ingredientTime: 400, // 0.4 seconds - very tight ingredient window
       burntTime: 1600, // 1.6 seconds to 100% - burns quickly
       timeLimit: 90000, // 90 seconds - shorter time but intense
-      orders: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], // very large orders that repeat
+      // UPDATED: Extremely challenging mixed orders
+      orders: [
+        { plain: 1 },
+        { butter: 1, plain: 1 },
+        { banana: 1, plain: 1, butter: 1 },
+        { plain: 2, butter: 2 },
+        { banana: 2, butter: 1, plain: 2 },
+        { plain: 3, butter: 2, banana: 1 },
+        { banana: 3, butter: 2, plain: 2 },
+        { plain: 4, butter: 2, banana: 2 },
+        { banana: 4, butter: 3, plain: 2 },
+        { plain: 5, butter: 3, banana: 2 },
+        { banana: 5, butter: 3, plain: 3 },
+        { plain: 6, butter: 4, banana: 3 },
+        { banana: 6, butter: 4, plain: 4 },
+        { plain: 7, butter: 4, banana: 4 },
+        { banana: 7, butter: 5, plain: 4 },
+        { plain: 8, butter: 5, banana: 5 },
+      ],
       starThresholds: [150, 400, 700], // extremely high thresholds for the intensity
       initialBatter: 1,
       initialMoney: 50,

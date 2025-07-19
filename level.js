@@ -156,8 +156,8 @@ class LevelManager {
         <div class="draggable-item" data-item-type="batter">
           <img src="images/item-batter.png" alt="Batter" class="draggable-item-image">
         </div>
-        <div class="resource-name">Batter</div>
         <div class="resource-display">
+          <div class="resource-name">Batter</div>
           <span class="resource-cost">Cost: $<span id="batterCost">1</span></span>
           <span class="resource-amount">Have: <span id="batterCount">10</span></span>
         </div>

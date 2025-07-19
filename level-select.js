@@ -52,8 +52,10 @@ class LevelSelectScreen {
         </div>
         <div class="level-stat">
           <span class="level-stat-icon">🥞</span>
-          <span class="level-stat-value">${Math.max(...config.orders)}</span>
-          <span class="level-stat-label">Max Stack</span>
+          <span class="level-stat-value">${this.getMaxOrderSize(
+            config.orders
+          )}</span>
+          <span class="level-stat-label">Max Order</span>
         </div>
       </div>
       
@@ -91,5 +93,18 @@ class LevelSelectScreen {
       }
     }
     return starsHTML;
+  }
+
+  // Helper method to get max order size from new order format
+  getMaxOrderSize(orders) {
+    let maxSize = 0;
+    orders.forEach((order) => {
+      const orderSize = Object.values(order).reduce(
+        (sum, count) => sum + count,
+        0
+      );
+      maxSize = Math.max(maxSize, orderSize);
+    });
+    return maxSize;
   }
 }
