@@ -40,6 +40,7 @@ class LevelManager {
   stopGame() {
     this.gameRunning = false;
     this.pancakeCooking.cleanup();
+    this.levelUI.stopTutorialCycling();
   }
 
   initializeGame() {

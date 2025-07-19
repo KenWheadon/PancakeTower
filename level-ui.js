@@ -1,6 +1,14 @@
 class LevelUI {
   constructor(levelManager) {
     this.levelManager = levelManager;
+    this.tutorialMessages = [
+      "🔥 Drag batter to grill to cook pancakes",
+      "🧈 Add ingredients before the deadline",
+      "🥞 Plate them before they burn",
+      "💰 Complete orders for money",
+    ];
+    this.currentTutorialIndex = 0;
+    this.tutorialInterval = null;
   }
 
   createGrid() {
@@ -90,6 +98,9 @@ class LevelUI {
 
     // Create sidebar with ingredients
     this.createSidebar();
+
+    // Start tutorial messages cycling
+    this.startTutorialCycling();
   }
 
   createSidebar() {
@@ -315,33 +326,6 @@ class LevelUI {
 
       if (stackCount) {
         stackCount.textContent = cell.pancakes.length;
-      }
-
-      // Add type breakdown display
-      let existingBreakdown = cellDiv.querySelector(".pancake-type-breakdown");
-      if (existingBreakdown) existingBreakdown.remove();
-
-      if (cell.pancakes.length > 0) {
-        const breakdown = document.createElement("div");
-        breakdown.className = "pancake-type-breakdown";
-
-        const pancakeCounts = this.levelManager.getServedPancakesByType(
-          cell.pancakes
-        );
-        const breakdownItems = [];
-
-        Object.entries(pancakeCounts).forEach(([type, count]) => {
-          if (count > 0) {
-            const icon =
-              type === "plain" ? "🥞" : type === "butter" ? "🧈" : "🍌";
-            breakdownItems.push(`${count}${icon}`);
-          }
-        });
-
-        breakdown.innerHTML = `<div class="type-counts">${breakdownItems.join(
-          " "
-        )}</div>`;
-        cellDiv.appendChild(breakdown);
       }
 
       // Update plate display with stacked pancakes
@@ -663,6 +647,76 @@ class LevelUI {
       buyBananaButton.disabled =
         this.levelManager.money <
         (this.levelManager.levelConfig.bananaCost || 0);
+    }
+  }
+
+  startTutorialCycling() {
+    // Create tutorial container if it doesn't exist
+    let tutorialContainer = document.getElementById("tutorialContainer");
+    if (!tutorialContainer) {
+      tutorialContainer = document.createElement("div");
+      tutorialContainer.id = "tutorialContainer";
+      tutorialContainer.style.cssText = `
+        margin-top: 20px;
+        padding: 15px 25px;
+        background: linear-gradient(145deg, #ffffff, #f8f8f8);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      `;
+
+      const tutorialText = document.createElement("div");
+      tutorialText.id = "tutorialText";
+      tutorialText.style.cssText = `
+        font-family: 'Fredoka', sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        transition: opacity 0.3s ease;
+        opacity: 1;
+      `;
+      tutorialText.textContent = this.tutorialMessages[0];
+
+      tutorialContainer.appendChild(tutorialText);
+
+      // Insert after game container
+      const gameContainer = document.getElementById("gameContainer");
+      gameContainer.parentNode.insertBefore(
+        tutorialContainer,
+        gameContainer.nextSibling
+      );
+    }
+
+    // Start cycling every 3 seconds
+    this.tutorialInterval = setInterval(() => {
+      this.cycleTutorialMessage();
+    }, 3000);
+  }
+
+  cycleTutorialMessage() {
+    const tutorialText = document.getElementById("tutorialText");
+    if (!tutorialText) return;
+
+    this.currentTutorialIndex =
+      (this.currentTutorialIndex + 1) % this.tutorialMessages.length;
+
+    // Add fade effect
+    tutorialText.style.opacity = "0.5";
+
+    setTimeout(() => {
+      tutorialText.textContent =
+        this.tutorialMessages[this.currentTutorialIndex];
+      tutorialText.style.opacity = "1";
+    }, 300);
+  }
+
+  stopTutorialCycling() {
+    if (this.tutorialInterval) {
+      clearInterval(this.tutorialInterval);
+      this.tutorialInterval = null;
     }
   }
 }

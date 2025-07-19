@@ -114,6 +114,10 @@ class DragDrop {
       // Update dragged item position
       const draggedElement = document.getElementById("draggedItemVisual");
       if (draggedElement) {
+        draggedElement.style.position = "fixed";
+        draggedElement.style.pointerEvents = "none";
+        draggedElement.style.zIndex = "9999";
+
         if (draggedElement.classList.contains("large-pancake")) {
           // For large pancakes, center them properly
           draggedElement.style.left = moveEvent.clientX - 32 + "px";
@@ -133,6 +137,10 @@ class DragDrop {
     const rect = e.target.getBoundingClientRect();
     const draggedElement = document.getElementById("draggedItemVisual");
     if (draggedElement) {
+      draggedElement.style.position = "fixed";
+      draggedElement.style.pointerEvents = "none";
+      draggedElement.style.zIndex = "9999";
+
       if (draggedElement.classList.contains("large-pancake")) {
         draggedElement.style.left = rect.left + rect.width / 2 - 32 + "px";
         draggedElement.style.top = rect.top + rect.height / 2 - 32 + "px";
