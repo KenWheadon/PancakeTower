@@ -109,7 +109,7 @@ class LevelUI {
     // Create store section with batter and available ingredients
     const storeSection = document.getElementById("storeSection");
     storeSection.innerHTML = `
-      <h3>🏪 Store</h3>
+      <h3>Store - Drag Items</h3>
       
       <!-- Batter Resource -->
       <div class="resource-item">
