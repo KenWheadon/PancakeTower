@@ -9,12 +9,42 @@ class CreditsGallery {
     this.creditsList = [];
     this.filteredCredits = [];
     this.currentIndex = 0;
+    this.eventListeners = new Map();
+    this.preloadedImages = [];
+
+    this.CSS_CLASSES = {
+      MODAL: "credits-gallery-modal",
+      CONTAINER: "credits-gallery-container",
+      HEADER: "credits-gallery-header",
+      TITLE: "credits-gallery-title",
+      CLOSE: "credits-gallery-close",
+      CONTENT: "credits-gallery-content",
+      DETAIL_VIEW: "credits-detail-view",
+      FILTERS: "credits-gallery-filters",
+      FILTER_BTN: "credits-filter-btn",
+      GRID: "credits-grid",
+      CARD: "credits-card",
+      CARD_IMAGE: "credits-card-image",
+      CARD_NAME: "credits-card-name",
+      CARD_TITLE: "credits-card-title",
+      CARD_DEPARTMENT: "credits-card-department",
+      DETAIL_BACK: "credits-detail-back",
+      DETAIL_LEFT: "credits-detail-left",
+      DETAIL_RIGHT: "credits-detail-right",
+      DETAIL_IMAGE: "credits-detail-image",
+      DETAIL_NAME: "credits-detail-name",
+      DETAIL_TITLE: "credits-detail-title",
+      DETAIL_DEPARTMENT: "credits-detail-department",
+      DETAIL_DESCRIPTION: "credits-detail-description",
+      NAVIGATION: "credits-navigation",
+      NAV_BTN: "credits-nav-btn",
+      ACTIVE: "active",
+    };
 
     this.init();
   }
 
   init() {
-    // Check if DOM is ready before proceeding
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", () => {
         this.initializeGallery();
@@ -31,32 +61,13 @@ class CreditsGallery {
   }
 
   createModalStructure() {
-    // Create modal overlay
-    this.modal = document.createElement("div");
-    this.modal.className = "credits-gallery-modal";
+    this.modal = this.createElement("div", this.CSS_CLASSES.MODAL);
+    this.container = this.createElement("div", this.CSS_CLASSES.CONTAINER);
 
-    // Create container
-    this.container = document.createElement("div");
-    this.container.className = "credits-gallery-container";
+    const header = this.createHeader();
+    this.content = this.createElement("div", this.CSS_CLASSES.CONTENT);
+    this.detailView = this.createElement("div", this.CSS_CLASSES.DETAIL_VIEW);
 
-    // Create header
-    const header = document.createElement("div");
-    header.className = "credits-gallery-header";
-    header.innerHTML = `
-      <h2 class="credits-gallery-title">Pancake Tower Credits</h2>
-      <h4>Company: Weird Demon Games</h4>
-      <button class="credits-gallery-close">×</button>
-    `;
-
-    // Create content area
-    this.content = document.createElement("div");
-    this.content.className = "credits-gallery-content";
-
-    // Create detail view
-    this.detailView = document.createElement("div");
-    this.detailView.className = "credits-detail-view";
-
-    // Assemble structure
     this.container.appendChild(header);
     this.container.appendChild(this.content);
     this.container.appendChild(this.detailView);
@@ -64,66 +75,92 @@ class CreditsGallery {
     document.body.appendChild(this.modal);
   }
 
-  setupEventListeners() {
-    // Close button
-    const closeBtn = this.modal.querySelector(".credits-gallery-close");
-    closeBtn.addEventListener("click", () => this.closeGallery());
+  createElement(tag, className) {
+    const element = document.createElement(tag);
+    element.className = className;
+    return element;
+  }
 
-    // Click outside to close
-    this.modal.addEventListener("click", (e) => {
+  createHeader() {
+    const header = this.createElement("div", this.CSS_CLASSES.HEADER);
+    header.innerHTML = `
+      <h2 class="${this.CSS_CLASSES.TITLE}">Pancake Tower Credits</h2>
+      <h4>Company: Weird Demon Games</h4>
+      <button class="${this.CSS_CLASSES.CLOSE}">×</button>
+    `;
+    return header;
+  }
+
+  setupEventListeners() {
+    this.addEventListenerWithCleanup(
+      this.modal.querySelector(`.${this.CSS_CLASSES.CLOSE}`),
+      "click",
+      () => this.closeGallery()
+    );
+
+    this.addEventListenerWithCleanup(this.modal, "click", (e) => {
       if (e.target === this.modal) {
         this.closeGallery();
       }
     });
 
-    // Keyboard navigation
-    document.addEventListener("keydown", (e) => {
-      if (!this.modal.classList.contains("active")) return;
+    this.addEventListenerWithCleanup(document, "keydown", (e) =>
+      this.handleKeydown(e)
+    );
+  }
 
-      switch (e.key) {
-        case "Escape":
-          if (this.detailView.classList.contains("active")) {
-            this.closeDetailView();
-          } else {
-            this.closeGallery();
-          }
-          break;
-        case "ArrowLeft":
-          if (this.detailView.classList.contains("active")) {
-            this.previousPerson();
-          }
-          break;
-        case "ArrowRight":
-          if (this.detailView.classList.contains("active")) {
-            this.nextPerson();
-          }
-          break;
-      }
-    });
+  addEventListenerWithCleanup(element, event, handler) {
+    element.addEventListener(event, handler);
+
+    if (!this.eventListeners.has(element)) {
+      this.eventListeners.set(element, []);
+    }
+    this.eventListeners.get(element).push({ event, handler });
+  }
+
+  handleKeydown(e) {
+    if (!this.modal.classList.contains(this.CSS_CLASSES.ACTIVE)) return;
+
+    const keyActions = {
+      Escape: () => this.handleEscape(),
+      ArrowLeft: () => this.handleArrowKey("left"),
+      ArrowRight: () => this.handleArrowKey("right"),
+    };
+
+    const action = keyActions[e.key];
+    if (action) action();
+  }
+
+  handleEscape() {
+    if (this.detailView.classList.contains(this.CSS_CLASSES.ACTIVE)) {
+      this.closeDetailView();
+    } else {
+      this.closeGallery();
+    }
+  }
+
+  handleArrowKey(direction) {
+    if (this.detailView.classList.contains(this.CSS_CLASSES.ACTIVE)) {
+      direction === "left" ? this.navigatePerson(-1) : this.navigatePerson(1);
+    }
   }
 
   loadCredits() {
-    if (typeof CREDITS === "undefined") {
-      console.error("CREDITS data not loaded");
-      return;
-    }
-
     this.creditsList = Object.entries(CREDITS).map(([key, data]) => ({
       id: key,
       ...data,
     }));
-
     this.filteredCredits = [...this.creditsList];
   }
 
   openGallery() {
     this.renderGallery();
-    this.modal.classList.add("active");
+    this.modal.classList.add(this.CSS_CLASSES.ACTIVE);
     document.body.style.overflow = "hidden";
   }
 
   closeGallery() {
-    this.modal.classList.remove("active");
+    this.modal.classList.remove(this.CSS_CLASSES.ACTIVE);
     this.closeDetailView();
     document.body.style.overflow = "";
   }
@@ -132,21 +169,10 @@ class CreditsGallery {
     const departments = ["all", ...getAllDepartments()];
 
     this.content.innerHTML = `
-      <div class="credits-gallery-filters">
-        ${departments
-          .map(
-            (dept) => `
-          <button class="credits-filter-btn ${
-            dept === this.currentFilter ? "active" : ""
-          }" 
-                  data-filter="${dept}">
-            ${dept === "all" ? "All Team Members" : dept}
-          </button>
-        `
-          )
-          .join("")}
+      <div class="${this.CSS_CLASSES.FILTERS}">
+        ${this.renderFilterButtons(departments)}
       </div>
-      <div class="credits-grid" id="credits-grid">
+      <div class="${this.CSS_CLASSES.GRID}" id="credits-grid">
         ${this.renderCreditsGrid()}
       </div>
     `;
@@ -155,52 +181,62 @@ class CreditsGallery {
     this.setupCreditsListeners();
   }
 
+  renderFilterButtons(departments) {
+    return departments
+      .map(
+        (dept) => `
+        <button class="${this.CSS_CLASSES.FILTER_BTN} ${
+          dept === this.currentFilter ? this.CSS_CLASSES.ACTIVE : ""
+        }" 
+                data-filter="${dept}">
+          ${dept === "all" ? "All Team Members" : dept}
+        </button>
+      `
+      )
+      .join("");
+  }
+
   renderCreditsGrid() {
     return this.filteredCredits
       .map(
         (person) => `
-      <div class="credits-card" data-person="${person.id}">
-        <img src="${person.previewImage}" alt="${person.name}" class="credits-card-image" />
-        <h3 class="credits-card-name">${person.name}</h3>
-        <p class="credits-card-title">${person.jobTitle}</p>
-        <p class="credits-card-department">${person.department}</p>
-      </div>
-    `
+        <div class="${this.CSS_CLASSES.CARD}" data-person="${person.id}">
+          <img src="${person.previewImage}" alt="${person.name}" class="${this.CSS_CLASSES.CARD_IMAGE}" />
+          <h3 class="${this.CSS_CLASSES.CARD_NAME}">${person.name}</h3>
+          <p class="${this.CSS_CLASSES.CARD_TITLE}">${person.jobTitle}</p>
+          <p class="${this.CSS_CLASSES.CARD_DEPARTMENT}">${person.department}</p>
+        </div>
+      `
       )
       .join("");
   }
 
   setupFilterListeners() {
-    const filterBtns = this.content.querySelectorAll(".credits-filter-btn");
-    filterBtns.forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const filter = e.target.dataset.filter;
-        this.setFilter(filter);
+    this.content
+      .querySelectorAll(`.${this.CSS_CLASSES.FILTER_BTN}`)
+      .forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          this.setFilter(e.target.dataset.filter);
+        });
       });
-    });
   }
 
   setupCreditsListeners() {
-    const creditsCards = this.content.querySelectorAll(".credits-card");
-    creditsCards.forEach((card) => {
-      card.addEventListener("click", (e) => {
-        const personId = e.currentTarget.dataset.person;
-        this.showPersonDetail(personId);
+    this.content
+      .querySelectorAll(`.${this.CSS_CLASSES.CARD}`)
+      .forEach((card) => {
+        card.addEventListener("click", (e) => {
+          this.showPersonDetail(e.currentTarget.dataset.person);
+        });
       });
-    });
   }
 
   setFilter(filter) {
     this.currentFilter = filter;
-
-    if (filter === "all") {
-      this.filteredCredits = [...this.creditsList];
-    } else {
-      this.filteredCredits = this.creditsList.filter(
-        (person) => person.department === filter
-      );
-    }
-
+    this.filteredCredits =
+      filter === "all"
+        ? [...this.creditsList]
+        : this.creditsList.filter((person) => person.department === filter);
     this.renderGallery();
   }
 
@@ -213,118 +249,138 @@ class CreditsGallery {
       (p) => p.id === personId
     );
 
-    this.detailView.innerHTML = `
-      <button class="credits-detail-back">←</button>
-      <div class="credits-detail-left">
-        <img src="${person.fullImage}" alt="${
-      person.name
-    }" class="credits-detail-image" />
+    this.detailView.innerHTML = this.renderPersonDetail(person);
+    this.setupDetailListeners();
+    this.detailView.classList.add(this.CSS_CLASSES.ACTIVE);
+  }
+
+  renderPersonDetail(person) {
+    return `
+      <button class="${this.CSS_CLASSES.DETAIL_BACK}">←</button>
+      <div class="${this.CSS_CLASSES.DETAIL_LEFT}">
+        <img src="${person.fullImage}" alt="${person.name}" class="${
+      this.CSS_CLASSES.DETAIL_IMAGE
+    }" />
       </div>
-      <div class="credits-detail-right">
-        <h2 class="credits-detail-name">${person.name}</h2>
-        <p class="credits-detail-title">${person.jobTitle}</p>
-        <p class="credits-detail-department">${person.department}</p>
-        <p class="credits-detail-description">${person.description}</p>
+      <div class="${this.CSS_CLASSES.DETAIL_RIGHT}">
+        <h2 class="${this.CSS_CLASSES.DETAIL_NAME}">${person.name}</h2>
+        <p class="${this.CSS_CLASSES.DETAIL_TITLE}">${person.jobTitle}</p>
+        <p class="${this.CSS_CLASSES.DETAIL_DEPARTMENT}">${
+      person.department
+    }</p>
+        <p class="${this.CSS_CLASSES.DETAIL_DESCRIPTION}">${
+      person.description
+    }</p>
       </div>
-      <div class="credits-navigation">
-        <button class="credits-nav-btn" id="prev-person" ${
-          this.currentIndex === 0 ? "disabled" : ""
-        }>
-          ← Previous
-        </button>
-        <button class="credits-nav-btn" id="next-person" ${
-          this.currentIndex === this.filteredCredits.length - 1
-            ? "disabled"
-            : ""
-        }>
-          Next →
-        </button>
+      <div class="${this.CSS_CLASSES.NAVIGATION}">
+        ${this.renderNavigationButtons()}
       </div>
     `;
+  }
 
-    this.setupDetailListeners();
-    this.detailView.classList.add("active");
+  renderNavigationButtons() {
+    return `
+      <button class="${this.CSS_CLASSES.NAV_BTN}" id="prev-person" ${
+      this.currentIndex === 0 ? "disabled" : ""
+    }>
+        ← Previous
+      </button>
+      <button class="${this.CSS_CLASSES.NAV_BTN}" id="next-person" ${
+      this.currentIndex === this.filteredCredits.length - 1 ? "disabled" : ""
+    }>
+        Next →
+      </button>
+    `;
   }
 
   setupDetailListeners() {
-    const backBtn = this.detailView.querySelector(".credits-detail-back");
-    const prevBtn = this.detailView.querySelector("#prev-person");
-    const nextBtn = this.detailView.querySelector("#next-person");
+    const buttonSelectors = [
+      {
+        selector: `.${this.CSS_CLASSES.DETAIL_BACK}`,
+        action: () => this.closeDetailView(),
+      },
+      { selector: "#prev-person", action: () => this.navigatePerson(-1) },
+      { selector: "#next-person", action: () => this.navigatePerson(1) },
+    ];
 
-    // Add event listeners with proper event handling
-    if (backBtn) {
-      backBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.closeDetailView();
-      });
-    }
-
-    if (prevBtn) {
-      prevBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.previousPerson();
-      });
-    }
-
-    if (nextBtn) {
-      nextBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.nextPerson();
-      });
-    }
+    buttonSelectors.forEach(({ selector, action }) => {
+      const button = this.detailView.querySelector(selector);
+      if (button) {
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          action();
+        });
+      }
+    });
   }
 
   closeDetailView() {
-    this.detailView.classList.remove("active");
+    this.detailView.classList.remove(this.CSS_CLASSES.ACTIVE);
     this.currentPerson = null;
   }
 
-  previousPerson() {
-    if (this.currentIndex > 0) {
-      this.currentIndex--;
-      const prevPerson = this.filteredCredits[this.currentIndex];
-      this.showPersonDetail(prevPerson.id);
+  navigatePerson(direction) {
+    const newIndex = this.currentIndex + direction;
+    if (newIndex >= 0 && newIndex < this.filteredCredits.length) {
+      this.currentIndex = newIndex;
+      const person = this.filteredCredits[this.currentIndex];
+      this.showPersonDetail(person.id);
     }
+  }
+
+  previousPerson() {
+    this.navigatePerson(-1);
   }
 
   nextPerson() {
-    if (this.currentIndex < this.filteredCredits.length - 1) {
-      this.currentIndex++;
-      const nextPerson = this.filteredCredits[this.currentIndex];
-      this.showPersonDetail(nextPerson.id);
-    }
+    this.navigatePerson(1);
   }
 
-  // Preload images for smoother experience
   preloadCreditsImages() {
+    this.cleanupPreloadedImages();
     this.creditsList.forEach((person) => {
       const previewImg = new Image();
       const fullImg = new Image();
       previewImg.src = person.previewImage;
       fullImg.src = person.fullImage;
+      this.preloadedImages.push(previewImg, fullImg);
     });
   }
 
-  // Public method to refresh gallery if credits are updated
+  cleanupPreloadedImages() {
+    this.preloadedImages = [];
+  }
+
   refresh() {
     this.loadCredits();
-    if (this.modal.classList.contains("active")) {
+    if (this.modal.classList.contains(this.CSS_CLASSES.ACTIVE)) {
       this.renderGallery();
     }
   }
 
-  // Destroy method for cleanup
+  cleanupEventListeners() {
+    this.eventListeners.forEach((listeners, element) => {
+      listeners.forEach(({ event, handler }) => {
+        element.removeEventListener(event, handler);
+      });
+    });
+    this.eventListeners.clear();
+  }
+
   destroy() {
+    this.cleanupEventListeners();
+    this.cleanupPreloadedImages();
+
     if (this.modal) {
       this.modal.remove();
     }
+
     const creditsBtn = document.querySelector(".credits-gallery-button");
     if (creditsBtn) {
       creditsBtn.remove();
     }
+
     document.body.style.overflow = "";
   }
 }
