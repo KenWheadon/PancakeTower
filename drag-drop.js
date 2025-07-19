@@ -6,10 +6,46 @@ class DragDrop {
     this.draggedItemId = null;
     this.currentMouseMoveHandler = null;
     this.currentMouseUpHandler = null;
+    this.currentTouchMoveHandler = null;
+    this.currentTouchEndHandler = null;
     this.hoverHandlers = new Map();
   }
 
+  // Get coordinates from mouse or touch event
+  getEventCoordinates(e) {
+    if (e.touches && e.touches.length > 0) {
+      return {
+        clientX: e.touches[0].clientX,
+        clientY: e.touches[0].clientY,
+      };
+    } else if (e.changedTouches && e.changedTouches.length > 0) {
+      return {
+        clientX: e.changedTouches[0].clientX,
+        clientY: e.changedTouches[0].clientY,
+      };
+    } else {
+      return {
+        clientX: e.clientX,
+        clientY: e.clientY,
+      };
+    }
+  }
+
   handleMouseDown(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const pancakeId = e.target.dataset.pancakeId;
+    const itemType = e.target.dataset.itemType;
+
+    if (pancakeId) {
+      this.startPancakeDrag(e, pancakeId);
+    } else if (itemType) {
+      this.startItemDrag(e, itemType);
+    }
+  }
+
+  handleTouchStart(e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -95,24 +131,24 @@ class DragDrop {
   }
 
   setupDragEventListeners(e) {
-    this.currentMouseMoveHandler = (moveEvent) => {
-      const draggedElement = document.getElementById("draggedItemVisual");
-      if (draggedElement) {
-        draggedElement.style.position = "fixed";
-        draggedElement.style.pointerEvents = "none";
-        draggedElement.style.zIndex = "9999";
+    const coords = this.getEventCoordinates(e);
 
-        if (draggedElement.classList.contains("large-pancake")) {
-          draggedElement.style.left = moveEvent.clientX - 32 + "px";
-          draggedElement.style.top = moveEvent.clientY - 32 + "px";
-        } else {
-          draggedElement.style.left = moveEvent.clientX - 24 + "px";
-          draggedElement.style.top = moveEvent.clientY - 24 + "px";
-        }
-      }
+    this.currentMouseMoveHandler = (moveEvent) => {
+      const moveCoords = this.getEventCoordinates(moveEvent);
+      this.updateDraggedElementPosition(moveCoords);
+    };
+
+    this.currentTouchMoveHandler = (moveEvent) => {
+      moveEvent.preventDefault(); // Prevent scrolling
+      const moveCoords = this.getEventCoordinates(moveEvent);
+      this.updateDraggedElementPosition(moveCoords);
     };
 
     this.currentMouseUpHandler = (upEvent) => {
+      this.endDrag(upEvent);
+    };
+
+    this.currentTouchEndHandler = (upEvent) => {
       this.endDrag(upEvent);
     };
 
@@ -132,8 +168,13 @@ class DragDrop {
       }
     }
 
+    // Add both mouse and touch event listeners
     document.addEventListener("mousemove", this.currentMouseMoveHandler);
+    document.addEventListener("touchmove", this.currentTouchMoveHandler, {
+      passive: false,
+    });
     document.addEventListener("mouseup", this.currentMouseUpHandler);
+    document.addEventListener("touchend", this.currentTouchEndHandler);
 
     document.querySelectorAll(".drag-target").forEach((target) => {
       const handleMouseEnter = () => target.classList.add("drag-over");
@@ -146,10 +187,47 @@ class DragDrop {
     });
   }
 
+  updateDraggedElementPosition(coords) {
+    const draggedElement = document.getElementById("draggedItemVisual");
+    if (draggedElement) {
+      if (draggedElement.classList.contains("large-pancake")) {
+        draggedElement.style.left = coords.clientX - 32 + "px";
+        draggedElement.style.top = coords.clientY - 32 + "px";
+      } else {
+        draggedElement.style.left = coords.clientX - 24 + "px";
+        draggedElement.style.top = coords.clientY - 24 + "px";
+      }
+    }
+
+    // Handle touch hover effects for mobile
+    if (coords.clientX && coords.clientY) {
+      this.handleTouchHover(coords);
+    }
+  }
+
+  handleTouchHover(coords) {
+    // Clear previous drag-over states
+    document.querySelectorAll(".drag-over").forEach((target) => {
+      target.classList.remove("drag-over");
+    });
+
+    // Find element under touch point
+    const elementUnderTouch = document.elementFromPoint(
+      coords.clientX,
+      coords.clientY
+    );
+    const targetCell = elementUnderTouch?.closest(".cell.drag-target");
+
+    if (targetCell) {
+      targetCell.classList.add("drag-over");
+    }
+  }
+
   endDrag(upEvent) {
+    const coords = this.getEventCoordinates(upEvent);
     const elementUnderMouse = document.elementFromPoint(
-      upEvent.clientX,
-      upEvent.clientY
+      coords.clientX,
+      coords.clientY
     );
     const targetCell = elementUnderMouse?.closest(".cell");
 
@@ -226,6 +304,7 @@ class DragDrop {
     this.draggedItemType = null;
     this.draggedItemId = null;
 
+    // Remove mouse event listeners
     if (this.currentMouseMoveHandler) {
       document.removeEventListener("mousemove", this.currentMouseMoveHandler);
       this.currentMouseMoveHandler = null;
@@ -233,6 +312,16 @@ class DragDrop {
     if (this.currentMouseUpHandler) {
       document.removeEventListener("mouseup", this.currentMouseUpHandler);
       this.currentMouseUpHandler = null;
+    }
+
+    // Remove touch event listeners
+    if (this.currentTouchMoveHandler) {
+      document.removeEventListener("touchmove", this.currentTouchMoveHandler);
+      this.currentTouchMoveHandler = null;
+    }
+    if (this.currentTouchEndHandler) {
+      document.removeEventListener("touchend", this.currentTouchEndHandler);
+      this.currentTouchEndHandler = null;
     }
 
     this.hoverHandlers.forEach((handlers, target) => {

@@ -86,6 +86,7 @@ class CreditsGallery {
     header.innerHTML = `
       <h2 class="${this.CSS_CLASSES.TITLE}">Pancake Tower Credits</h2>
       <h4>Company: Weird Demon Games</h4>
+      <img class='credits-logo' src="images/company-logo.png">
       <button class="${this.CSS_CLASSES.CLOSE}">×</button>
     `;
     return header;

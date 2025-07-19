@@ -109,7 +109,7 @@ const GAME_CONFIG = {
 
     3: {
       name: "Dinner Rush Chaos",
-      description: "Master level challenge with butter!",
+      description: "Master level challenge and this time there's butter!",
       difficulty: "Hard",
       gridLayout: [
         "plate",
@@ -208,7 +208,7 @@ const GAME_CONFIG = {
       cookingTime: 5000,
       ingredientTime: 4000,
       burntTime: 7500,
-      timeLimit: 180000,
+      timeLimit: 120000,
       orders: [
         { banana: 2 },
         { banana: 3, butter: 1 },
@@ -219,7 +219,7 @@ const GAME_CONFIG = {
         { plain: 3, butter: 2, banana: 2 },
         { banana: 5, butter: 2, plain: 3 },
       ],
-      starThresholds: [30, 60, 120], // thresholds for 1, 2, 3 stars
+      starThresholds: [100, 300, 600], // thresholds for 1, 2, 3 stars
       initialBatter: 6,
       initialMoney: 0,
       batterCost: 5,
@@ -232,7 +232,7 @@ const GAME_CONFIG = {
       initialButter: 1,
       bananaCost: 1,
       bananaPurchaseAmount: 2,
-      initialBanana: 0,
+      initialBanana: 2,
     },
 
     6: {
@@ -256,19 +256,19 @@ const GAME_CONFIG = {
       timeLimit: 60000,
       orders: [
         { banana: 1, butter: 1, plain: 1 },
-        { plain: 3, butter: 2, banana: 1 },
-        { plain: 7, butter: 4, banana: 4 },
-        { banana: 7, butter: 5, plain: 4 },
-        { plain: 8, butter: 5, banana: 5 },
+        { plain: 2, butter: 2, banana: 5 },
+        { plain: 1, butter: 6, banana: 3 },
+        { banana: 2, butter: 5 },
+        { plain: 2, butter: 3, banana: 1 },
       ],
-      starThresholds: [150, 400, 700], // extremely high thresholds for the intensity
+      starThresholds: [125, 200, 400],
       initialBatter: 0,
       initialMoney: 50,
       batterCost: 10,
       batterPurchaseAmount: 3,
-      pancakeReward: 20, // High reward per pancake due to difficulty
-      pancakePenalty: 0, // High penalty to match
-      availableIngredients: ["butter", "banana"], // all ingredients available
+      pancakeReward: 10,
+      pancakePenalty: 0,
+      availableIngredients: ["butter", "banana"],
       butterCost: 10,
       butterPurchaseAmount: 2,
       initialButter: 0,
