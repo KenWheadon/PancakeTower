@@ -904,6 +904,53 @@
   box-shadow: 0 4px 15px rgba(255, 204, 112, 0.3);
   animation: orderPulse 2s ease-in-out infinite alternate;
   font-family: var(--font-display);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.order-text {
+  display: block;
+}
+
+.combo-box {
+  background: linear-gradient(145deg, #8e44ad, #6a1b9a);
+  color: var(--text-white);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  box-shadow: 0 2px 8px rgba(142, 68, 173, 0.3);
+  animation: comboBoxGlow 1.5s ease-in-out infinite alternate;
+  position: relative;
+}
+
+/* Combo Money Animation */
+.combo-money-animation {
+  position: fixed;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: #8e44ad;
+  pointer-events: none;
+  z-index: var(--z-overlay);
+  animation: comboMoneyFly 1.5s ease-in-out forwards;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes comboMoneyFly {
+  0% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5) rotate(10deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1) rotate(20deg);
+  }
 }
 
 @keyframes orderPulse {

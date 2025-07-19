@@ -155,19 +155,16 @@ class PancakeStackGame {
             <div class="top-stat">
               <h3>🎯 Current Order</h3>
               <div class="top-stat-value current-order" id="currentOrder">
-                1 Pancake
+                <div class="order-text" id="orderText">1 Pancake</div>
+                <div class="combo-box" id="comboBox">
+                  <span class="combo-text" id="comboText">Combo: 0x (+$0)</span>
+                </div>
               </div>
             </div>
 
              <div class="top-stat">
               <h3>💰 Earnings</h3>
               <div class="top-stat-value money-display" id="moneyDisplay">$0</div>
-            </div>
-
-            <!-- NEW: Combo Display -->
-            <div class="top-stat" id="comboStat" style="display: none;">
-              <h3>🔥 Combo</h3>
-              <div class="top-stat-value combo-display" id="comboDisplay">0x</div>
             </div>
           </div>
         </div>

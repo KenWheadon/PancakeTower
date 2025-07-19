@@ -241,13 +241,14 @@ class LevelManager {
       orderFulfillmentBonus = totalPancakesInOrder;
       payment += orderFulfillmentBonus;
 
-      // NEW: Increment combo and add combo bonus
+      // NEW: Add combo and combo bonus
       this.combo++;
       comboBonus = this.combo * 5; // $5 per combo level
       payment += comboBonus;
 
-      // Add combo effect
+      // Add combo effect and money animation
       this.levelUI.addComboEffect(cellIndex, this.combo, comboBonus);
+      this.levelUI.addComboMoneyAnimation(comboBonus);
     } else {
       // Reset combo if order is not perfectly fulfilled
       this.combo = 0;

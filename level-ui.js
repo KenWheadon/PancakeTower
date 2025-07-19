@@ -772,17 +772,22 @@ class LevelUI {
       }
     });
 
-    document.getElementById("currentOrder").textContent = orderParts.join(" ");
+    // Update the order text (not the whole current order div)
+    const orderText = document.getElementById("orderText");
+    if (orderText) {
+      orderText.textContent = orderParts.join(" ");
+    }
 
-    // NEW: Update combo display
-    const comboStat = document.getElementById("comboStat");
-    const comboDisplay = document.getElementById("comboDisplay");
-    if (comboStat && comboDisplay) {
+    // NEW: Update combo display in the combo box
+    const comboBox = document.getElementById("comboBox");
+    const comboText = document.getElementById("comboText");
+    if (comboBox && comboText) {
       if (this.levelManager.combo > 0) {
-        comboDisplay.textContent = `${this.levelManager.combo}x`;
-        comboStat.style.display = "block";
+        const nextComboBonus = (this.levelManager.combo + 1) * 5; // Show what next combo would earn
+        comboText.textContent = `Combo: ${this.levelManager.combo}x (Next: +${nextComboBonus})`;
+        comboBox.style.display = "block";
       } else {
-        comboStat.style.display = "none";
+        comboBox.style.display = "none";
       }
     }
 
