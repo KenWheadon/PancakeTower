@@ -24,6 +24,10 @@ class LevelManager {
     this.burntPancakes = new Map(); // Track pancakes that are burning out
 
     this.levelConfig = null;
+
+    // Store mouse event handlers for proper cleanup
+    this.currentMouseMoveHandler = null;
+    this.currentMouseUpHandler = null;
   }
 
   startLevel(levelNum, levelConfig) {
@@ -782,8 +786,8 @@ class LevelManager {
   }
 
   setupDragEventListeners(e) {
-    // Add mouse move and up listeners
-    const handleMouseMove = (moveEvent) => {
+    // Create the event handlers as methods so they can be properly removed
+    this.currentMouseMoveHandler = (moveEvent) => {
       // Update dragged item position
       const draggedElement = document.getElementById("draggedItemVisual");
       if (draggedElement) {
@@ -798,7 +802,7 @@ class LevelManager {
       }
     };
 
-    const handleMouseUp = (upEvent) => {
+    this.currentMouseUpHandler = (upEvent) => {
       this.endDrag(upEvent);
     };
 
@@ -816,8 +820,8 @@ class LevelManager {
     }
 
     // Add event listeners
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", this.currentMouseMoveHandler);
+    document.addEventListener("mouseup", this.currentMouseUpHandler);
 
     // Add hover effects for drop targets
     document.querySelectorAll(".drag-target").forEach((target) => {
@@ -911,9 +915,15 @@ class LevelManager {
     this.draggedItemType = null;
     this.draggedItemId = null;
 
-    // Remove event listeners
-    document.removeEventListener("mousemove", arguments.callee);
-    document.removeEventListener("mouseup", arguments.callee);
+    // Remove event listeners using the stored references
+    if (this.currentMouseMoveHandler) {
+      document.removeEventListener("mousemove", this.currentMouseMoveHandler);
+      this.currentMouseMoveHandler = null;
+    }
+    if (this.currentMouseUpHandler) {
+      document.removeEventListener("mouseup", this.currentMouseUpHandler);
+      this.currentMouseUpHandler = null;
+    }
   }
 
   handleDragStart(e) {
