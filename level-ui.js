@@ -177,6 +177,57 @@ class LevelUI {
     });
   }
 
+  // Helper method to check if a plate contains at least the required pancakes for an order
+  plateContainsOrder(platePancakes, order) {
+    const plateCounts = {};
+    platePancakes.forEach((pancake) => {
+      plateCounts[pancake.type] = (plateCounts[pancake.type] || 0) + 1;
+    });
+
+    // Check if plate has at least the required amount of each pancake type
+    for (const [type, required] of Object.entries(order)) {
+      const available = plateCounts[type] || 0;
+      if (available < required) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Helper method to check if a plate contains exactly the required pancakes for an order
+  plateExactlyMatchesOrder(platePancakes, order) {
+    const plateCounts = {};
+    platePancakes.forEach((pancake) => {
+      plateCounts[pancake.type] = (plateCounts[pancake.type] || 0) + 1;
+    });
+
+    // Check if plate has exactly the required amount of each pancake type
+    const orderTypes = Object.keys(order);
+    const plateTypes = Object.keys(plateCounts);
+
+    // Must have same number of types
+    if (orderTypes.length !== plateTypes.length) {
+      return false;
+    }
+
+    // Check each type matches exactly
+    for (const [type, required] of Object.entries(order)) {
+      const available = plateCounts[type] || 0;
+      if (available !== required) {
+        return false;
+      }
+    }
+
+    // Check no extra types
+    for (const type of plateTypes) {
+      if (!(type in order)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   addClickEffect(e) {
     const ripple = document.createElement("div");
     ripple.style.cssText = `
@@ -326,6 +377,33 @@ class LevelUI {
 
       if (stackCount) {
         stackCount.textContent = cell.pancakes.length;
+      }
+
+      // Check if this plate matches the current order
+      const currentOrder = this.levelManager.getCurrentOrder();
+      const containsOrder = this.plateContainsOrder(
+        cell.pancakes,
+        currentOrder
+      );
+      const exactMatch = this.plateExactlyMatchesOrder(
+        cell.pancakes,
+        currentOrder
+      );
+
+      // Remove previous order-related classes
+      cellDiv.classList.remove("order-exact-match", "order-contains-match");
+
+      if (exactMatch) {
+        // Exact match: glow + wiggle + visible button
+        cellDiv.classList.add("order-exact-match");
+        serveButton.classList.add("order-match-visible");
+      } else if (containsOrder) {
+        // Contains required: just glow + visible button
+        cellDiv.classList.add("order-contains-match");
+        serveButton.classList.add("order-match-visible");
+      } else {
+        // No match: remove visible button class
+        serveButton.classList.remove("order-match-visible");
       }
 
       // Update plate display with stacked pancakes
@@ -648,6 +726,13 @@ class LevelUI {
         this.levelManager.money <
         (this.levelManager.levelConfig.bananaCost || 0);
     }
+
+    // Update all plate displays to check for order matches
+    this.levelManager.grid.forEach((cell, index) => {
+      if (cell.type === "plate") {
+        this.updateCellDisplay(index);
+      }
+    });
   }
 
   startTutorialCycling() {

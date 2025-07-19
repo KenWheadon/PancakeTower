@@ -137,6 +137,51 @@
   padding-bottom: 60px;
 }
 
+/* Order Matching Styles for Plates */
+.cell.plate.order-contains-match {
+  animation: orderContainsGlow 2s ease-in-out infinite;
+}
+
+.cell.plate.order-exact-match {
+  animation: orderExactMatch 1s ease-in-out infinite;
+}
+
+@keyframes orderContainsGlow {
+  0%,
+  100% {
+    box-shadow: var(--shadow-md);
+    border-color: #d8bfd8;
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.7);
+    border-color: var(--color-primary);
+  }
+}
+
+@keyframes orderExactMatch {
+  0%,
+  100% {
+    transform: translateY(-2px) scale(1);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+    border-color: var(--color-primary);
+  }
+  25% {
+    transform: translateY(-2px) scale(1.02) rotate(1deg);
+    box-shadow: 0 0 25px rgba(76, 175, 80, 0.8);
+    border-color: var(--color-primary-light);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 1);
+    border-color: var(--color-primary);
+  }
+  75% {
+    transform: translateY(-2px) scale(1.02) rotate(-1deg);
+    box-shadow: 0 0 25px rgba(76, 175, 80, 0.8);
+    border-color: var(--color-primary-light);
+  }
+}
+
 /* Plate hover effect to show serve button */
 .cell.plate:hover .serve-button {
   opacity: 1;
@@ -360,7 +405,7 @@
   align-items: center;
 }
 
-/* Serve Button - Hidden by default, shown on hover */
+/* Serve Button - Hidden by default, shown on hover or when plate matches order */
 .serve-button {
   position: absolute;
   bottom: var(--spacing-sm);
@@ -386,8 +431,21 @@
   visibility: hidden;
 }
 
+/* Make serve button visible when plate matches order */
+.serve-button.order-match-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
 .serve-button:hover {
   transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+  background: linear-gradient(145deg, #ff8e53, var(--color-warning));
+}
+
+.serve-button.order-match-visible:hover {
+  transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
   background: linear-gradient(145deg, #ff8e53, var(--color-warning));
 }
@@ -397,10 +455,22 @@
   box-shadow: var(--shadow-button-warning);
 }
 
+.serve-button.order-match-visible:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-button-warning);
+}
+
 .serve-button:disabled {
   background: linear-gradient(145deg, #ccc, #999);
   cursor: not-allowed;
   transform: translateX(-50%);
+  box-shadow: var(--shadow-sm);
+}
+
+.serve-button.order-match-visible:disabled {
+  background: linear-gradient(145deg, #ccc, #999);
+  cursor: not-allowed;
+  transform: translateY(0);
   box-shadow: var(--shadow-sm);
 }
 
