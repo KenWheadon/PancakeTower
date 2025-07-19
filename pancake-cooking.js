@@ -79,6 +79,19 @@ class PancakeCooking {
     return true;
   }
 
+  getBurntSoundForPancakeType(pancakeType) {
+    switch (pancakeType) {
+      case "plain":
+        return "burnt1";
+      case "butter":
+        return "burnt2";
+      case "banana":
+        return "burnt3";
+      default:
+        return "burnt1"; // fallback to plain pancake sound
+    }
+  }
+
   updateCooking() {
     const currentTime = Date.now();
 
@@ -165,6 +178,10 @@ class PancakeCooking {
 
       if (pancake.progress >= GAME_CONFIG.mechanics.burntThreshold) {
         const cell = this.levelManager.grid[pancake.cellIndex];
+
+        // Play the appropriate burnt sound based on pancake type
+        const burntSound = this.getBurntSoundForPancakeType(pancake.type);
+        this.levelManager.game.audioManager.playSfx(burntSound);
 
         this.cookingPancakes.delete(id);
         this.burntPancakes.set(id, {

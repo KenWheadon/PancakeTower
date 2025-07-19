@@ -27,6 +27,9 @@ const GAME_CONFIG = {
       earnMoney: "audio/earn-money.mp3",
       timeWarning15: "audio/15-second-time-warning.mp3",
       timeTicking: "audio/last-10-seconds-ticking.mp3",
+      burnt1: "audio/burnt-1.mp3",
+      burnt2: "audio/burnt-2.mp3",
+      burnt3: "audio/burnt-3.mp3",
     },
     defaultVolumes: {
       music: 0.7,

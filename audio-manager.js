@@ -25,30 +25,9 @@ class AudioManager {
   }
 
   loadAudioFiles() {
-    const backgroundTracks = {
-      main: "audio/main.mp3",
-      level1: "audio/level1.mp3",
-      level2: "audio/level2.mp3",
-      level3: "audio/level3.mp3",
-      level4: "audio/level4.mp3",
-      level5: "audio/level5.mp3",
-      level6: "audio/level6.mp3",
-    };
-
-    const sfxTracks = {
-      levelComplete: "audio/level-complete.mp3",
-      orderServed: "audio/order-served.mp3",
-      batterDropped: "audio/batter-dropped-on-grill.mp3",
-      pancakeCooked: "audio/pancake-cooked.mp3",
-      startLevel: "audio/start-level.mp3",
-      buttonClick: "audio/button-click.mp3",
-      buttonHover: "audio/button-hover.mp3",
-      placePancake: "audio/place-pancake-on-plate.mp3",
-      comboEarned: "audio/combo-earned.mp3",
-      earnMoney: "audio/earn-money.mp3",
-      timeWarning15: "audio/15-second-time-warning.mp3",
-      timeTicking: "audio/last-10-seconds-ticking.mp3",
-    };
+    // Use the config from GAME_CONFIG instead of hardcoded values
+    const backgroundTracks = GAME_CONFIG.audio.backgroundTracks;
+    const sfxTracks = GAME_CONFIG.audio.soundEffects;
 
     Object.entries(backgroundTracks).forEach(([key, src]) => {
       const audio = new Audio(src);
@@ -72,6 +51,7 @@ class AudioManager {
       audio.addEventListener(
         "error",
         () => {
+          console.warn(`Failed to load audio: ${audio.src}`);
           resolve();
         },
         { once: true }
@@ -197,8 +177,17 @@ class AudioManager {
         playAudio.volume = this.sfxMuted ? 0 : this.sfxVolume;
       }
 
+      // Add debug logging for burnt sounds
+      if (effectKey.startsWith("burnt")) {
+        console.log(`Playing burnt sound: ${effectKey}`);
+      }
+
       playAudio.currentTime = 0;
-      playAudio.play().catch(() => {});
+      playAudio.play().catch((error) => {
+        console.warn(`Failed to play sound effect: ${effectKey}`, error);
+      });
+    } else {
+      console.warn(`Sound effect not found: ${effectKey}`);
     }
   }
 
