@@ -112,9 +112,9 @@ class LevelUI {
       <h3>Store - Drag Items to Grill</h3>
       
       <!-- Batter Resource -->
-      <div class="resource-item">
+      <div class="resource-item" id="batterResourceItem">
         <div class="resource-left">
-            <div class="draggable-item" data-item-type="batter">
+            <div class="draggable-item" data-item-type="batter" id="batterDraggable">
                 <img src="images/item-batter.png" alt="Batter" class="draggable-item-image">
             </div>
         </div>
@@ -133,6 +133,7 @@ class LevelUI {
           if (ingredient === "butter") {
             const butterItem = document.createElement("div");
             butterItem.className = "resource-item";
+            butterItem.id = "butterResourceItem";
             butterItem.innerHTML = `
             <div class="resource-left">
             <div class="draggable-item" data-item-type="butter">
@@ -148,6 +149,7 @@ class LevelUI {
           } else if (ingredient === "banana") {
             const bananaItem = document.createElement("div");
             bananaItem.className = "resource-item";
+            bananaItem.id = "bananaResourceItem";
             bananaItem.innerHTML = `
           <div class="resource-left">
             <div class="draggable-item" data-item-type="banana">
@@ -226,6 +228,46 @@ class LevelUI {
     }
 
     return true;
+  }
+
+  // NEW: Check if we have enough ingredients to fulfill the current order
+  checkInsufficientIngredients() {
+    const currentOrder = this.levelManager.getCurrentOrder();
+    const insufficientItems = [];
+
+    // Calculate total pancakes needed
+    const totalPancakesNeeded = Object.values(currentOrder).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+
+    // Check if we have enough batter for total pancakes needed
+    if (this.levelManager.batter < totalPancakesNeeded) {
+      insufficientItems.push("batter");
+    }
+
+    // Check specific ingredient requirements
+    Object.entries(currentOrder).forEach(([type, count]) => {
+      if (type === "butter" && this.levelManager.butter < count) {
+        insufficientItems.push("butter");
+      }
+      if (type === "banana" && this.levelManager.banana < count) {
+        insufficientItems.push("banana");
+      }
+    });
+
+    return insufficientItems;
+  }
+
+  // NEW: Check if there are no pancakes cooking and we have batter
+  shouldBatterWiggle() {
+    // Check if no pancakes are cooking
+    const hasCookingPancakes = this.levelManager.grid.some(
+      (cell) => cell.type === "grill" && cell.cookingPancake !== null
+    );
+
+    // Return true if no cooking pancakes AND we have batter
+    return !hasCookingPancakes && this.levelManager.batter > 0;
   }
 
   addClickEffect(e) {
@@ -611,13 +653,63 @@ class LevelUI {
     }, 1500);
   }
 
-  addSuccessEffect(cellIndex, payment) {
+  // NEW: Add combo effect
+  addComboEffect(cellIndex, combo, comboBonus) {
     const cellDiv = document.querySelector(`[data-cell-index="${cellIndex}"]`);
 
-    // Score popup
+    // Combo popup
+    const comboPopup = document.createElement("div");
+    comboPopup.className = "combo-popup";
+    comboPopup.innerHTML = `
+      <div style="color: #4caf50; font-weight: bold; font-size: 18px;">COMBO x${combo}!</div>
+      <div style="color: #ff6b6b; font-size: 14px;">+${comboBonus} bonus</div>
+    `;
+    comboPopup.style.cssText = `
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      padding: 10px 15px;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+      pointer-events: none;
+      z-index: 200;
+      text-align: center;
+      animation: comboPopupAnimation 2s ease-out forwards;
+    `;
+
+    cellDiv.appendChild(comboPopup);
+
+    setTimeout(() => {
+      if (comboPopup.parentNode) {
+        comboPopup.remove();
+      }
+    }, 2000);
+  }
+
+  addSuccessEffect(
+    cellIndex,
+    payment,
+    orderFulfillmentBonus = 0,
+    comboBonus = 0
+  ) {
+    const cellDiv = document.querySelector(`[data-cell-index="${cellIndex}"]`);
+
+    // Enhanced score popup with bonus information
     const scorePopup = document.createElement("div");
     scorePopup.className = "score-popup";
-    scorePopup.textContent = `+${payment}`;
+    let popupContent = `+${payment}`;
+
+    if (orderFulfillmentBonus > 0) {
+      popupContent += `<br><small style="color: #2196f3;">Order Bonus: +${orderFulfillmentBonus}</small>`;
+    }
+
+    if (comboBonus > 0) {
+      popupContent += `<br><small style="color: #4caf50;">Combo Bonus: +${comboBonus}</small>`;
+    }
+
+    scorePopup.innerHTML = popupContent;
     cellDiv.appendChild(scorePopup);
 
     setTimeout(() => scorePopup.remove(), GAME_CONFIG.animations.scorePopup);
@@ -682,6 +774,18 @@ class LevelUI {
 
     document.getElementById("currentOrder").textContent = orderParts.join(" ");
 
+    // NEW: Update combo display
+    const comboStat = document.getElementById("comboStat");
+    const comboDisplay = document.getElementById("comboDisplay");
+    if (comboStat && comboDisplay) {
+      if (this.levelManager.combo > 0) {
+        comboDisplay.textContent = `${this.levelManager.combo}x`;
+        comboStat.style.display = "block";
+      } else {
+        comboStat.style.display = "none";
+      }
+    }
+
     document.getElementById("batterCount").textContent =
       this.levelManager.batter;
     document.getElementById("batterCost").textContent =
@@ -704,6 +808,32 @@ class LevelUI {
       bananaCount.textContent = this.levelManager.banana;
       bananaCost.textContent = this.levelManager.levelConfig.bananaCost || 0;
     }
+
+    // NEW: Update batter wiggle animation
+    const batterDraggable = document.getElementById("batterDraggable");
+    if (batterDraggable) {
+      if (this.shouldBatterWiggle()) {
+        batterDraggable.classList.add("batter-wiggle");
+      } else {
+        batterDraggable.classList.remove("batter-wiggle");
+      }
+    }
+
+    // NEW: Check for insufficient ingredients and highlight them
+    const insufficientItems = this.checkInsufficientIngredients();
+
+    // Remove previous highlighting
+    document.querySelectorAll(".resource-item").forEach((item) => {
+      item.classList.remove("insufficient-ingredient");
+    });
+
+    // Add highlighting for insufficient items
+    insufficientItems.forEach((itemType) => {
+      const resourceItem = document.getElementById(`${itemType}ResourceItem`);
+      if (resourceItem) {
+        resourceItem.classList.add("insufficient-ingredient");
+      }
+    });
 
     // Update store section styling based on item counts
     const storeSection = document.getElementById("storeSection");

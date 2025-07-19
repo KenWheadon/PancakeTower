@@ -54,6 +54,47 @@
   font-family: var(--font-display);
 }
 
+/* Combo Display */
+.combo-display {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  text-align: center;
+  font-family: var(--font-display);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  animation: comboGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes comboGlow {
+  from {
+    transform: scale(1);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  to {
+    transform: scale(1.05);
+    text-shadow: 0 0 15px rgba(76, 175, 80, 0.8);
+  }
+}
+
+/* Combo Popup Animation */
+@keyframes comboPopupAnimation {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0.8);
+  }
+}
+
 /* Game Container */
 #gameContainer {
   display: flex;
@@ -634,6 +675,27 @@
   background: var(--bg-gradient-light);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
+  transition: var(--transition-normal);
+}
+
+/* Resource Item Highlighting for Insufficient Ingredients */
+.resource-item.insufficient-ingredient {
+  background: linear-gradient(145deg, #fff3e0, #ffe0b2);
+  border: 2px solid #ff9800;
+  box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+  animation: insufficientIngredientPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes insufficientIngredientPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 25px rgba(255, 152, 0, 0.8);
+  }
 }
 
 .resource-left,
@@ -669,6 +731,27 @@
 .draggable-item.dragging {
   opacity: 0.5;
   transform: rotate(5deg) scale(0.9);
+}
+
+/* Batter Wiggle Animation - NEW */
+.draggable-item.batter-wiggle {
+  animation: batterWiggle 2s ease-in-out infinite;
+}
+
+@keyframes batterWiggle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-2deg);
+  }
+  50% {
+    transform: scale(1.15) rotate(0deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(2deg);
+  }
 }
 
 .draggable-item-image {

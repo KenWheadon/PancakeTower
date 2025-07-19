@@ -163,6 +163,12 @@ class PancakeStackGame {
               <h3>💰 Earnings</h3>
               <div class="top-stat-value money-display" id="moneyDisplay">$0</div>
             </div>
+
+            <!-- NEW: Combo Display -->
+            <div class="top-stat" id="comboStat" style="display: none;">
+              <h3>🔥 Combo</h3>
+              <div class="top-stat-value combo-display" id="comboDisplay">0x</div>
+            </div>
           </div>
         </div>
 
