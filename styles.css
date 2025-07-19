@@ -270,28 +270,6 @@ body::before {
   border-color: #ffb347;
 }
 
-.level-card.completed {
-  border-color: #4caf50;
-  background: linear-gradient(145deg, #f8fff8, #f0fff4);
-}
-
-.level-card.completed::before {
-  content: "✓";
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 30px;
-  height: 30px;
-  background: #4caf50;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 16px;
-}
-
 .level-header {
   display: flex;
   justify-content: space-between;

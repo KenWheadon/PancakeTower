@@ -34,7 +34,7 @@ const GAME_CONFIG = {
     },
 
     2: {
-      name: "Lunch Time Madness",
+      name: "Lunch Time Rush",
       description: "Faster cooking, bigger orders!",
       difficulty: "Medium",
       gridLayout: [
