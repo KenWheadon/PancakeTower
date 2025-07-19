@@ -207,7 +207,7 @@
   display: flex;
   justify-content: center;
   gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-xs);
   font-size: 11px;
   color: var(--text-light);
 }
@@ -240,7 +240,7 @@
   justify-content: center;
   align-items: center;
   gap: 2px;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-xs);
 }
 
 .star {

@@ -65,7 +65,7 @@ class LevelSelectScreen {
       
       <button class="level-play-button ${isCompleted ? "completed" : "new"}" 
               data-level="${levelNum}">
-        ${isCompleted ? "▶️ Replay" : "▶️ Start"}
+        ${isCompleted ? "Replay" : "Start"}
       </button>
     `;
 

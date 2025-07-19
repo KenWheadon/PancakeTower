@@ -136,6 +136,8 @@
 .start-buttons {
   gap: var(--spacing-md);
   align-items: center;
+  display: flex;
+  justify-content: space-between;
 }
 
 .start-button {
