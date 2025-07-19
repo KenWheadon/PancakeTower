@@ -28,8 +28,7 @@ class PancakeStackGame {
       <!-- Loading Screen -->
       <div id="loadingScreen" class="loading-screen">
         <div class="loading-content">
-          <div class="loading-logo">🥞</div>
-          <h1 class="loading-title">Pancake Tower</h1>
+          <img class="game-logo" src="images/logo.png" alt="Pancake Tower Logo">
           <div class="loading-text" id="loadingText">Loading pancakes...</div>
           <div class="loading-bar-container">
             <div class="loading-bar" id="loadingBar"></div>
