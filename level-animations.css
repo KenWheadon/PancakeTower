@@ -1,0 +1,433 @@
+/* Level Animations and Dynamic Effects */
+
+/* Combo Display Animations */
+.combo-display {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  text-align: center;
+  font-family: var(--font-display);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  animation: comboGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes comboGlow {
+  from {
+    transform: scale(1);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  to {
+    transform: scale(1.05);
+    text-shadow: 0 0 15px rgba(76, 175, 80, 0.8);
+  }
+}
+
+@keyframes comboPopupAnimation {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0.8);
+  }
+}
+
+/* Order Matching Animations */
+.cell.plate.order-contains-match {
+  animation: orderContainsGlow 2s ease-in-out infinite;
+}
+
+.cell.plate.order-exact-match {
+  animation: orderExactMatch 1s ease-in-out infinite;
+}
+
+@keyframes orderContainsGlow {
+  0%,
+  100% {
+    box-shadow: var(--shadow-md);
+    border-color: #d8bfd8;
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.7);
+    border-color: var(--color-primary);
+  }
+}
+
+@keyframes orderExactMatch {
+  0%,
+  100% {
+    transform: translateY(-2px) scale(1);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+    border-color: var(--color-primary);
+  }
+  25% {
+    transform: translateY(-2px) scale(1.02) rotate(1deg);
+    box-shadow: 0 0 25px rgba(76, 175, 80, 0.8);
+    border-color: var(--color-primary-light);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 1);
+    border-color: var(--color-primary);
+  }
+  75% {
+    transform: translateY(-2px) scale(1.02) rotate(-1deg);
+    box-shadow: 0 0 25px rgba(76, 175, 80, 0.8);
+    border-color: var(--color-primary-light);
+  }
+}
+
+/* Plate hover effect to show serve button */
+.cell.plate:hover .serve-button {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Drag Animations */
+.cell.drag-over {
+  border-color: #00ff7f;
+  border-width: 4px;
+  box-shadow: 0 0 20px rgba(0, 255, 127, 0.5);
+  animation: dragPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes dragPulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.02);
+  }
+}
+
+.cell.plate.drag-target,
+.cell.grill.drag-target {
+  background: linear-gradient(145deg, #e6ffe6, #ccffcc);
+  border-color: var(--color-primary);
+}
+
+@keyframes dragFloat {
+  from {
+    transform: rotate(-2deg) scale(1.1);
+  }
+  to {
+    transform: rotate(2deg) scale(1.2);
+  }
+}
+
+/* Pancake Cooking Animations */
+.pancake.cooked-pancake-ready {
+  animation: cookedPancakeReady 1.5s ease-in-out infinite;
+}
+
+@keyframes cookedPancakeReady {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+      drop-shadow(0 0 8px rgba(76, 175, 80, 0.6));
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(1.05) rotate(2deg);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+      drop-shadow(0 0 15px rgba(76, 175, 80, 0.8));
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+      drop-shadow(0 0 20px rgba(76, 175, 80, 1));
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(1.05) rotate(-2deg);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+      drop-shadow(0 0 15px rgba(76, 175, 80, 0.8));
+  }
+}
+
+.pancake.cooked-pancake-ready:hover {
+  animation-play-state: paused;
+  transform: translate(-50%, -50%) scale(1.15);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+    drop-shadow(0 0 25px rgba(76, 175, 80, 1));
+}
+
+.pancake.cooked-pancake-ready:active {
+  cursor: grabbing;
+  animation-play-state: paused;
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* Burnt pancake fade out animation */
+.pancake.burnt-fading {
+  animation: burntFadeOut 2s ease-out forwards;
+}
+
+@keyframes burntFadeOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+}
+
+/* Cooking Progress Pause Indicator */
+.cooking-paused-specific .progress-fill {
+  animation: pausedPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pausedPulse {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Resource Item Highlighting */
+.resource-item.insufficient-ingredient {
+  background: linear-gradient(145deg, #fff3e0, #ffe0b2);
+  border: 2px solid #ff9800;
+  box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+  animation: insufficientIngredientPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes insufficientIngredientPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 25px rgba(255, 152, 0, 0.8);
+  }
+}
+
+/* Batter Wiggle and Arrow Animation */
+.draggable-item.batter-wiggle {
+  animation: batterWiggle 2s ease-in-out infinite;
+}
+
+@keyframes batterWiggle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-2deg);
+  }
+  50% {
+    transform: scale(1.15) rotate(0deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(2deg);
+  }
+}
+
+.resource-item.batter-has-left-arrow::before {
+  content: "👉";
+  position: absolute;
+  left: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 32px;
+  animation: pointingArrowLeft 0.5s ease-in-out infinite alternate;
+  z-index: 100;
+}
+
+@keyframes pointingArrowLeft {
+  from {
+    transform: translateY(-50%) translateX(0px);
+  }
+  to {
+    transform: translateY(-50%) translateX(10px);
+  }
+}
+
+/* Timer and Money Display Animations */
+.timer {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-warning);
+  text-align: center;
+  font-family: var(--font-display);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  animation: timerPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes timerPulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+.timer.urgent {
+  color: var(--color-warning-dark);
+  animation: urgentPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes urgentPulse {
+  from {
+    transform: scale(1);
+    text-shadow: 2px 2px 4px rgba(255, 68, 68, 0.5);
+  }
+  to {
+    transform: scale(1.1);
+    text-shadow: 2px 2px 8px rgba(255, 68, 68, 0.8);
+  }
+}
+
+.money-display {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  text-align: center;
+  font-family: var(--font-display);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.money-display.penalty-glow {
+  animation: penaltyGlow 0.8s ease-in-out;
+}
+
+@keyframes penaltyGlow {
+  0%,
+  100% {
+    color: var(--color-primary);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    color: var(--color-warning-dark);
+    text-shadow: 0 0 15px rgba(255, 68, 68, 0.8);
+  }
+}
+
+/* Order and Combo Animations */
+.current-order {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-align: center;
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: linear-gradient(145deg, #ffe5b4, #ffcc70);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 15px rgba(255, 204, 112, 0.3);
+  animation: orderPulse 2s ease-in-out infinite alternate;
+  font-family: var(--font-display);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.order-text {
+  display: block;
+}
+
+@keyframes orderPulse {
+  from {
+    box-shadow: 0 4px 15px rgba(255, 204, 112, 0.3);
+  }
+  to {
+    box-shadow: 0 6px 20px rgba(255, 204, 112, 0.5);
+  }
+}
+
+.combo-box {
+  background: linear-gradient(145deg, #8e44ad, #6a1b9a);
+  color: var(--text-white);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  box-shadow: 0 2px 8px rgba(142, 68, 173, 0.3);
+  animation: comboBoxGlow 1.5s ease-in-out infinite alternate;
+  position: relative;
+}
+
+@keyframes comboBoxGlow {
+  from {
+    box-shadow: 0 2px 8px rgba(142, 68, 173, 0.3);
+  }
+  to {
+    box-shadow: 0 4px 15px rgba(142, 68, 173, 0.6);
+  }
+}
+
+.combo-money-animation {
+  position: fixed;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: #8e44ad;
+  pointer-events: none;
+  z-index: var(--z-overlay);
+  animation: comboMoneyFly 1.5s ease-in-out forwards;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes comboMoneyFly {
+  0% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5) rotate(10deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1) rotate(20deg);
+  }
+}
+
+/* Game Over Screen Animations */
+@keyframes gameOverAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-var(--spacing-lg));
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes starsSpin {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes recordPulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}

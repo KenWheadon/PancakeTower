@@ -1,0 +1,339 @@
+/* Level Game Components and Interactions */
+
+/* Pancake Styles */
+.pancake {
+  width: auto;
+  height: 120px;
+  object-fit: contain;
+  cursor: grab;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  transition: var(--transition-fast);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  user-select: none;
+  pointer-events: auto;
+}
+
+.pancake:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.pancake:active {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* Pancake Stack */
+.pancake-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  position: absolute;
+  height: auto;
+  z-index: 10;
+}
+
+.pancake-stack .pancake {
+  margin: 0;
+  transition: var(--transition-normal);
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: 100%;
+  height: 140px;
+}
+
+.pancake-stack .top-pancake {
+  cursor: grab;
+}
+
+.pancake-stack .top-pancake:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* Pancake Type Breakdown */
+.pancake-type-breakdown {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
+  color: var(--text-primary);
+  z-index: 25;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.type-counts {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
+/* Progress Bar */
+.progress-bar {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  right: var(--spacing-sm);
+  height: var(--spacing-sm);
+  background: linear-gradient(90deg, #333, #555);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 15;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-warning), #ff8e53);
+  transition: width 0.1s ease;
+  position: relative;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+.progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: 6px 6px 0 0;
+}
+
+.progress-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--text-white), #e0e0e0);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+.progress-marker.ingredient {
+  background: linear-gradient(180deg, #ffeb3b, #ffc107);
+  box-shadow: 0 0 8px rgba(255, 235, 59, 0.8);
+}
+
+.progress-marker.done {
+  background: linear-gradient(180deg, #00ff7f, #32cd32);
+  box-shadow: 0 0 8px rgba(0, 255, 127, 0.8);
+}
+
+.progress-marker.burnt {
+  left: 100%;
+  background: linear-gradient(180deg, var(--color-warning-dark), #cc0000);
+}
+
+/* Draggable Items */
+.draggable-item {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  transition: var(--transition-normal);
+  margin-bottom: var(--spacing-sm);
+}
+
+.draggable-item:hover {
+  transform: translateY(-3px) scale(1.05);
+}
+
+.draggable-item:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.draggable-item.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg) scale(0.9);
+}
+
+.draggable-item-image {
+  width: auto;
+  height: 85px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* Drag Effects */
+.dragged-pancake,
+.dragged-item {
+  position: fixed;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 1001;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  animation: dragFloat 0.5s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+
+.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg) scale(0.9);
+  z-index: var(--z-overlay);
+  pointer-events: none;
+}
+
+/* Serve Button */
+.serve-button {
+  position: absolute;
+  bottom: var(--spacing-sm);
+  transform: translateY(10px);
+  background: var(--btn-gradient-warning);
+  color: var(--text-white);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border-radius: var(--radius-2xl);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
+  box-shadow: var(--shadow-button-warning);
+  transition: var(--transition-bounce);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 80px;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.serve-button.order-match-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.serve-button:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+  background: linear-gradient(145deg, #ff8e53, var(--color-warning));
+}
+
+.serve-button.order-match-visible:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+  background: linear-gradient(145deg, #ff8e53, var(--color-warning));
+}
+
+.serve-button:active {
+  transform: translateX(-50%) translateY(0);
+  box-shadow: var(--shadow-button-warning);
+}
+
+.serve-button.order-match-visible:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-button-warning);
+}
+
+.serve-button:disabled {
+  background: linear-gradient(145deg, #ccc, #999);
+  cursor: not-allowed;
+  transform: translateX(-50%);
+  box-shadow: var(--shadow-sm);
+}
+
+.serve-button.order-match-visible:disabled {
+  background: linear-gradient(145deg, #ccc, #999);
+  cursor: not-allowed;
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.serve-button .stack-count {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-round);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Buy Button */
+.buy-button {
+  background: var(--btn-gradient-primary);
+  color: var(--text-white);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-2xl);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
+  box-shadow: var(--shadow-button-primary);
+  transition: var(--transition-bounce);
+  min-width: 120px;
+}
+
+.buy-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+  background: linear-gradient(
+    145deg,
+    var(--color-primary-light),
+    var(--color-primary)
+  );
+}
+
+.buy-button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-button-primary);
+}
+
+.buy-button:disabled {
+  background: linear-gradient(145deg, #ccc, #999);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.restart-button {
+  background: var(--btn-gradient-primary);
+  color: var(--text-white);
+  border: none;
+  padding: var(--spacing-lg) var(--spacing-3xl);
+  border-radius: var(--spacing-2xl);
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
+  box-shadow: var(--shadow-button-primary);
+  transition: var(--transition-bounce);
+  margin-top: var(--spacing-xl);
+}
+
+.restart-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+  background: linear-gradient(
+    145deg,
+    var(--color-primary-light),
+    var(--color-primary)
+  );
+}
+
+.restart-button:active {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-button-primary);
+}

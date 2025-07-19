@@ -887,8 +887,8 @@ class LevelUI {
       tutorialContainer = document.createElement("div");
       tutorialContainer.id = "tutorialContainer";
       tutorialContainer.style.cssText = `
-        margin-top: 20px;
-        padding: 15px 25px;
+        margin-top: 10px;
+        padding: 10px 15px;
         background: linear-gradient(145deg, #ffffff, #f8f8f8);
         border-radius: 15px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
