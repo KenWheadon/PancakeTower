@@ -12,6 +12,7 @@ class AudioManager {
 
     this.isInitialized = false;
     this.loadPromises = [];
+    this.settingsVisible = false;
 
     this.init();
   }
@@ -186,11 +187,20 @@ class AudioManager {
   }
 
   createAudioControls() {
-    const audioControls = document.createElement("div");
-    audioControls.className = "audio-controls";
-    audioControls.innerHTML = `
+    const audioControlsContainer = document.createElement("div");
+    audioControlsContainer.className = "audio-controls-container";
+
+    const audioButton = document.createElement("button");
+    audioButton.className = "audio-settings-button";
+    audioButton.innerHTML = "🎵";
+    audioButton.title = "Audio Settings";
+
+    const audioSettings = document.createElement("div");
+    audioSettings.className = "audio-settings-panel";
+    audioSettings.style.display = "none";
+    audioSettings.innerHTML = `
       <div class="audio-control-group">
-        <span class="audio-label">🎵 Music</span>
+        <span class="audio-label">Music</span>
         <button class="audio-mute-btn" id="musicMuteBtn">${
           this.musicMuted ? "🔇" : "🔊"
         }</button>
@@ -198,7 +208,7 @@ class AudioManager {
                min="0" max="1" step="0.1" value="${this.musicVolume}">
       </div>
       <div class="audio-control-group">
-        <span class="audio-label">🔊 Effects</span>
+        <span class="audio-label">Sound Effects</span>
         <button class="audio-mute-btn" id="sfxMuteBtn">${
           this.sfxMuted ? "🔇" : "🔊"
         }</button>
@@ -207,10 +217,33 @@ class AudioManager {
       </div>
     `;
 
-    const musicMuteBtn = audioControls.querySelector("#musicMuteBtn");
-    const sfxMuteBtn = audioControls.querySelector("#sfxMuteBtn");
-    const musicSlider = audioControls.querySelector("#musicVolumeSlider");
-    const sfxSlider = audioControls.querySelector("#sfxVolumeSlider");
+    audioControlsContainer.appendChild(audioButton);
+    audioControlsContainer.appendChild(audioSettings);
+
+    audioButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.settingsVisible = !this.settingsVisible;
+      audioSettings.style.display = this.settingsVisible ? "block" : "none";
+      this.playSfx("buttonClick");
+    });
+
+    audioButton.addEventListener("mouseenter", () => {
+      this.playSfx("buttonHover");
+    });
+
+    audioSettings.addEventListener("mouseleave", () => {
+      this.settingsVisible = false;
+      audioSettings.style.display = "none";
+    });
+
+    audioSettings.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    const musicMuteBtn = audioSettings.querySelector("#musicMuteBtn");
+    const sfxMuteBtn = audioSettings.querySelector("#sfxMuteBtn");
+    const musicSlider = audioSettings.querySelector("#musicVolumeSlider");
+    const sfxSlider = audioSettings.querySelector("#sfxVolumeSlider");
 
     musicMuteBtn.addEventListener("click", () => {
       const muted = this.toggleMusicMute();
@@ -232,7 +265,7 @@ class AudioManager {
       this.setSfxVolume(parseFloat(e.target.value));
     });
 
-    return audioControls;
+    return audioControlsContainer;
   }
 
   destroy() {

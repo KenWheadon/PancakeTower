@@ -198,24 +198,50 @@ class PancakeStackGame {
           position: fixed;
           bottom: 20px;
           right: 20px;
+          z-index: 1000;
+        }
+
+        .audio-settings-button {
+          background: rgba(255, 255, 255, 0.95);
+          border: none;
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          font-size: 20px;
+          cursor: pointer;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .audio-settings-button:hover {
+          transform: scale(1.1);
+          background: rgba(255, 255, 255, 1);
+        }
+
+        .audio-settings-panel {
+          position: absolute;
+          bottom: 60px;
+          right: 0;
           background: rgba(255, 255, 255, 0.95);
           border-radius: 15px;
           padding: 15px;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-          z-index: 1000;
-        }
-
-        .audio-controls {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
           min-width: 200px;
+          backdrop-filter: blur(10px);
         }
 
         .audio-control-group {
           display: flex;
           align-items: center;
           gap: 10px;
+          margin-bottom: 10px;
+        }
+
+        .audio-control-group:last-child {
+          margin-bottom: 0;
         }
 
         .audio-label {
