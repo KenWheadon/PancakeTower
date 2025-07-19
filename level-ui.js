@@ -1,0 +1,671 @@
+class LevelUI {
+  constructor(levelManager) {
+    this.levelManager = levelManager;
+  }
+
+  createGrid() {
+    const gameGrid = document.getElementById("gameGrid");
+    gameGrid.innerHTML = "";
+
+    this.levelManager.grid.forEach((cell, index) => {
+      const cellDiv = document.createElement("div");
+      cellDiv.className = `cell ${cell.type}`;
+      cellDiv.dataset.cellIndex = index;
+
+      if (cell.type === "grill") {
+        // Replace emoji with image
+        const grillImg = document.createElement("img");
+        grillImg.src = "images/item-grill.png";
+        grillImg.className = "grill-image";
+        grillImg.alt = "Grill";
+        cellDiv.appendChild(grillImg);
+
+        // Add drop zone functionality for grills (for batter)
+        cellDiv.addEventListener(
+          "dragover",
+          this.levelManager.dragDrop.handleDragOver.bind(
+            this.levelManager.dragDrop
+          )
+        );
+        cellDiv.addEventListener(
+          "drop",
+          this.levelManager.dragDrop.handleDrop.bind(this.levelManager.dragDrop)
+        );
+        cellDiv.addEventListener(
+          "dragenter",
+          this.levelManager.dragDrop.handleDragEnter.bind(
+            this.levelManager.dragDrop
+          )
+        );
+        cellDiv.addEventListener(
+          "dragleave",
+          this.levelManager.dragDrop.handleDragLeave.bind(
+            this.levelManager.dragDrop
+          )
+        );
+      } else if (cell.type === "plate") {
+        // Replace emoji with image
+        const plateImg = document.createElement("img");
+        plateImg.src = "images/item-plate-1.png";
+        plateImg.className = "plate-image";
+        plateImg.alt = "Plate";
+        cellDiv.appendChild(plateImg);
+
+        const serveButton = document.createElement("button");
+        serveButton.className = "serve-button";
+        serveButton.innerHTML = `<span class="stack-count">0</span>Sell`;
+        serveButton.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.levelManager.servePlate(index);
+        });
+        cellDiv.appendChild(serveButton);
+
+        // Add drop zone functionality for plates
+        cellDiv.addEventListener(
+          "dragover",
+          this.levelManager.dragDrop.handleDragOver.bind(
+            this.levelManager.dragDrop
+          )
+        );
+        cellDiv.addEventListener(
+          "drop",
+          this.levelManager.dragDrop.handleDrop.bind(this.levelManager.dragDrop)
+        );
+        cellDiv.addEventListener(
+          "dragenter",
+          this.levelManager.dragDrop.handleDragEnter.bind(
+            this.levelManager.dragDrop
+          )
+        );
+        cellDiv.addEventListener(
+          "dragleave",
+          this.levelManager.dragDrop.handleDragLeave.bind(
+            this.levelManager.dragDrop
+          )
+        );
+      }
+
+      gameGrid.appendChild(cellDiv);
+    });
+
+    // Create sidebar with ingredients
+    this.createSidebar();
+  }
+
+  createSidebar() {
+    const sidebar = document.getElementById("sidebar");
+
+    // Create store section with batter and available ingredients
+    const storeSection = document.getElementById("storeSection");
+    storeSection.innerHTML = `
+      <h3>🏪 Store</h3>
+      
+      <!-- Batter Resource -->
+      <div class="resource-item">
+        <div class="resource-left">
+            <div class="draggable-item" data-item-type="batter">
+                <img src="images/item-batter.png" alt="Batter" class="draggable-item-image">
+            </div>
+        </div>
+    
+        <div class="resource-right">
+            <span class="resource-amount">Have: <span id="batterCount">10</span></span>
+            <button class="buy-button" id="buyBatter">Buy More $<span id="batterCost">1</span></button>
+        </div>
+    </div>
+    `;
+
+    // Add ingredients based on level config
+    if (this.levelManager.levelConfig.availableIngredients) {
+      this.levelManager.levelConfig.availableIngredients.forEach(
+        (ingredient) => {
+          if (ingredient === "butter") {
+            const butterItem = document.createElement("div");
+            butterItem.className = "resource-item";
+            butterItem.innerHTML = `
+            <div class="resource-left">
+            <div class="draggable-item" data-item-type="butter">
+              <img src="images/item-butter.png" alt="Butter" class="draggable-item-image">
+            </div>
+            </div>
+            <div class="resource-right">
+            <span class="resource-amount">Have: <span id="butterCount">${this.levelManager.butter}</span></span>
+            <button class="buy-button" id="buyButter">Buy More $<span id="butterCost">${this.levelManager.levelConfig.butterCost}</span></button>
+            </div>
+          `;
+            storeSection.appendChild(butterItem);
+          } else if (ingredient === "banana") {
+            const bananaItem = document.createElement("div");
+            bananaItem.className = "resource-item";
+            bananaItem.innerHTML = `
+          <div class="resource-left">
+            <div class="draggable-item" data-item-type="banana">
+              <img src="images/item-banana.png" alt="Banana" class="draggable-item-image">
+            </div>
+            </div>
+            <div class="resource-right">
+              <span class="resource-amount">Have: <span id="bananaCount">${this.levelManager.banana}</span></span>
+            <button class="buy-button" id="buyBanana">Buy More $<span id="bananaCost">${this.levelManager.levelConfig.bananaCost}</span></button>
+            </div>
+          `;
+            storeSection.appendChild(bananaItem);
+          }
+        }
+      );
+    }
+
+    // Add drag event listeners to all draggable items
+    document.querySelectorAll(".draggable-item").forEach((item) => {
+      item.addEventListener(
+        "mousedown",
+        this.levelManager.dragDrop.handleMouseDown.bind(
+          this.levelManager.dragDrop
+        )
+      );
+      item.addEventListener("dragstart", (e) => e.preventDefault());
+    });
+  }
+
+  addClickEffect(e) {
+    const ripple = document.createElement("div");
+    ripple.style.cssText = `
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.6);
+      transform: scale(0);
+      animation: ripple 0.6s linear;
+      pointer-events: none;
+    `;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + "px";
+    ripple.style.left = e.clientX - rect.left - size / 2 + "px";
+    ripple.style.top = e.clientY - rect.top - size / 2 + "px";
+
+    e.currentTarget.appendChild(ripple);
+
+    setTimeout(() => ripple.remove(), GAME_CONFIG.animations.rippleEffect);
+  }
+
+  addSizzleEffect(cellIndex) {
+    const cellDiv = document.querySelector(`[data-cell-index="${cellIndex}"]`);
+    cellDiv.classList.add("success-glow");
+    setTimeout(
+      () => cellDiv.classList.remove("success-glow"),
+      GAME_CONFIG.animations.sizzleEffect
+    );
+  }
+
+  // Use type-specific images based on pancake type and progress
+  updateCellDisplay(cellIndex) {
+    const cell = this.levelManager.grid[cellIndex];
+    const cellDiv = document.querySelector(`[data-cell-index="${cellIndex}"]`);
+
+    if (cell.type === "grill" && cell.cookingPancake) {
+      const pancake = cell.cookingPancake;
+      const progress = pancake.progress;
+
+      // Hide grill image when cooking
+      const grillImg = cellDiv.querySelector(".grill-image");
+      if (grillImg) {
+        grillImg.style.opacity = "0.3";
+      }
+
+      // Calculate thresholds from level config
+      const ingredientThreshold =
+        (this.levelManager.levelConfig.ingredientTime /
+          this.levelManager.levelConfig.burntTime) *
+        100;
+      const cookingThreshold =
+        (this.levelManager.levelConfig.cookingTime /
+          this.levelManager.levelConfig.burntTime) *
+        100;
+
+      // Update progress bar
+      let progressBar = cellDiv.querySelector(".progress-bar");
+      if (!progressBar) {
+        progressBar = document.createElement("div");
+        progressBar.className = "progress-bar";
+
+        progressBar.innerHTML = `
+          <div class="progress-fill"></div>
+          <div class="progress-marker ingredient" style="left: ${ingredientThreshold}%"></div>
+          <div class="progress-marker done" style="left: ${cookingThreshold}%"></div>
+        `;
+        cellDiv.appendChild(progressBar);
+      }
+
+      const progressFill = progressBar.querySelector(".progress-fill");
+      progressFill.style.width = `${progress}%`;
+
+      // Show pancake immediately when batter is placed
+      let pancakeImg = cellDiv.querySelector(".pancake");
+      if (!pancakeImg) {
+        pancakeImg = document.createElement("img");
+        pancakeImg.className = "pancake large-pancake";
+        pancakeImg.dataset.pancakeId = pancake.id;
+        cellDiv.appendChild(pancakeImg);
+      }
+
+      // Update pancake appearance based on type and progress
+      if (progress < ingredientThreshold) {
+        pancakeImg.src = `images/${pancake.type}-pancake-goo.png`; // Uncooked - can add ingredients
+        pancakeImg.alt = `Uncooked ${pancake.type} pancake`;
+        pancakeImg.draggable = false;
+        pancakeImg.style.cursor = "not-allowed";
+      } else if (progress < cookingThreshold) {
+        pancakeImg.src = `images/${pancake.type}-pancake-solid.png`; // Solid - no more ingredients, still cooking
+        pancakeImg.alt = `Solid ${pancake.type} pancake`;
+        pancakeImg.draggable = false;
+        pancakeImg.style.cursor = "not-allowed";
+      } else if (progress >= GAME_CONFIG.mechanics.burntThreshold) {
+        pancakeImg.src = `images/${pancake.type}-pancake-burnt.png`; // Burnt
+        pancakeImg.alt = `Burnt ${pancake.type} pancake`;
+        pancakeImg.draggable = false;
+        pancakeImg.style.cursor = "not-allowed";
+      } else {
+        pancakeImg.src = `images/${pancake.type}-pancake-cooked.png`; // Cooked
+        pancakeImg.alt = `Cooked ${pancake.type} pancake`;
+        pancakeImg.draggable = false; // Disable HTML5 drag
+        pancakeImg.style.cursor = "grab";
+
+        // Remove any existing event listeners
+        pancakeImg.removeEventListener(
+          "mousedown",
+          this.levelManager.dragDrop.handleMouseDown
+        );
+        pancakeImg.removeEventListener(
+          "dragstart",
+          this.levelManager.dragDrop.handleDragStart
+        );
+
+        // Add mouse-based drag handling
+        pancakeImg.addEventListener(
+          "mousedown",
+          this.levelManager.dragDrop.handleMouseDown.bind(
+            this.levelManager.dragDrop
+          )
+        );
+        pancakeImg.addEventListener("dragstart", (e) => e.preventDefault());
+      }
+
+      // Add ingredient drop zone functionality to cooking pancakes that haven't passed ingredient deadline
+      if (!pancake.ingredientDeadlinePassed) {
+        cellDiv.classList.add("ingredient-drop-zone");
+      } else {
+        cellDiv.classList.remove("ingredient-drop-zone");
+      }
+    } else if (cell.type === "grill") {
+      // Clear grill display when no pancake and show grill image
+      const grillImg = cellDiv.querySelector(".grill-image");
+      if (grillImg) {
+        grillImg.style.opacity = "1";
+      }
+
+      const progressBar = cellDiv.querySelector(".progress-bar");
+      const pancakeImg = cellDiv.querySelector(".pancake");
+      if (progressBar) progressBar.remove();
+      if (pancakeImg) pancakeImg.remove();
+      cellDiv.classList.remove("ingredient-drop-zone");
+    } else if (cell.type === "plate") {
+      // Update serve button with type breakdown and total count
+      const serveButton = cellDiv.querySelector(".serve-button");
+      const stackCount = serveButton.querySelector(".stack-count");
+
+      if (stackCount) {
+        stackCount.textContent = cell.pancakes.length;
+      }
+
+      // Add type breakdown display
+      let existingBreakdown = cellDiv.querySelector(".pancake-type-breakdown");
+      if (existingBreakdown) existingBreakdown.remove();
+
+      if (cell.pancakes.length > 0) {
+        const breakdown = document.createElement("div");
+        breakdown.className = "pancake-type-breakdown";
+
+        const pancakeCounts = this.levelManager.getServedPancakesByType(
+          cell.pancakes
+        );
+        const breakdownItems = [];
+
+        Object.entries(pancakeCounts).forEach(([type, count]) => {
+          if (count > 0) {
+            const icon =
+              type === "plain" ? "🥞" : type === "butter" ? "🧈" : "🍌";
+            breakdownItems.push(`${count}${icon}`);
+          }
+        });
+
+        breakdown.innerHTML = `<div class="type-counts">${breakdownItems.join(
+          " "
+        )}</div>`;
+        cellDiv.appendChild(breakdown);
+      }
+
+      // Update plate display with stacked pancakes
+      const existingStack = cellDiv.querySelector(".pancake-stack");
+      if (existingStack) existingStack.remove();
+
+      if (cell.pancakes.length > 0) {
+        const stackDiv = document.createElement("div");
+        stackDiv.className = "pancake-stack";
+
+        // Create visual stacking effect
+        cell.pancakes.forEach((pancake, index) => {
+          const pancakeImg = document.createElement("img");
+          pancakeImg.className = "pancake stacked-pancake large-pancake";
+          // Use type-specific image for cooked pancakes
+          pancakeImg.src = `images/${pancake.type}-pancake-cooked.png`;
+          pancakeImg.alt = `Stacked ${pancake.type} pancake`;
+          pancakeImg.dataset.pancakeId = pancake.id;
+
+          // Apply stacking transform - make pancakes visible with slight offset
+          pancakeImg.style.zIndex = (index + 10).toString();
+          pancakeImg.style.position = "absolute";
+          pancakeImg.style.top = `${-index * 8}px`; // Stack them with 8px offset
+          pancakeImg.style.left = "50%";
+          pancakeImg.style.transform = "translateX(-50%)";
+          pancakeImg.style.visibility = "visible";
+          pancakeImg.style.display = "block";
+
+          // Only top pancake is draggable
+          if (index === cell.pancakes.length - 1) {
+            pancakeImg.draggable = false; // Disable HTML5 drag
+            pancakeImg.classList.add("top-pancake");
+            pancakeImg.style.cursor = "grab";
+
+            // Remove any existing event listeners
+            pancakeImg.removeEventListener(
+              "mousedown",
+              this.levelManager.dragDrop.handleMouseDown
+            );
+            pancakeImg.removeEventListener(
+              "dragstart",
+              this.levelManager.dragDrop.handleDragStart
+            );
+
+            // Add mouse-based drag handling
+            pancakeImg.addEventListener(
+              "mousedown",
+              this.levelManager.dragDrop.handleMouseDown.bind(
+                this.levelManager.dragDrop
+              )
+            );
+            pancakeImg.addEventListener("dragstart", (e) => e.preventDefault());
+          } else {
+            // Lower pancakes in stack are not interactive
+            pancakeImg.style.cursor = "default";
+            pancakeImg.style.opacity = "0.9";
+          }
+
+          stackDiv.appendChild(pancakeImg);
+        });
+
+        // Ensure the stack div itself is visible and positioned correctly
+        stackDiv.style.position = "relative";
+        stackDiv.style.width = "100%";
+        stackDiv.style.height = "80px";
+        stackDiv.style.display = "block";
+        stackDiv.style.visibility = "visible";
+
+        cellDiv.appendChild(stackDiv);
+      }
+    }
+  }
+
+  addBurntEffect(cellIndex) {
+    const cellDiv = document.querySelector(`[data-cell-index="${cellIndex}"]`);
+    const particles = ["💨", "🔥", "💨"];
+
+    particles.forEach((particle, i) => {
+      setTimeout(() => {
+        const particleEl = document.createElement("div");
+        particleEl.className = "particle";
+        particleEl.textContent = particle;
+
+        // Center particles around the middle of the cell with small random offset
+        const centerX = 50;
+        const centerY = 50;
+        const offsetRange = 25; // pixels from center
+
+        particleEl.style.left = `calc(${centerX}% + ${
+          (Math.random() - 0.5) * offsetRange
+        }px)`;
+        particleEl.style.top = `calc(${centerY}% + ${
+          (Math.random() - 0.5) * offsetRange
+        }px)`;
+
+        cellDiv.appendChild(particleEl);
+
+        setTimeout(
+          () => particleEl.remove(),
+          GAME_CONFIG.animations.particleEffect
+        );
+      }, i * 100);
+    });
+  }
+
+  addMoveEffect(cellIndex) {
+    const cellDiv = document.querySelector(`[data-cell-index="${cellIndex}"]`);
+    const particles = ["✨", "⭐", "✨"];
+
+    particles.forEach((particle, i) => {
+      setTimeout(() => {
+        const particleEl = document.createElement("div");
+        particleEl.className = "particle";
+        particleEl.textContent = particle;
+
+        // Center particles around the middle of the cell with small random offset
+        const centerX = 50;
+        const centerY = 50;
+        const offsetRange = 20; // pixels from center
+
+        particleEl.style.left = `calc(${centerX}% + ${
+          (Math.random() - 0.5) * offsetRange
+        }px)`;
+        particleEl.style.top = `calc(${centerY}% + ${
+          (Math.random() - 0.5) * offsetRange
+        }px)`;
+
+        cellDiv.appendChild(particleEl);
+
+        setTimeout(
+          () => particleEl.remove(),
+          GAME_CONFIG.animations.particleEffect
+        );
+      }, i * 100);
+    });
+  }
+
+  addCoinAnimation(cellIndex) {
+    const cellDiv = document.querySelector(`[data-cell-index="${cellIndex}"]`);
+    const moneyDisplay = document.getElementById("moneyDisplay");
+
+    if (!cellDiv || !moneyDisplay) return;
+
+    const coin = document.createElement("div");
+    coin.className = "coin-animation";
+    coin.textContent = "🪙";
+
+    // Get positions
+    const cellRect = cellDiv.getBoundingClientRect();
+    const moneyRect = moneyDisplay.getBoundingClientRect();
+
+    // Set initial position
+    coin.style.position = "fixed";
+    coin.style.left = cellRect.left + cellRect.width / 2 + "px";
+    coin.style.top = cellRect.top + cellRect.height / 2 + "px";
+    coin.style.zIndex = "1000";
+
+    document.body.appendChild(coin);
+
+    // Animate to money display
+    setTimeout(() => {
+      coin.style.left = moneyRect.left + moneyRect.width / 2 + "px";
+      coin.style.top = moneyRect.top + moneyRect.height / 2 + "px";
+    }, 10);
+
+    // Remove after animation
+    setTimeout(() => {
+      if (coin.parentNode) {
+        coin.remove();
+      }
+    }, 1000);
+  }
+
+  addPenaltyAnimation() {
+    const moneyDisplay = document.getElementById("moneyDisplay");
+    if (!moneyDisplay) return;
+
+    // Add red glow to money display
+    moneyDisplay.classList.add("penalty-glow");
+    setTimeout(() => {
+      moneyDisplay.classList.remove("penalty-glow");
+    }, 800);
+
+    // Add -1 animation
+    const penalty = document.createElement("div");
+    penalty.className = "penalty-animation";
+    penalty.textContent = "-1";
+
+    const moneyRect = moneyDisplay.getBoundingClientRect();
+    penalty.style.left = moneyRect.left + moneyRect.width / 2 + "px";
+    penalty.style.top = moneyRect.top + "px";
+
+    moneyDisplay.appendChild(penalty);
+
+    setTimeout(() => {
+      if (penalty.parentNode) {
+        penalty.remove();
+      }
+    }, 1500);
+  }
+
+  addSuccessEffect(cellIndex, payment) {
+    const cellDiv = document.querySelector(`[data-cell-index="${cellIndex}"]`);
+
+    // Score popup
+    const scorePopup = document.createElement("div");
+    scorePopup.className = "score-popup";
+    scorePopup.textContent = `+${payment}`;
+    cellDiv.appendChild(scorePopup);
+
+    setTimeout(() => scorePopup.remove(), GAME_CONFIG.animations.scorePopup);
+
+    // Confetti particles
+    const confetti = ["🎉", "🎊", "✨", "⭐", "🌟"];
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        const particleEl = document.createElement("div");
+        particleEl.className = "particle";
+        particleEl.textContent =
+          confetti[Math.floor(Math.random() * confetti.length)];
+        particleEl.style.left = Math.random() * 100 + "%";
+        particleEl.style.top = Math.random() * 100 + "%";
+        cellDiv.appendChild(particleEl);
+
+        setTimeout(
+          () => particleEl.remove(),
+          GAME_CONFIG.animations.particleEffect
+        );
+      }, i * 50);
+    }
+
+    // Glow effect
+    cellDiv.classList.add("success-glow");
+    setTimeout(
+      () => cellDiv.classList.remove("success-glow"),
+      GAME_CONFIG.animations.successGlow
+    );
+  }
+
+  screenShake() {
+    document.body.classList.add("shake");
+    setTimeout(
+      () => document.body.classList.remove("shake"),
+      GAME_CONFIG.animations.screenShake
+    );
+  }
+
+  updateUI() {
+    const timeSeconds = Math.ceil(this.levelManager.timeRemaining / 1000);
+    const timerEl = document.getElementById("timer");
+    timerEl.textContent = timeSeconds;
+
+    // Add urgent styling when time is low
+    if (timeSeconds <= GAME_CONFIG.mechanics.urgentTimerThreshold) {
+      timerEl.classList.add("urgent");
+    } else {
+      timerEl.classList.remove("urgent");
+    }
+
+    // Show typed order requirements
+    const currentOrder = this.levelManager.getCurrentOrder();
+    let orderText = "";
+    const orderParts = [];
+
+    Object.entries(currentOrder).forEach(([type, count]) => {
+      if (count > 0) {
+        const typeIcon =
+          type === "plain" ? "🥞" : type === "butter" ? "🧈🥞" : "🍌🥞";
+        orderParts.push(`${count}${typeIcon}`);
+      }
+    });
+
+    document.getElementById("currentOrder").textContent =
+      orderParts.join(" + ");
+
+    document.getElementById("batterCount").textContent =
+      this.levelManager.batter;
+    document.getElementById("batterCost").textContent =
+      this.levelManager.levelConfig.batterCost;
+    document.getElementById(
+      "moneyDisplay"
+    ).textContent = `${this.levelManager.money}`;
+
+    // Update ingredient counts if they exist
+    const butterCount = document.getElementById("butterCount");
+    const butterCost = document.getElementById("butterCost");
+    if (butterCount && butterCost) {
+      butterCount.textContent = this.levelManager.butter;
+      butterCost.textContent = this.levelManager.levelConfig.butterCost || 0;
+    }
+
+    const bananaCount = document.getElementById("bananaCount");
+    const bananaCost = document.getElementById("bananaCost");
+    if (bananaCount && bananaCost) {
+      bananaCount.textContent = this.levelManager.banana;
+      bananaCost.textContent = this.levelManager.levelConfig.bananaCost || 0;
+    }
+
+    // Update store section styling based on item counts
+    const storeSection = document.getElementById("storeSection");
+    const buyButton = document.getElementById("buyBatter");
+
+    if (this.levelManager.batter === 0) {
+      storeSection.classList.add("out-of-stock");
+    } else {
+      storeSection.classList.remove("out-of-stock");
+    }
+
+    // Update buy button availability
+    buyButton.disabled =
+      this.levelManager.money < this.levelManager.levelConfig.batterCost;
+
+    const buyButterButton = document.getElementById("buyButter");
+    if (buyButterButton) {
+      buyButterButton.disabled =
+        this.levelManager.money <
+        (this.levelManager.levelConfig.butterCost || 0);
+    }
+
+    const buyBananaButton = document.getElementById("buyBanana");
+    if (buyBananaButton) {
+      buyBananaButton.disabled =
+        this.levelManager.money <
+        (this.levelManager.levelConfig.bananaCost || 0);
+    }
+  }
+}
