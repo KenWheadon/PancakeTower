@@ -6,7 +6,7 @@ const CREDITS = {
     previewImage: "images/ken-head.png",
     fullImage: "images/ken-head.png",
     description:
-      "I've loved games since I can remember and love to come up with new ideas and create fun experiences. I've been involved in game development since I was in middleschool, first making things for Newgrounds and trying to get through to the website - these were all bad dressup monster games, weird story's and a few attempts at animations. Game design was clearly the only option after highschool graduation so I went a community college to take game design and flash programming. After 3 years and several internships I graduated with 2 degrees and landed myself a job making lottery games - first as part of a small team and eventually being bought out and working for one of the largest players in the lottery industry. I was burnt out and didn't enjoy my job any more as the culture at larger companies wasn't a good fit for me. I pivoted and took my experience with game design and development and joined another small team - but this time making elearning software. Here I focused on honing my skills, while I kept picking away at game development in my spare time. As generative technology really hit the scene in 2022 - I imedpently jumped on it as I saw the huge potential for my game development and it's ability to get past the largest hurdle I kept facing with my personal projects. I tend to hyper focus, and when I'm doing something it's all I think about - but I can only keep it up for a few weeks at most, and if I keep pushing myself past that (2 - 3 - 4 months) then I get burnt out and end up crashing. This would lead to 6 month periods where I didn't even want to think about game development and I'd question if I'd ever be able to follow my dreams or if I'd just accept that it wasn't for me. I felt a lot of self doubt, and a huge amount of imposter syndrome.",
+      "I've loved games since I can remember and love to come up with new ideas and create fun experiences. I've been involved in game development since I was in middleschool, first making things for Newgrounds and trying to get through to the website - these were all bad dressup monster games, weird story's and a few attempts at animations. Game design was clearly the only option after highschool graduation so I went a community college to take game design and flash programming. After 3 years and several internships I graduated with 2 degrees and landed myself a job making lottery games - first as part of a small team and eventually being bought out and working for one of the largest players in the lottery industry. I was burnt out and didn't enjoy my job any more as the culture at larger companies wasn't a good fit for me. I pivoted and took my experience with game design and development and joined another small team - but this time making elearning software. Here I focused on honing my skills, while I kept picking away at game development in my spare time. As generative technology really hit the scene in 2022 - I imedpently jumped on it as I saw the huge potential for my game development and it's ability to get past the largest hurdle I kept facing with my personal projects. I tend to hyper focus, and when I'm doing something it's all I think about - but I can only keep it up for a few weeks at most, and if I keep pushing myself past that (2 - 3 - 4 months) then I get burnt out and end up crashing. This would lead to 6 month periods where I didn't even want to think about game development and I'd question if I'd ever be able to follow my dreams or if I'd just accept that it wasn't for me. I felt a lot of self doubt, and a huge amount of imposter syndrome. ",
   },
 
   Jessy: {
@@ -20,23 +20,23 @@ const CREDITS = {
   },
 
   Freesounds: {
-    name: "FreeSounds.com",
+    name: "FreeSounds",
     jobTitle: "Sound Effects",
     department: "Audio",
     previewImage: "images/freesound-head.png",
     fullImage: "images/freesound-logo.png",
     description:
-      "Multiple contributors from FreeSounds.com provided the majority of sound effects used throughout the game experience.",
+      "Multiple contributors from FreeSounds.org provided the majority of sound effects used throughout the game experience. Thank you to: colorsCrimsonTears, David819, SilverIllusionist, mrickey13, plasterbrain, Sess8it, Bertrof, GameAudio, and Yoshicakes77.",
   },
 
   Gamesounds: {
-    name: "gamesounds.com",
+    name: "pixabay",
     jobTitle: "Sound Effects",
     department: "Audio",
     previewImage: "images/px-head.png",
     fullImage: "images/px-head.png",
     description:
-      "Additional sound effects contributors from gamesounds.com helped expand the audio library for enhanced gameplay immersion.",
+      "Additional sound effects contributors from pixabay.com helped expand the audio library for enhanced gameplay immersion. Thank you to: Karim-Nessim, Universfield, and freesound_community.",
   },
 
   Suno: {
