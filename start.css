@@ -30,7 +30,7 @@
   text-align: center;
   position: relative;
   z-index: var(--z-base);
-  background: var(--bg-gradient-light);
+  background: var(--bg-gradient-hover);
   padding: var(--spacing-md);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-2xl);
