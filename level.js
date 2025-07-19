@@ -21,6 +21,7 @@ class LevelManager {
     // Pancake tracking
     this.pancakeIdCounter = 0;
     this.cookingPancakes = new Map(); // id -> pancake data
+    this.burntPancakes = new Map(); // Track pancakes that are burning out
 
     this.levelConfig = null;
   }
@@ -44,6 +45,9 @@ class LevelManager {
     this.gameRunning = false;
     if (this.cookingPancakes) {
       this.cookingPancakes.clear();
+    }
+    if (this.burntPancakes) {
+      this.burntPancakes.clear();
     }
   }
 
@@ -78,6 +82,7 @@ class LevelManager {
     // Pancake tracking
     this.pancakeIdCounter = 0;
     this.cookingPancakes = new Map(); // id -> pancake data
+    this.burntPancakes = new Map(); // Track pancakes that are burning out
 
     this.createGrid();
     this.updateUI();
@@ -308,6 +313,28 @@ class LevelManager {
   updateCooking() {
     const currentTime = Date.now();
 
+    // Handle burning out pancakes
+    this.burntPancakes.forEach((burntData, id) => {
+      if (currentTime >= burntData.removeTime) {
+        // Remove the pancake and clean up
+        const cellDiv = document.querySelector(
+          `[data-cell-index="${burntData.cellIndex}"]`
+        );
+        const pancakeImg = cellDiv?.querySelector(
+          `.pancake[data-pancake-id="${id}"]`
+        );
+        if (pancakeImg) {
+          pancakeImg.remove();
+        }
+
+        const cell = this.grid[burntData.cellIndex];
+        cell.cookingPancake = null;
+
+        this.burntPancakes.delete(id);
+        this.updateCellDisplay(burntData.cellIndex);
+      }
+    });
+
     this.cookingPancakes.forEach((pancake, id) => {
       // Check if this specific item is being dragged
       const isDraggedItem =
@@ -360,13 +387,42 @@ class LevelManager {
         this.updateCellDisplay(pancake.cellIndex);
       }
 
-      // Auto-remove burnt pancakes
+      // Handle burnt pancakes with fade out effect
       if (pancake.progress >= GAME_CONFIG.mechanics.burntThreshold) {
         const cell = this.grid[pancake.cellIndex];
-        cell.cookingPancake = null;
+
+        // Remove from cooking pancakes and add to burnt pancakes
         this.cookingPancakes.delete(id);
-        this.updateCellDisplay(pancake.cellIndex);
+        this.burntPancakes.set(id, {
+          cellIndex: pancake.cellIndex,
+          removeTime: currentTime + 2000, // Remove after 2 seconds
+        });
+
+        // Show burnt image and start fade animation
+        const cellDiv = document.querySelector(
+          `[data-cell-index="${pancake.cellIndex}"]`
+        );
+        const pancakeImg = cellDiv?.querySelector(".pancake");
+        if (pancakeImg) {
+          pancakeImg.src = "images/plain-pancake-burnt.png";
+          pancakeImg.classList.add("burnt-fading");
+          pancakeImg.draggable = false;
+          pancakeImg.style.cursor = "not-allowed";
+        }
+
+        // Add burnt particle effect
         this.addBurntEffect(pancake.cellIndex);
+
+        // Clear progress bar
+        const progressBar = cellDiv?.querySelector(".progress-bar");
+        if (progressBar) progressBar.remove();
+
+        // Hide grill image
+        const grillImg = cellDiv?.querySelector(".grill-image");
+        if (grillImg) {
+          grillImg.style.opacity = "0.3";
+        }
+
         return;
       }
 

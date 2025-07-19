@@ -137,6 +137,13 @@
   padding-bottom: 60px;
 }
 
+/* Plate hover effect to show serve button */
+.cell.plate:hover .serve-button {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
 /* Drag States */
 .cell.drag-over {
   border-color: #00ff7f;
@@ -178,6 +185,9 @@
 .plate-image {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* Progress Bar */
@@ -252,29 +262,50 @@
   }
 }
 
-/* Pancake Styles */
+/* Pancake Styles - Updated for bigger size and centering */
 .pancake {
-  width: 48px;
-  height: 48px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   cursor: grab;
-  margin: 2px;
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 10;
   transition: var(--transition-fast);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   user-select: none;
   pointer-events: auto;
-  padding: var(--spacing-sm);
 }
 
 .pancake:hover {
-  transform: scale(1.1);
+  transform: translate(-50%, -50%) scale(1.1);
 }
 
 .pancake:active {
   cursor: grabbing;
-  transform: scale(0.95);
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* Burnt pancake fade out animation */
+.pancake.burnt-fading {
+  animation: burntFadeOut 2s ease-out forwards;
+}
+
+@keyframes burntFadeOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
 }
 
 /* Pancake Stack */
@@ -293,6 +324,11 @@
   margin: 0;
   transition: var(--transition-normal);
   position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: 48px;
+  height: 48px;
 }
 
 .pancake-stack .stacked-pancake {
@@ -307,10 +343,12 @@
   transform: translateY(-2px) scale(1.05);
 }
 
-/* Serve Button */
+/* Serve Button - Hidden by default, shown on hover */
 .serve-button {
   position: absolute;
   bottom: var(--spacing-sm);
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
   background: var(--btn-gradient-warning);
   color: var(--text-white);
   border: none;
@@ -328,23 +366,25 @@
   gap: var(--spacing-sm);
   min-width: 80px;
   justify-content: center;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .serve-button:hover {
-  transform: translateY(-2px);
+  transform: translateX(-50%) translateY(-2px);
   box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
   background: linear-gradient(145deg, #ff8e53, var(--color-warning));
 }
 
 .serve-button:active {
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
   box-shadow: var(--shadow-button-warning);
 }
 
 .serve-button:disabled {
   background: linear-gradient(145deg, #ccc, #999);
   cursor: not-allowed;
-  transform: none;
+  transform: translateX(-50%);
   box-shadow: var(--shadow-sm);
 }
 
