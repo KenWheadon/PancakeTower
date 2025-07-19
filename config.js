@@ -66,7 +66,7 @@ const GAME_CONFIG = {
         { plain: 2 },
         { plain: 1 },
       ],
-      starThresholds: [5, 10, 20],
+      starThresholds: [25, 150, 300],
       initialBatter: 2,
       initialMoney: 0,
       batterCost: 1,
