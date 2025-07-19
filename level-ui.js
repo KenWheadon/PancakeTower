@@ -109,7 +109,7 @@ class LevelUI {
     // Create store section with batter and available ingredients
     const storeSection = document.getElementById("storeSection");
     storeSection.innerHTML = `
-      <h3>Store - Drag Items</h3>
+      <h3>Store - Drag Items to Grill</h3>
       
       <!-- Batter Resource -->
       <div class="resource-item">
@@ -316,21 +316,27 @@ class LevelUI {
         pancakeImg.alt = `Uncooked ${pancake.type} pancake`;
         pancakeImg.draggable = false;
         pancakeImg.style.cursor = "not-allowed";
+        pancakeImg.classList.remove("cooked-pancake-ready"); // Remove cooked effect
       } else if (progress < cookingThreshold) {
         pancakeImg.src = `images/${pancake.type}-pancake-solid.png`; // Solid - no more ingredients, still cooking
         pancakeImg.alt = `Solid ${pancake.type} pancake`;
         pancakeImg.draggable = false;
         pancakeImg.style.cursor = "not-allowed";
+        pancakeImg.classList.remove("cooked-pancake-ready"); // Remove cooked effect
       } else if (progress >= GAME_CONFIG.mechanics.burntThreshold) {
         pancakeImg.src = `images/${pancake.type}-pancake-burnt.png`; // Burnt
         pancakeImg.alt = `Burnt ${pancake.type} pancake`;
         pancakeImg.draggable = false;
         pancakeImg.style.cursor = "not-allowed";
+        pancakeImg.classList.remove("cooked-pancake-ready"); // Remove cooked effect
       } else {
         pancakeImg.src = `images/${pancake.type}-pancake-cooked.png`; // Cooked
         pancakeImg.alt = `Cooked ${pancake.type} pancake`;
         pancakeImg.draggable = false; // Disable HTML5 drag
         pancakeImg.style.cursor = "grab";
+
+        // Add cooked pancake wiggle and glow effect
+        pancakeImg.classList.add("cooked-pancake-ready");
 
         // Remove any existing event listeners
         pancakeImg.removeEventListener(

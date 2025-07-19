@@ -324,12 +324,54 @@
   pointer-events: auto;
 }
 
+/* Cooked pancake ready effect */
+.pancake.cooked-pancake-ready {
+  animation: cookedPancakeReady 1.5s ease-in-out infinite;
+}
+
+@keyframes cookedPancakeReady {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+      drop-shadow(0 0 8px rgba(76, 175, 80, 0.6));
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(1.05) rotate(2deg);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+      drop-shadow(0 0 15px rgba(76, 175, 80, 0.8));
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+      drop-shadow(0 0 20px rgba(76, 175, 80, 1));
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(1.05) rotate(-2deg);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+      drop-shadow(0 0 15px rgba(76, 175, 80, 0.8));
+  }
+}
+
 .pancake:hover {
   transform: translate(-50%, -50%) scale(1.1);
 }
 
+.pancake.cooked-pancake-ready:hover {
+  animation-play-state: paused;
+  transform: translate(-50%, -50%) scale(1.15);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+    drop-shadow(0 0 25px rgba(76, 175, 80, 1));
+}
+
 .pancake:active {
   cursor: grabbing;
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+.pancake.cooked-pancake-ready:active {
+  cursor: grabbing;
+  animation-play-state: paused;
   transform: translate(-50%, -50%) scale(0.95);
 }
 
