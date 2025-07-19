@@ -88,13 +88,25 @@ class LevelManager {
       cellDiv.dataset.cellIndex = index;
 
       if (cell.type === "grill") {
-        cellDiv.innerHTML = "🔥";
+        // Replace emoji with image
+        const grillImg = document.createElement("img");
+        grillImg.src = "images/item-grill.png";
+        grillImg.className = "grill-image";
+        grillImg.alt = "Grill";
+        cellDiv.appendChild(grillImg);
+
         cellDiv.addEventListener("click", (e) => {
           this.addClickEffect(e);
           this.startCooking(index);
         });
       } else if (cell.type === "plate") {
-        cellDiv.innerHTML = "🍽️";
+        // Replace emoji with image
+        const plateImg = document.createElement("img");
+        plateImg.src = "images/item-plate-1.png";
+        plateImg.className = "plate-image";
+        plateImg.alt = "Plate";
+        cellDiv.appendChild(plateImg);
+
         const serveButton = document.createElement("button");
         serveButton.className = "serve-button";
         serveButton.innerHTML = `<span class="stack-count">0</span>Sell`;
@@ -283,8 +295,11 @@ class LevelManager {
       const pancake = cell.cookingPancake;
       const progress = pancake.progress;
 
-      // Hide fire emoji when cooking
-      cellDiv.classList.add("cooking");
+      // Hide grill image when cooking
+      const grillImg = cellDiv.querySelector(".grill-image");
+      if (grillImg) {
+        grillImg.style.opacity = "0.3";
+      }
 
       // Calculate the actual cooking threshold from level config
       const cookingThreshold =
@@ -307,42 +322,53 @@ class LevelManager {
       progressFill.style.width = `${progress}%`;
 
       // Show pancake immediately when batter is placed
-      let pancakeEmoji = cellDiv.querySelector(".pancake");
-      if (!pancakeEmoji) {
-        pancakeEmoji = document.createElement("div");
-        pancakeEmoji.className = "pancake";
-        pancakeEmoji.dataset.pancakeId = pancake.id;
-        cellDiv.appendChild(pancakeEmoji);
+      let pancakeImg = cellDiv.querySelector(".pancake");
+      if (!pancakeImg) {
+        pancakeImg = document.createElement("img");
+        pancakeImg.className = "pancake";
+        pancakeImg.dataset.pancakeId = pancake.id;
+        cellDiv.appendChild(pancakeImg);
       }
 
       // Update pancake appearance based on progress using the actual cooking threshold
       if (progress < cookingThreshold) {
-        pancakeEmoji.innerHTML = "🍞"; // Uncooked bread
-        pancakeEmoji.draggable = false;
-        pancakeEmoji.style.cursor = "not-allowed";
+        pancakeImg.src = "images/plain-pancake-goo.png"; // Uncooked
+        pancakeImg.alt = "Uncooked pancake";
+        pancakeImg.draggable = false;
+        pancakeImg.style.cursor = "not-allowed";
+      } else if (progress >= GAME_CONFIG.mechanics.burntThreshold) {
+        pancakeImg.src = "images/plain-pancake-burnt.png"; // Burnt
+        pancakeImg.alt = "Burnt pancake";
+        pancakeImg.draggable = false;
+        pancakeImg.style.cursor = "not-allowed";
       } else {
-        pancakeEmoji.innerHTML = "🥞"; // Cooked pancake
-        pancakeEmoji.draggable = false; // Disable HTML5 drag
-        pancakeEmoji.style.cursor = "grab";
+        pancakeImg.src = "images/plain-pancake-cooked.png"; // Cooked
+        pancakeImg.alt = "Cooked pancake";
+        pancakeImg.draggable = false; // Disable HTML5 drag
+        pancakeImg.style.cursor = "grab";
 
         // Remove any existing event listeners
-        pancakeEmoji.removeEventListener("mousedown", this.handleMouseDown);
-        pancakeEmoji.removeEventListener("dragstart", this.handleDragStart);
+        pancakeImg.removeEventListener("mousedown", this.handleMouseDown);
+        pancakeImg.removeEventListener("dragstart", this.handleDragStart);
 
         // Add mouse-based drag handling
-        pancakeEmoji.addEventListener(
+        pancakeImg.addEventListener(
           "mousedown",
           this.handleMouseDown.bind(this)
         );
-        pancakeEmoji.addEventListener("dragstart", (e) => e.preventDefault());
+        pancakeImg.addEventListener("dragstart", (e) => e.preventDefault());
       }
     } else if (cell.type === "grill") {
-      // Clear grill display when no pancake and show fire emoji
-      cellDiv.classList.remove("cooking");
+      // Clear grill display when no pancake and show grill image
+      const grillImg = cellDiv.querySelector(".grill-image");
+      if (grillImg) {
+        grillImg.style.opacity = "1";
+      }
+
       const progressBar = cellDiv.querySelector(".progress-bar");
-      const pancakeEmoji = cellDiv.querySelector(".pancake");
+      const pancakeImg = cellDiv.querySelector(".pancake");
       if (progressBar) progressBar.remove();
-      if (pancakeEmoji) pancakeEmoji.remove();
+      if (pancakeImg) pancakeImg.remove();
     } else if (cell.type === "plate") {
       // Update serve button with stack count
       const serveButton = cellDiv.querySelector(".serve-button");
@@ -362,36 +388,37 @@ class LevelManager {
 
         // Create visual stacking effect
         cell.pancakes.forEach((pancake, index) => {
-          const pancakeDiv = document.createElement("div");
-          pancakeDiv.className = "pancake stacked-pancake";
-          pancakeDiv.innerHTML = "🥞";
-          pancakeDiv.dataset.pancakeId = pancake.id;
+          const pancakeImg = document.createElement("img");
+          pancakeImg.className = "pancake stacked-pancake";
+          pancakeImg.src = "images/plain-pancake-cooked.png";
+          pancakeImg.alt = "Stacked pancake";
+          pancakeImg.dataset.pancakeId = pancake.id;
 
           // Apply stacking transform
-          pancakeDiv.style.zIndex = index + 10;
+          pancakeImg.style.zIndex = index + 10;
 
           // Only top pancake is draggable
           if (index === cell.pancakes.length - 1) {
-            pancakeDiv.draggable = false; // Disable HTML5 drag
-            pancakeDiv.classList.add("top-pancake");
+            pancakeImg.draggable = false; // Disable HTML5 drag
+            pancakeImg.classList.add("top-pancake");
 
             // Remove any existing event listeners
-            pancakeDiv.removeEventListener("mousedown", this.handleMouseDown);
-            pancakeDiv.removeEventListener("dragstart", this.handleDragStart);
+            pancakeImg.removeEventListener("mousedown", this.handleMouseDown);
+            pancakeImg.removeEventListener("dragstart", this.handleDragStart);
 
             // Add mouse-based drag handling
-            pancakeDiv.addEventListener(
+            pancakeImg.addEventListener(
               "mousedown",
               this.handleMouseDown.bind(this)
             );
-            pancakeDiv.addEventListener("dragstart", (e) => e.preventDefault());
+            pancakeImg.addEventListener("dragstart", (e) => e.preventDefault());
           } else {
             // Lower pancakes in stack are not interactive
-            pancakeDiv.style.cursor = "default";
-            pancakeDiv.style.opacity = "0.9";
+            pancakeImg.style.cursor = "default";
+            pancakeImg.style.opacity = "0.9";
           }
 
-          stackDiv.appendChild(pancakeDiv);
+          stackDiv.appendChild(pancakeImg);
         });
 
         cellDiv.appendChild(stackDiv);
@@ -415,9 +442,10 @@ class LevelManager {
     e.target.style.cursor = "grabbing";
 
     // Create dragged pancake visual
-    const draggedPancake = document.createElement("div");
+    const draggedPancake = document.createElement("img");
     draggedPancake.className = "dragged-pancake";
-    draggedPancake.textContent = "🥞";
+    draggedPancake.src = "images/plain-pancake-cooked.png";
+    draggedPancake.alt = "Dragged pancake";
     draggedPancake.id = "draggedPancakeVisual";
     document.body.appendChild(draggedPancake);
 

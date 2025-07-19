@@ -9,6 +9,7 @@ class PancakeStackGame {
     this.startScreen = null;
     this.levelSelectScreen = null;
     this.levelManager = null;
+    this.starManager = new StarManager();
 
     // First inject HTML to create DOM structure
     this.injectHTML();
@@ -179,6 +180,7 @@ class PancakeStackGame {
           <h2>Level Complete!</h2>
           <div class="stars" id="starsDisplay">⭐⭐⭐</div>
           <div id="finalScore">Final Score: $0</div>
+          <div id="newRecordMessage" class="new-record hidden">🎉 New Best Score!</div>
           <button class="restart-button" id="restartButton">Play Again</button>
           <button class="restart-button" id="backToLevelsButton" style="margin-left: 10px;">Choose Level</button>
         </div>
@@ -244,13 +246,27 @@ class PancakeStackGame {
     else if (finalScore >= this.levelConfig.starThresholds[1]) stars = 2;
     else if (finalScore >= this.levelConfig.starThresholds[0]) stars = 1;
 
+    // Save stars and check if it's a new record
+    const isNewRecord = this.starManager.saveStarsForLevel(
+      this.currentLevel,
+      stars
+    );
+
     // Show game over screen
     const gameOverScreen = document.getElementById("gameOverScreen");
     const starsDisplay = document.getElementById("starsDisplay");
     const finalScoreDisplay = document.getElementById("finalScore");
+    const newRecordMessage = document.getElementById("newRecordMessage");
 
     starsDisplay.textContent = "⭐".repeat(stars) + "☆".repeat(3 - stars);
     finalScoreDisplay.textContent = `Final Score: ${finalScore}`;
+
+    // Show new record message if applicable
+    if (isNewRecord && stars > 0) {
+      newRecordMessage.classList.remove("hidden");
+    } else {
+      newRecordMessage.classList.add("hidden");
+    }
 
     gameOverScreen.classList.remove("hidden");
   }

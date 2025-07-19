@@ -1,92 +1,74 @@
 class LoadingManager {
   constructor(gameInstance) {
     this.game = gameInstance;
-    this.assetsLoaded = 0;
-    this.assetsToLoad = 0;
-    this.loadingComplete = false;
+    this.loadingStartTime = null;
   }
 
   showLoadingScreen() {
-    this.game.gameState = "loading";
+    this.loadingStartTime = Date.now();
+
+    // Show loading screen
     document.getElementById("loadingScreen").classList.remove("hidden");
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("levelSelectScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.add("hidden");
-    document.getElementById("gameOverScreen").classList.add("hidden");
-    document.getElementById("htpPopup").classList.add("hidden");
 
-    // Start loading process
-    this.startLoading();
+    this.startLoadingAnimation();
   }
 
-  startLoading() {
-    // Simulate loading assets
-    this.assetsToLoad = 10; // Simulate 10 assets to load
-    this.assetsLoaded = 0;
-    this.loadingComplete = false;
-
-    const loadingMessages = [
-      "Heating up the grill...",
-      "Mixing pancake batter...",
-      "Preparing plates...",
-      "Loading recipes...",
-      "Setting up kitchen...",
-      "Almost ready to cook!",
-    ];
-
-    let messageIndex = 0;
-    const loadingTextElement = document.getElementById("loadingText");
-
-    // Update loading messages
-    const messageInterval = setInterval(() => {
-      if (loadingTextElement && messageIndex < loadingMessages.length) {
-        loadingTextElement.textContent = loadingMessages[messageIndex];
-        messageIndex++;
-      }
-    }, 800);
-
-    // Simulate asset loading
-    const loadingInterval = setInterval(() => {
-      if (this.assetsLoaded < this.assetsToLoad) {
-        this.assetsLoaded++;
-        this.updateLoadingProgress();
-      } else {
-        clearInterval(loadingInterval);
-        clearInterval(messageInterval);
-        setTimeout(() => {
-          this.completeLoading();
-        }, 500);
-      }
-    }, 300);
-  }
-
-  updateLoadingProgress() {
-    const percentage = Math.floor(
-      (this.assetsLoaded / this.assetsToLoad) * 100
-    );
-
+  startLoadingAnimation() {
     const loadingBar = document.getElementById("loadingBar");
+    const loadingText = document.getElementById("loadingText");
     const loadingPercentage = document.getElementById("loadingPercentage");
+    const messages = GAME_CONFIG.screens.loading.messages;
 
-    if (loadingBar) {
-      loadingBar.style.width = percentage + "%";
-    }
+    let progress = 0;
+    let messageIndex = 0;
 
-    if (loadingPercentage) {
-      loadingPercentage.textContent = percentage + "%";
-    }
+    const updateLoading = () => {
+      // Update progress
+      progress += Math.random() * 15 + 5; // Random progress between 5-20%
+      progress = Math.min(progress, 100);
+
+      // Update UI
+      loadingBar.style.width = progress + "%";
+      loadingPercentage.textContent = Math.floor(progress) + "%";
+
+      // Update message occasionally
+      if (progress > (messageIndex + 1) * (100 / messages.length)) {
+        messageIndex = Math.min(messageIndex + 1, messages.length - 1);
+        loadingText.textContent = messages[messageIndex];
+      }
+
+      // Check if loading is complete
+      if (progress >= 100) {
+        this.completeLoading();
+      } else {
+        setTimeout(updateLoading, 200 + Math.random() * 300); // Random delay
+      }
+    };
+
+    // Start the loading animation
+    setTimeout(updateLoading, 500);
   }
 
   completeLoading() {
-    this.loadingComplete = true;
+    // Ensure minimum loading time has passed
+    const elapsed = Date.now() - this.loadingStartTime;
+    const remaining = GAME_CONFIG.MINIMUM_LOADING_TIME - elapsed;
 
-    const loadingText = document.getElementById("loadingText");
-    if (loadingText) {
-      loadingText.textContent = "Ready to cook!";
+    if (remaining > 0) {
+      setTimeout(() => {
+        this.finishLoading();
+      }, remaining);
+    } else {
+      this.finishLoading();
     }
+  }
 
-    setTimeout(() => {
-      this.game.showStartScreen();
-    }, 1000);
+  finishLoading() {
+    // Hide loading screen and show start screen
+    document.getElementById("loadingScreen").classList.add("hidden");
+    this.game.showStartScreen();
   }
 }

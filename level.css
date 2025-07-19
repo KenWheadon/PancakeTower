@@ -119,13 +119,24 @@
   transform: scale(0.95);
 }
 
-/* Hide fire emoji when cooking */
-.cell.grill.cooking {
-  font-size: 0;
+/* Grill and Plate Images */
+.grill-image,
+.plate-image {
+  width: auto;
+  height: 85%;
+  object-fit: contain;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  z-index: 5;
 }
 
-.cell.grill.cooking::after {
-  content: none;
+.grill-image {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.plate-image {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  position: absolute;
 }
 
 .cell.plate {
@@ -160,6 +171,7 @@
   border-radius: 6px;
   overflow: hidden;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 15;
 }
 
 .progress-fill {
@@ -202,7 +214,9 @@
 }
 
 .pancake {
-  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
   cursor: grab;
   margin: 2px;
   position: relative;
@@ -244,7 +258,7 @@
 }
 
 .pancake-stack .stacked-pancake {
-  margin-bottom: -75px; /* Overlap pancakes for stacking effect */
+  margin-bottom: -35px; /* Overlap pancakes for stacking effect - adjusted for images */
 }
 
 .pancake-stack .top-pancake {
@@ -561,7 +575,9 @@
 /* Dragged pancake visual */
 .dragged-pancake {
   position: fixed;
-  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
   pointer-events: none;
   z-index: 1001;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
@@ -675,6 +691,23 @@
   }
   50% {
     transform: rotate(5deg);
+  }
+}
+
+.new-record {
+  font-size: 18px;
+  color: #4caf50;
+  font-weight: bold;
+  margin: 15px 0;
+  animation: recordPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes recordPulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
   }
 }
 

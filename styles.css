@@ -175,6 +175,310 @@ body::before {
   }
 }
 
+/* Level Select Screen Styles */
+.level-select-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.level-select-content {
+  background: linear-gradient(145deg, #ffffff, #f8f8f8);
+  border-radius: 25px;
+  padding: 40px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+  max-width: 900px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.level-select-title {
+  font-family: "Fredoka One", cursive;
+  font-size: 36px;
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.level-select-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.htp-button,
+.back-button {
+  background: linear-gradient(145deg, #6c5ce7, #5a4fcf);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Fredoka", sans-serif;
+  box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+  transition: all 0.3s ease;
+}
+
+.back-button {
+  background: linear-gradient(145deg, #74b9ff, #0984e3);
+  box-shadow: 0 4px 15px rgba(116, 185, 255, 0.3);
+}
+
+.htp-button:hover,
+.back-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+}
+
+.back-button:hover {
+  box-shadow: 0 6px 20px rgba(116, 185, 255, 0.4);
+}
+
+.levels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.level-card {
+  background: linear-gradient(145deg, #ffffff, #f5f5f5);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border: 3px solid transparent;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.level-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  border-color: #ffb347;
+}
+
+.level-card.completed {
+  border-color: #4caf50;
+  background: linear-gradient(145deg, #f8fff8, #f0fff4);
+}
+
+.level-card.completed::before {
+  content: "✓";
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  background: #4caf50;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.level-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.level-number {
+  font-family: "Fredoka One", cursive;
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+}
+
+.level-difficulty {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.level-difficulty.easy {
+  background: linear-gradient(145deg, #d4edda, #c3e6cb);
+  color: #155724;
+}
+
+.level-difficulty.medium {
+  background: linear-gradient(145deg, #fff3cd, #ffeaa7);
+  color: #856404;
+}
+
+.level-difficulty.hard {
+  background: linear-gradient(145deg, #f8d7da, #f5c6cb);
+  color: #721c24;
+}
+
+.level-title {
+  font-family: "Fredoka One", cursive;
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.level-description {
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.level-stars {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.stars-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stars-display {
+  display: flex;
+  gap: 4px;
+  font-size: 24px;
+}
+
+.star.earned {
+  color: #ffc107;
+  text-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+  animation: starGlow 2s ease-in-out infinite alternate;
+}
+
+.star.empty {
+  color: #ddd;
+}
+
+@keyframes starGlow {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+.level-details {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+  border-radius: 12px;
+}
+
+.level-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.detail-icon {
+  font-size: 16px;
+}
+
+.detail-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+}
+
+.level-play-button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: "Fredoka", sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: none;
+}
+
+.level-play-button.new {
+  background: linear-gradient(145deg, #4caf50, #45a049);
+  color: white;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.level-play-button.completed {
+  background: linear-gradient(145deg, #2196f3, #1976d2);
+  color: white;
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+
+.level-play-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.level-play-button.completed:hover {
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+}
+
+.level-play-button:active {
+  transform: translateY(0);
+}
+
+/* Back to Menu Button */
+.back-to-menu-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: linear-gradient(145deg, #74b9ff, #0984e3);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Fredoka", sans-serif;
+  box-shadow: 0 4px 15px rgba(116, 185, 255, 0.3);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.back-to-menu-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(116, 185, 255, 0.4);
+}
+
+.back-to-menu-button:active {
+  transform: translateY(0);
+}
+
 .hidden {
   display: none !important;
 }
