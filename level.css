@@ -308,7 +308,7 @@
   }
 }
 
-/* Pancake Stack */
+/* Pancake Stack - FIXED VISIBILITY AND DOUBLED SIZE */
 .pancake-stack {
   display: flex;
   flex-direction: column-reverse;
@@ -327,12 +327,12 @@
   top: auto;
   left: auto;
   transform: none;
-  width: 48px;
-  height: 48px;
+  width: 96px; /* Doubled from 48px */
+  height: 96px; /* Doubled from 48px */
 }
 
 .pancake-stack .stacked-pancake {
-  margin-bottom: -35px;
+  margin-bottom: -70px; /* Adjusted for larger size (was -35px) */
 }
 
 .pancake-stack .top-pancake {
@@ -347,8 +347,7 @@
 .serve-button {
   position: absolute;
   bottom: var(--spacing-sm);
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
+  transform: translateY(10px);
   background: var(--btn-gradient-warning);
   color: var(--text-white);
   border: none;

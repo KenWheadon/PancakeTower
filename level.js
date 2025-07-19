@@ -154,7 +154,7 @@ class LevelManager {
       <!-- Batter Resource -->
       <div class="resource-item">
         <div class="draggable-item" data-item-type="batter">
-          <img src="images/batter-bowl.png" alt="Batter" class="draggable-item-image">
+          <img src="images/item-batter.png" alt="Batter" class="draggable-item-image">
         </div>
         <div class="resource-name">Batter</div>
         <div class="resource-display">
@@ -680,7 +680,7 @@ class LevelManager {
     draggedItem.id = "draggedItemVisual";
 
     if (itemType === "batter") {
-      draggedItem.src = "images/batter-bowl.png";
+      draggedItem.src = "images/item-batter.png";
       draggedItem.alt = "Dragged batter";
       // Add drag effect to empty grills
       document.querySelectorAll(".cell.grill").forEach((grill) => {
