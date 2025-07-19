@@ -13,7 +13,7 @@
   align-items: center;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   pointer-events: none;
 }
 
@@ -29,15 +29,15 @@
   max-width: 1200px;
   max-height: 800px;
   background: linear-gradient(135deg, #2c3e50, #34495e);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   border: 2px solid rgba(255, 215, 0, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-2xl);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
   transform: scale(0.8);
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
 }
 
 .credits-gallery-modal.active .credits-gallery-container {
@@ -45,9 +45,9 @@
 }
 
 .credits-gallery-header {
-  padding: 20px 30px;
+  padding: var(--spacing-lg) var(--spacing-2xl);
   background: linear-gradient(135deg, #f39c12, #e67e22);
-  color: white;
+  color: var(--text-white);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -55,28 +55,28 @@
 }
 
 .credits-gallery-title {
-  font-size: 28px;
-  font-weight: bold;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
   margin: 0;
-  font-family: "Fredoka One", cursive;
+  font-family: var(--font-display);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .credits-gallery-close {
   background: none;
   border: none;
-  color: white;
-  font-size: 28px;
+  color: var(--text-white);
+  font-size: var(--font-size-xl);
   cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: all 0.2s ease;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-round);
+  transition: var(--transition-fast);
   width: 44px;
   height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .credits-gallery-close:hover {
@@ -86,7 +86,7 @@
 
 .credits-gallery-content {
   flex: 1;
-  padding: 20px;
+  padding: var(--spacing-lg);
   overflow-y: auto;
   position: relative;
   background: linear-gradient(135deg, #34495e, #2c3e50);
@@ -95,23 +95,23 @@
 .credits-gallery-filters {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 25px;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
   flex-wrap: wrap;
 }
 
 .credits-filter-btn {
-  padding: 10px 18px;
+  padding: var(--spacing-sm) var(--spacing-lg);
   background: rgba(255, 255, 255, 0.1);
   color: #ecf0f1;
   border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 20px;
+  border-radius: var(--radius-xl);
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  font-weight: 600;
+  transition: var(--transition-normal);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   text-transform: capitalize;
-  font-family: "Fredoka", sans-serif;
+  font-family: var(--font-primary);
 }
 
 .credits-filter-btn:hover,
@@ -120,14 +120,14 @@
   border-color: #f39c12;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
-  color: white;
+  color: var(--text-white);
 }
 
 .credits-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 25px;
-  padding: 20px 0;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-lg) 0;
 }
 
 .credits-card {
@@ -137,11 +137,11 @@
     rgba(255, 255, 255, 0.05)
   );
   border: 1px solid rgba(255, 215, 0, 0.2);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-lg);
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
@@ -169,7 +169,7 @@
 
 .credits-card:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-2xl);
   border-color: #f39c12;
   background: linear-gradient(
     135deg,
@@ -181,11 +181,11 @@
 .credits-card-image {
   width: 100px;
   height: 100px;
-  border-radius: 50%;
+  border-radius: var(--radius-round);
   object-fit: cover;
-  margin: 0 auto 15px;
+  margin: 0 auto var(--spacing-md);
   border: 3px solid rgba(255, 215, 0, 0.3);
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
 }
 
 .credits-card:hover .credits-card-image {
@@ -195,28 +195,28 @@
 }
 
 .credits-card-name {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
   color: #ecf0f1;
-  margin: 0 0 8px 0;
-  font-family: "Fredoka One", cursive;
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-display);
 }
 
 .credits-card-title {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: #f39c12;
-  margin: 0 0 5px 0;
-  font-weight: 600;
-  font-family: "Fredoka", sans-serif;
+  margin: 0 0 var(--spacing-xs) 0;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
 }
 
 .credits-card-department {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: #bdc3c7;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin: 0;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .credits-detail-view {
@@ -229,7 +229,7 @@
   display: flex;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   z-index: 10;
 }
 
@@ -243,84 +243,84 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
+  padding: var(--spacing-3xl);
   position: relative;
 }
 
 .credits-detail-image {
   max-width: 100%;
   max-height: 100%;
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-2xl);
   border: 3px solid rgba(255, 215, 0, 0.3);
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
 }
 
 .credits-detail-right {
   width: 50%;
-  padding: 40px;
+  padding: var(--spacing-3xl);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  color: white;
+  color: var(--text-white);
   background: rgba(0, 0, 0, 0.1);
 }
 
 .credits-detail-name {
-  font-size: 36px;
-  font-weight: bold;
-  margin: 0 0 10px 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--spacing-sm) 0;
   color: #f39c12;
-  font-family: "Fredoka One", cursive;
+  font-family: var(--font-display);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .credits-detail-title {
-  font-size: 20px;
+  font-size: var(--font-size-lg);
   color: #ecf0f1;
-  margin: 0 0 8px 0;
-  font-weight: 600;
-  font-family: "Fredoka", sans-serif;
+  margin: 0 0 var(--spacing-sm) 0;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
 }
 
 .credits-detail-department {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: #f39c12;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin: 0 0 25px 0;
-  font-weight: 500;
+  margin: 0 0 var(--spacing-xl) 0;
+  font-weight: var(--font-weight-medium);
 }
 
 .credits-detail-description {
-  font-size: 16px;
+  font-size: var(--font-size-md);
   line-height: 1.6;
   color: #bdc3c7;
   margin: 0;
-  font-family: "Fredoka", sans-serif;
-  font-weight: 400;
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-normal);
 }
 
 .credits-detail-back {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: var(--spacing-lg);
+  left: var(--spacing-lg);
   background: rgba(0, 0, 0, 0.7);
-  color: white;
+  color: var(--text-white);
   border: none;
-  border-radius: 50%;
+  border-radius: var(--radius-round);
   width: 44px;
   height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 18px;
+  transition: var(--transition-normal);
+  font-size: var(--font-size-lg);
   z-index: 100;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 215, 0, 0.3);
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .credits-detail-back:hover {
@@ -331,24 +331,24 @@
 
 .credits-navigation {
   position: absolute;
-  bottom: 25px;
+  bottom: var(--spacing-xl);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-sm);
 }
 
 .credits-nav-btn {
   background: rgba(0, 0, 0, 0.6);
-  color: white;
+  color: var(--text-white);
   border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 20px;
-  padding: 10px 18px;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-sm) var(--spacing-lg);
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: "Fredoka", sans-serif;
+  transition: var(--transition-normal);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
   backdrop-filter: blur(10px);
 }
 
@@ -385,7 +385,7 @@
     transparent 50%
   );
   pointer-events: none;
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
 .credits-gallery-content {
@@ -401,7 +401,7 @@
   }
 
   .credits-gallery-header {
-    padding: 15px 20px;
+    padding: var(--spacing-md) var(--spacing-lg);
   }
 
   .credits-gallery-title {
@@ -410,11 +410,11 @@
 
   .credits-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 18px;
+    gap: var(--spacing-lg);
   }
 
   .credits-card {
-    padding: 15px;
+    padding: var(--spacing-md);
   }
 
   .credits-card-image {
@@ -429,7 +429,7 @@
   .credits-detail-left,
   .credits-detail-right {
     width: 100%;
-    padding: 20px;
+    padding: var(--spacing-lg);
   }
 
   .credits-detail-left {
@@ -441,14 +441,14 @@
   }
 
   .credits-detail-name {
-    font-size: 28px;
+    font-size: var(--font-size-xl);
   }
 
   .credits-detail-title {
-    font-size: 18px;
+    font-size: var(--font-size-lg);
   }
 
   .credits-detail-description {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
   }
 }

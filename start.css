@@ -5,12 +5,12 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #ffe5b4 0%, #ffcc70 50%, #ffa500 100%);
+  background: var(--bg-gradient-main);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
-  padding: 20px;
+  z-index: var(--z-modal);
+  padding: var(--spacing-lg);
   box-sizing: border-box;
 }
 
@@ -29,11 +29,11 @@
 .start-content {
   text-align: center;
   position: relative;
-  z-index: 1;
-  background: linear-gradient(145deg, #ffffff, #f0f0f0);
-  padding: 50px;
-  border-radius: 25px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: var(--z-base);
+  background: var(--bg-gradient-light);
+  padding: var(--spacing-4xl);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-2xl);
   max-width: 600px;
   width: 100%;
   animation: startScreenAppear 0.8s ease-out;
@@ -42,7 +42,7 @@
 @keyframes startScreenAppear {
   from {
     opacity: 0;
-    transform: scale(0.9) translateY(20px);
+    transform: scale(0.9) translateY(var(--spacing-lg));
   }
   to {
     opacity: 1;
@@ -51,12 +51,12 @@
 }
 
 .game-logo-section {
-  margin-bottom: 40px;
+  margin-bottom: var(--spacing-3xl);
 }
 
 .game-logo {
   font-size: 100px;
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
   animation: logoFloat 3s ease-in-out infinite;
 }
 
@@ -71,23 +71,23 @@
 }
 
 .game-title {
-  font-family: "Fredoka One", cursive;
-  font-size: 48px;
-  color: #333;
-  margin-bottom: 10px;
+  font-family: var(--font-display);
+  font-size: var(--font-size-3xl);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .game-subtitle {
-  font-family: "Fredoka", sans-serif;
-  font-size: 20px;
-  color: #666;
-  margin-bottom: 30px;
-  font-weight: 500;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-2xl);
+  font-weight: var(--font-weight-medium);
 }
 
 .game-instructions {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -97,91 +97,100 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 15px;
-  padding: 15px 20px 15px 12px;
-  background: linear-gradient(145deg, #fafafa, #f5f5f5);
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-md)
+    var(--spacing-sm);
+  background: var(--bg-gradient-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-normal);
   width: 48%;
 }
 
 .instruction-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .instruction-icon {
-  font-size: 24px;
-  margin-right: 5px;
+  font-size: var(--font-size-xl);
+  margin-right: var(--spacing-xs);
 }
 
 .instruction-text {
-  font-family: "Fredoka", sans-serif;
-  font-size: 16px;
-  color: #444;
-  font-weight: 500;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-md);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
 }
 
 .start-buttons {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: var(--spacing-md);
   align-items: center;
 }
 
 .start-button {
-  background: linear-gradient(145deg, #4caf50, #45a049);
-  color: white;
+  background: var(--btn-gradient-primary);
+  color: var(--text-white);
   border: none;
-  padding: 20px 40px;
-  border-radius: 30px;
+  padding: var(--spacing-lg) var(--spacing-3xl);
+  border-radius: var(--spacing-2xl);
   cursor: pointer;
-  font-size: 18px;
-  font-weight: 600;
-  font-family: "Fredoka", sans-serif;
-  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
+  box-shadow: var(--shadow-button-primary);
+  transition: var(--transition-bounce);
   min-width: 200px;
 }
 
 .start-button:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
-  background: linear-gradient(145deg, #5cbf60, #4caf50);
+  background: linear-gradient(
+    145deg,
+    var(--color-primary-light),
+    var(--color-primary)
+  );
 }
 
 .start-button:active {
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  box-shadow: var(--shadow-button-primary);
 }
 
 .start-button.secondary {
-  background: linear-gradient(145deg, #2196f3, #1976d2);
-  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+  background: var(--btn-gradient-secondary);
+  box-shadow: var(--shadow-button-secondary);
 }
 
 .start-button.secondary:hover {
-  background: linear-gradient(145deg, #42a5f5, #2196f3);
+  background: linear-gradient(
+    145deg,
+    var(--color-secondary-light),
+    var(--color-secondary)
+  );
   box-shadow: 0 8px 25px rgba(33, 150, 243, 0.6);
 }
 
 .start-button.secondary:active {
-  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+  box-shadow: var(--shadow-button-secondary);
 }
 
 .back-button {
   background: linear-gradient(145deg, #666, #555);
-  color: white;
+  color: var(--text-white);
   border: none;
-  padding: 12px 24px;
-  border-radius: 25px;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border-radius: var(--radius-2xl);
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: "Fredoka", sans-serif;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: var(--transition-bounce);
 }
 
 .back-button:hover {

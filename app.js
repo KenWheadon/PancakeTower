@@ -83,8 +83,8 @@ class PancakeStackGame {
           <h1 class="level-select-title">Choose Your Challenge</h1>
           
           <div class="level-select-buttons">
-            <button class="htp-button" id="htpButton">❓ How to Play</button>
-            <button class="back-button" id="backToStartButton">← Back to Menu</button>
+          <button class="back-button" id="backToStartButton">← Back to Menu</button>  
+          <button class="htp-button" id="htpButton">❓ How to Play</button>
           </div>
           
           <div class="levels-grid" id="levelsGrid">

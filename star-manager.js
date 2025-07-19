@@ -165,11 +165,6 @@ class LevelSelectScreen {
             <div class="detail-icon">💰</div>
             <div class="detail-text">${levelConfig.pancakeReward}/🥞</div>
           </div>
-          ${
-            levelNum === 6
-              ? '<div class="level-detail"><div class="detail-icon">⚡</div><div class="detail-text">LIGHTNING</div></div>'
-              : ""
-          }
         </div>
         <div class="stars-label">Best Performance</div>
         <div class="stars-display">

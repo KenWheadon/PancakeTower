@@ -5,13 +5,13 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #ffe5b4 0%, #ffcc70 50%, #ffa500 100%);
+  background: var(--bg-gradient-main);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 20px;
+  z-index: var(--z-overlay);
+  padding: var(--spacing-lg);
   box-sizing: border-box;
 }
 
@@ -25,14 +25,15 @@
   background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="30" r="1" fill="rgba(255,255,255,0.1)"/></svg>')
     repeat;
   pointer-events: none;
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
 .level-select-content {
-  background: linear-gradient(145deg, #ffffff, #f8f8f8);
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  background: var(--bg-gradient-light);
+  padding: var(--spacing-2xl);
+  border-radius: var(--radius-xl);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow: var(--shadow-xl);
   max-width: 700px;
   width: 100%;
   position: relative;
@@ -52,10 +53,10 @@
 }
 
 .level-select-title {
-  font-family: "Fredoka One", cursive;
-  font-size: 32px;
-  color: #333;
-  margin-bottom: 15px;
+  font-family: var(--font-display);
+  font-size: var(--font-size-2xl);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
   text-align: center;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -64,22 +65,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: var(--spacing-xl);
 }
 
 .htp-button,
 .back-button {
   background: linear-gradient(145deg, #6c5ce7, #5a4fcf);
-  color: white;
+  color: var(--text-white);
   border: none;
-  padding: 10px 16px;
-  border-radius: 18px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--spacing-lg);
   cursor: pointer;
   font-size: 13px;
-  font-weight: 600;
-  font-family: "Fredoka", sans-serif;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
   box-shadow: 0 3px 12px rgba(108, 92, 231, 0.3);
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
 }
 
 .back-button {
@@ -100,17 +101,17 @@
 .levels-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
-  gap: 15px;
-  margin-top: 15px;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
 }
 
 .level-card {
-  background: linear-gradient(145deg, #ffffff, #f8f8f8);
-  border-radius: 16px;
-  padding: 12px 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  background: var(--bg-gradient-light);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-sm);
+  box-shadow: var(--shadow-md);
   border: 2px solid #e0e0e0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: var(--transition-bounce);
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -119,11 +120,11 @@
 .level-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-color: #ffb347;
+  border-color: var(--color-accent);
 }
 
 .level-card.completed {
-  border-color: #4caf50;
+  border-color: var(--color-primary);
   background: linear-gradient(145deg, #f8fff8, #f0fff4);
 }
 
@@ -131,17 +132,17 @@
   content: "✓";
   position: absolute;
   bottom: 45%;
-  right: 16px;
+  right: var(--spacing-md);
   width: 24px;
   height: 24px;
-  background: #4caf50;
-  color: white;
-  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--text-white);
+  border-radius: var(--radius-round);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
 }
 
 .level-header {
@@ -152,20 +153,20 @@
 }
 
 .level-number {
-  font-family: "Fredoka One", cursive;
-  font-size: 14px;
-  color: #666;
+  font-family: var(--font-display);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
   background: #f0f0f0;
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-weight: normal;
+  padding: 4px var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-normal);
 }
 
 .level-difficulty {
-  padding: 3px 8px;
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 600;
+  padding: 3px var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -186,29 +187,29 @@
 }
 
 .level-title {
-  font-family: "Fredoka One", cursive;
-  font-size: 18px;
-  color: #333;
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
   margin-bottom: 6px;
   text-align: center;
   line-height: 1.2;
 }
 
 .level-description {
-  color: #666;
-  font-size: 12px;
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
   line-height: 1.3;
 }
 
 .level-stats {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-bottom: 15px;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
   font-size: 11px;
-  color: #888;
+  color: var(--text-light);
 }
 
 .level-stat {
@@ -219,13 +220,13 @@
 }
 
 .level-stat-icon {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .level-stat-value {
-  font-weight: 600;
-  color: #333;
-  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  font-size: var(--font-size-xs);
 }
 
 .level-stat-label {
@@ -239,11 +240,11 @@
   justify-content: center;
   align-items: center;
   gap: 2px;
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-md);
 }
 
 .star {
-  font-size: 16px;
+  font-size: var(--spacing-md);
 }
 
 .star.earned {
@@ -257,27 +258,27 @@
 
 .level-play-button {
   width: 100%;
-  padding: 10px;
+  padding: var(--spacing-sm);
   border: none;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: "Fredoka", sans-serif;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   text-transform: none;
 }
 
 .level-play-button.new {
-  background: linear-gradient(145deg, #4caf50, #45a049);
-  color: white;
-  box-shadow: 0 3px 12px rgba(76, 175, 80, 0.3);
+  background: var(--btn-gradient-primary);
+  color: var(--text-white);
+  box-shadow: var(--shadow-button-primary);
 }
 
 .level-play-button.completed {
-  background: linear-gradient(145deg, #2196f3, #1976d2);
-  color: white;
-  box-shadow: 0 3px 12px rgba(33, 150, 243, 0.3);
+  background: var(--btn-gradient-secondary);
+  color: var(--text-white);
+  box-shadow: var(--shadow-button-secondary);
 }
 
 .level-play-button:hover {
@@ -296,19 +297,19 @@
 /* Back to Menu Button */
 .back-to-menu-button {
   position: fixed;
-  top: 20px;
-  left: 20px;
-  background: linear-gradient(145deg, #74b9ff, #0984e3);
-  color: white;
+  top: var(--spacing-lg);
+  left: var(--spacing-lg);
+  background: var(--btn-gradient-secondary);
+  color: var(--text-white);
   border: none;
-  padding: 10px 16px;
-  border-radius: 18px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--spacing-lg);
   cursor: pointer;
   font-size: 13px;
-  font-weight: 600;
-  font-family: "Fredoka", sans-serif;
-  box-shadow: 0 3px 12px rgba(116, 185, 255, 0.3);
-  transition: all 0.3s ease;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
+  box-shadow: var(--shadow-button-secondary);
+  transition: var(--transition-normal);
   z-index: 100;
 }
 
@@ -332,19 +333,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: var(--z-modal);
   backdrop-filter: blur(5px);
 }
 
 .htp-content {
-  background: linear-gradient(145deg, #ffffff, #f0f0f0);
-  padding: 40px;
-  border-radius: 25px;
+  background: var(--bg-gradient-light);
+  padding: var(--spacing-3xl);
+  border-radius: var(--radius-2xl);
   max-width: 600px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-2xl);
   animation: htpAppear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
@@ -352,7 +353,7 @@
 @keyframes htpAppear {
   from {
     opacity: 0;
-    transform: scale(0.8) translateY(-20px);
+    transform: scale(0.8) translateY(-var(--spacing-lg));
   }
   to {
     opacity: 1;
@@ -361,70 +362,70 @@
 }
 
 .htp-title {
-  font-family: "Fredoka One", cursive;
-  font-size: 32px;
-  color: #333;
-  margin-bottom: 30px;
+  font-family: var(--font-display);
+  font-size: var(--font-size-2xl);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2xl);
   text-align: center;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .htp-instructions {
-  font-family: "Fredoka", sans-serif;
-  font-size: 16px;
-  color: #444;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-md);
+  color: var(--text-primary);
   line-height: 1.6;
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-2xl);
 }
 
 .htp-instruction {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: linear-gradient(145deg, #fafafa, #f5f5f5);
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  border-left: 4px solid #2196f3;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--bg-gradient-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--color-secondary);
 }
 
 .htp-instruction-number {
-  background: linear-gradient(145deg, #2196f3, #1976d2);
-  color: white;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  background: var(--btn-gradient-secondary);
+  color: var(--text-white);
+  border-radius: var(--radius-round);
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xl);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: bold;
-  font-family: "Fredoka One", cursive;
-  margin-right: 15px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-display);
+  margin-right: var(--spacing-md);
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+  box-shadow: var(--shadow-button-secondary);
 }
 
 .htp-instruction-text {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   flex-grow: 1;
 }
 
 .htp-close-button {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  background: linear-gradient(145deg, #f44336, #d32f2f);
-  color: white;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  background: var(--btn-gradient-danger);
+  color: var(--text-white);
   border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: var(--spacing-3xl);
+  height: var(--spacing-3xl);
+  border-radius: var(--radius-round);
   cursor: pointer;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
   box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: var(--transition-bounce);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -433,7 +434,7 @@
 .htp-close-button:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(244, 67, 54, 0.6);
-  background: linear-gradient(145deg, #ef5350, #f44336);
+  background: linear-gradient(145deg, #ef5350, var(--color-danger));
 }
 
 .htp-close-button:active {
@@ -442,17 +443,17 @@
 }
 
 .htp-got-it-button {
-  background: linear-gradient(145deg, #4caf50, #45a049);
-  color: white;
+  background: var(--btn-gradient-primary);
+  color: var(--text-white);
   border: none;
-  padding: 15px 30px;
-  border-radius: 25px;
+  padding: var(--spacing-md) var(--spacing-2xl);
+  border-radius: var(--radius-2xl);
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  font-family: "Fredoka", sans-serif;
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
+  box-shadow: var(--shadow-button-primary);
+  transition: var(--transition-bounce);
   display: block;
   margin: 0 auto;
 }
@@ -460,14 +461,47 @@
 .htp-got-it-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
-  background: linear-gradient(145deg, #5cbf60, #4caf50);
+  background: linear-gradient(
+    145deg,
+    var(--color-primary-light),
+    var(--color-primary)
+  );
 }
 
 .htp-got-it-button:active {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(76, 175, 80, 0.4);
+  box-shadow: var(--shadow-button-primary);
 }
 
-.hidden {
-  display: none !important;
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .level-select-content {
+    width: 95%;
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  .level-select-title {
+    font-size: 22px;
+  }
+
+  .levels-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .level-card {
+    padding: var(--spacing-md);
+  }
+
+  .htp-content {
+    padding: var(--spacing-lg);
+  }
+
+  .htp-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .htp-instruction-text {
+    font-size: var(--font-size-sm);
+  }
 }
