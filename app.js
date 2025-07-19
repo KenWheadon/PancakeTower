@@ -29,7 +29,7 @@ class PancakeStackGame {
       <div id="loadingScreen" class="loading-screen">
         <div class="loading-content">
           <div class="loading-logo">🥞</div>
-          <h1 class="loading-title">Pancake Stack Game</h1>
+          <h1 class="loading-title">Pancake Tower</h1>
           <div class="loading-text" id="loadingText">Loading pancakes...</div>
           <div class="loading-bar-container">
             <div class="loading-bar" id="loadingBar"></div>
@@ -43,18 +43,22 @@ class PancakeStackGame {
         <div class="start-content">
           <div class="game-logo-section">
             <div class="game-logo">🥞</div>
-            <h1 class="game-title">Pancake Stack Game</h1>
+            <h1 class="game-title">Pancake Tower</h1>
             <p class="game-subtitle">Master the art of pancake cooking!</p>
           </div>
           
           <div class="game-instructions">
             <div class="instruction-item">
               <span class="instruction-icon">🔥</span>
-              <span class="instruction-text">Cook pancakes on the grill</span>
+              <span class="instruction-text">Drag batter to grill to cook pancakes</span>
+            </div>
+            <div class="instruction-item">
+              <span class="instruction-icon">🧈</span>
+              <span class="instruction-text">Add ingredients before the deadline</span>
             </div>
             <div class="instruction-item">
               <span class="instruction-icon">🥞</span>
-              <span class="instruction-text">Stack them perfectly</span>
+              <span class="instruction-text">Plate them before they burn</span>
             </div>
             <div class="instruction-item">
               <span class="instruction-icon">💰</span>
@@ -101,30 +105,34 @@ class PancakeStackGame {
             </div>
             <div class="htp-instruction">
               <div class="htp-instruction-number">2</div>
-              <div class="htp-instruction-text">Click an empty grill to add pancake batter</div>
+              <div class="htp-instruction-text">Drag batter from the store to an empty grill to start cooking</div>
             </div>
             <div class="htp-instruction">
               <div class="htp-instruction-number">3</div>
-              <div class="htp-instruction-text">Wait for the pancake to become cooked and then drag it to a plate</div>
+              <div class="htp-instruction-text">Add ingredients (butter, banana) by dragging them to the pancake BEFORE the first marker</div>
             </div>
             <div class="htp-instruction">
               <div class="htp-instruction-number">4</div>
-              <div class="htp-instruction-text">Don't let the bar fill completely or your pancake will get burnt and be thrown away</div>
+              <div class="htp-instruction-text">Wait for the pancake to become cooked (second marker) and then drag it to a plate</div>
             </div>
             <div class="htp-instruction">
               <div class="htp-instruction-number">5</div>
-              <div class="htp-instruction-text">Drag pancakes between plates to create different sized stacks</div>
+              <div class="htp-instruction-text">Don't let the bar fill completely or your pancake will get burnt and be thrown away</div>
             </div>
             <div class="htp-instruction">
               <div class="htp-instruction-number">6</div>
-              <div class="htp-instruction-text">Complete orders perfectly to earn money</div>
+              <div class="htp-instruction-text">Drag pancakes between plates to create different sized stacks</div>
             </div>
             <div class="htp-instruction">
               <div class="htp-instruction-number">7</div>
-              <div class="htp-instruction-text">Lose money for each incorrect pancake in an order</div>
+              <div class="htp-instruction-text">Complete orders perfectly to earn money</div>
             </div>
             <div class="htp-instruction">
               <div class="htp-instruction-number">8</div>
+              <div class="htp-instruction-text">Lose money for each incorrect pancake in an order</div>
+            </div>
+            <div class="htp-instruction">
+              <div class="htp-instruction-number">9</div>
               <div class="htp-instruction-text">Make as much money as you can in the time limit and aim for 3 stars!</div>
             </div>
           </div>
@@ -161,15 +169,7 @@ class PancakeStackGame {
           <div id="gameGrid"></div>
           <div id="sidebar">
             <div class="sidebar-section store-section" id="storeSection">
-              <h3>🏪 Store</h3>
-              <div class="resource-item">
-                <div class="resource-name">Batter</div>
-                <div class="resource-display">
-                  <span class="resource-cost">Cost: $<span id="batterCost">1</span></span>
-                  <span class="resource-amount">Have: <span id="batterCount">10</span></span>
-                </div>
-                <button class="buy-button" id="buyBatter">Buy More</button>
-              </div>
+              <!-- Store content will be dynamically generated -->
             </div>
           </div>
         </div>

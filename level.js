@@ -6,11 +6,14 @@ class LevelManager {
     this.gameRunning = false;
     this.timeRemaining = 0;
     this.batter = 0;
+    this.butter = 0;
+    this.banana = 0;
     this.money = 0;
     this.currentOrderIndex = 0;
     this.totalOrdersCompleted = 0;
     this.isDragging = false;
-    this.draggedPancakeId = null;
+    this.draggedItemType = null;
+    this.draggedItemId = null;
 
     // Grid state
     this.grid = [];
@@ -56,11 +59,14 @@ class LevelManager {
     this.gameRunning = true;
     this.timeRemaining = this.levelConfig.timeLimit;
     this.batter = this.levelConfig.initialBatter;
+    this.butter = this.levelConfig.initialButter || 0;
+    this.banana = this.levelConfig.initialBanana || 0;
     this.money = this.levelConfig.initialMoney;
     this.currentOrderIndex = 0;
     this.totalOrdersCompleted = 0;
     this.isDragging = false;
-    this.draggedPancakeId = null;
+    this.draggedItemType = null;
+    this.draggedItemId = null;
 
     // Grid state
     this.grid = new Array(9).fill(null).map((_, index) => ({
@@ -95,10 +101,12 @@ class LevelManager {
         grillImg.alt = "Grill";
         cellDiv.appendChild(grillImg);
 
-        cellDiv.addEventListener("click", (e) => {
-          this.addClickEffect(e);
-          this.startCooking(index);
-        });
+        // Remove click event listener - now only drag-and-drop works
+        // Add drop zone functionality for grills (for batter)
+        cellDiv.addEventListener("dragover", this.handleDragOver.bind(this));
+        cellDiv.addEventListener("drop", this.handleDrop.bind(this));
+        cellDiv.addEventListener("dragenter", this.handleDragEnter.bind(this));
+        cellDiv.addEventListener("dragleave", this.handleDragLeave.bind(this));
       } else if (cell.type === "plate") {
         // Replace emoji with image
         const plateImg = document.createElement("img");
@@ -115,10 +123,8 @@ class LevelManager {
           this.servePlate(index);
         });
         cellDiv.appendChild(serveButton);
-      }
 
-      // Add drop zone functionality for plates
-      if (cell.type === "plate") {
+        // Add drop zone functionality for plates
         cellDiv.addEventListener("dragover", this.handleDragOver.bind(this));
         cellDiv.addEventListener("drop", this.handleDrop.bind(this));
         cellDiv.addEventListener("dragenter", this.handleDragEnter.bind(this));
@@ -127,6 +133,75 @@ class LevelManager {
 
       gameGrid.appendChild(cellDiv);
     });
+
+    // Create sidebar with ingredients
+    this.createSidebar();
+  }
+
+  createSidebar() {
+    const sidebar = document.getElementById("sidebar");
+
+    // Create store section with batter and available ingredients
+    const storeSection = document.getElementById("storeSection");
+    storeSection.innerHTML = `
+      <h3>🏪 Store</h3>
+      
+      <!-- Batter Resource -->
+      <div class="resource-item">
+        <div class="draggable-item" data-item-type="batter">
+          <img src="images/batter-bowl.png" alt="Batter" class="draggable-item-image">
+        </div>
+        <div class="resource-name">Batter</div>
+        <div class="resource-display">
+          <span class="resource-cost">Cost: $<span id="batterCost">1</span></span>
+          <span class="resource-amount">Have: <span id="batterCount">10</span></span>
+        </div>
+        <button class="buy-button" id="buyBatter">Buy More</button>
+      </div>
+    `;
+
+    // Add ingredients based on level config
+    if (this.levelConfig.availableIngredients) {
+      this.levelConfig.availableIngredients.forEach((ingredient) => {
+        if (ingredient === "butter") {
+          const butterItem = document.createElement("div");
+          butterItem.className = "resource-item";
+          butterItem.innerHTML = `
+            <div class="draggable-item" data-item-type="butter">
+              <img src="images/ingredient-butter.png" alt="Butter" class="draggable-item-image">
+            </div>
+            <div class="resource-name">Butter</div>
+            <div class="resource-display">
+              <span class="resource-cost">Cost: $<span id="butterCost">${this.levelConfig.butterCost}</span></span>
+              <span class="resource-amount">Have: <span id="butterCount">${this.butter}</span></span>
+            </div>
+            <button class="buy-button" id="buyButter">Buy More</button>
+          `;
+          storeSection.appendChild(butterItem);
+        } else if (ingredient === "banana") {
+          const bananaItem = document.createElement("div");
+          bananaItem.className = "resource-item";
+          bananaItem.innerHTML = `
+            <div class="draggable-item" data-item-type="banana">
+              <img src="images/ingredient-banana.png" alt="Banana" class="draggable-item-image">
+            </div>
+            <div class="resource-name">Banana</div>
+            <div class="resource-display">
+              <span class="resource-cost">Cost: $<span id="bananaCost">${this.levelConfig.bananaCost}</span></span>
+              <span class="resource-amount">Have: <span id="bananaCount">${this.banana}</span></span>
+            </div>
+            <button class="buy-button" id="buyBanana">Buy More</button>
+          `;
+          storeSection.appendChild(bananaItem);
+        }
+      });
+    }
+
+    // Add drag event listeners to all draggable items
+    document.querySelectorAll(".draggable-item").forEach((item) => {
+      item.addEventListener("mousedown", this.handleMouseDown.bind(this));
+      item.addEventListener("dragstart", (e) => e.preventDefault());
+    });
   }
 
   setupGameEventListeners() {
@@ -134,6 +209,15 @@ class LevelManager {
     document
       .getElementById("buyBatter")
       ?.addEventListener("click", () => this.buyBatter());
+
+    // Add event listeners for ingredient purchases if they exist
+    document
+      .getElementById("buyButter")
+      ?.addEventListener("click", () => this.buyButter());
+
+    document
+      .getElementById("buyBanana")
+      ?.addEventListener("click", () => this.buyBanana());
   }
 
   addClickEffect(e) {
@@ -176,6 +260,8 @@ class LevelManager {
       progress: 0,
       startTime: Date.now(),
       cellIndex: cellIndex,
+      ingredients: [], // track added ingredients
+      ingredientDeadlinePassed: false,
     };
 
     cell.cookingPancake = pancake;
@@ -186,6 +272,28 @@ class LevelManager {
 
     this.updateCellDisplay(cellIndex);
     this.updateUI();
+  }
+
+  addIngredientToPancake(pancakeId, ingredientType) {
+    const pancake = this.cookingPancakes.get(pancakeId);
+    if (!pancake || pancake.ingredientDeadlinePassed) return false;
+
+    // Check if we have the ingredient
+    if (ingredientType === "butter" && this.butter <= 0) return false;
+    if (ingredientType === "banana" && this.banana <= 0) return false;
+
+    // Consume ingredient
+    if (ingredientType === "butter") this.butter--;
+    if (ingredientType === "banana") this.banana--;
+
+    // Add to pancake
+    pancake.ingredients.push(ingredientType);
+
+    // Update display
+    this.updateCellDisplay(pancake.cellIndex);
+    this.updateUI();
+
+    return true;
   }
 
   addSizzleEffect(cellIndex) {
@@ -201,16 +309,16 @@ class LevelManager {
     const currentTime = Date.now();
 
     this.cookingPancakes.forEach((pancake, id) => {
-      // Check if this specific pancake is being dragged
-      const isDraggedPancake =
-        this.isDragging && this.draggedPancakeId === id.toString();
+      // Check if this specific item is being dragged
+      const isDraggedItem =
+        this.isDragging && this.draggedItemId === id.toString();
 
       const cellDiv = document.querySelector(
         `[data-cell-index="${pancake.cellIndex}"]`
       );
       const progressBar = cellDiv?.querySelector(".progress-bar");
 
-      if (isDraggedPancake) {
+      if (isDraggedItem) {
         // Pause only this pancake's cooking
         if (progressBar) {
           progressBar.classList.add("cooking-paused-specific");
@@ -240,6 +348,17 @@ class LevelManager {
         GAME_CONFIG.mechanics.burntThreshold,
         (elapsed / this.levelConfig.burntTime) * 100
       );
+
+      // Check if ingredient deadline has passed
+      const ingredientThreshold =
+        (this.levelConfig.ingredientTime / this.levelConfig.burntTime) * 100;
+      if (
+        pancake.progress >= ingredientThreshold &&
+        !pancake.ingredientDeadlinePassed
+      ) {
+        pancake.ingredientDeadlinePassed = true;
+        this.updateCellDisplay(pancake.cellIndex);
+      }
 
       // Auto-remove burnt pancakes
       if (pancake.progress >= GAME_CONFIG.mechanics.burntThreshold) {
@@ -301,7 +420,9 @@ class LevelManager {
         grillImg.style.opacity = "0.3";
       }
 
-      // Calculate the actual cooking threshold from level config
+      // Calculate thresholds from level config
+      const ingredientThreshold =
+        (this.levelConfig.ingredientTime / this.levelConfig.burntTime) * 100;
       const cookingThreshold =
         (this.levelConfig.cookingTime / this.levelConfig.burntTime) * 100;
 
@@ -313,6 +434,7 @@ class LevelManager {
 
         progressBar.innerHTML = `
           <div class="progress-fill"></div>
+          <div class="progress-marker ingredient" style="left: ${ingredientThreshold}%"></div>
           <div class="progress-marker done" style="left: ${cookingThreshold}%"></div>
         `;
         cellDiv.appendChild(progressBar);
@@ -330,10 +452,15 @@ class LevelManager {
         cellDiv.appendChild(pancakeImg);
       }
 
-      // Update pancake appearance based on progress using the actual cooking threshold
-      if (progress < cookingThreshold) {
-        pancakeImg.src = "images/plain-pancake-goo.png"; // Uncooked
+      // Update pancake appearance based on progress using the actual thresholds
+      if (progress < ingredientThreshold) {
+        pancakeImg.src = "images/plain-pancake-goo.png"; // Uncooked - can add ingredients
         pancakeImg.alt = "Uncooked pancake";
+        pancakeImg.draggable = false;
+        pancakeImg.style.cursor = "not-allowed";
+      } else if (progress < cookingThreshold) {
+        pancakeImg.src = "images/plain-pancake-solid.png"; // Solid - no more ingredients, still cooking
+        pancakeImg.alt = "Solid pancake";
         pancakeImg.draggable = false;
         pancakeImg.style.cursor = "not-allowed";
       } else if (progress >= GAME_CONFIG.mechanics.burntThreshold) {
@@ -358,6 +485,13 @@ class LevelManager {
         );
         pancakeImg.addEventListener("dragstart", (e) => e.preventDefault());
       }
+
+      // Add ingredient drop zone functionality to cooking pancakes that haven't passed ingredient deadline
+      if (!pancake.ingredientDeadlinePassed) {
+        cellDiv.classList.add("ingredient-drop-zone");
+      } else {
+        cellDiv.classList.remove("ingredient-drop-zone");
+      }
     } else if (cell.type === "grill") {
       // Clear grill display when no pancake and show grill image
       const grillImg = cellDiv.querySelector(".grill-image");
@@ -369,6 +503,7 @@ class LevelManager {
       const pancakeImg = cellDiv.querySelector(".pancake");
       if (progressBar) progressBar.remove();
       if (pancakeImg) pancakeImg.remove();
+      cellDiv.classList.remove("ingredient-drop-zone");
     } else if (cell.type === "plate") {
       // Update serve button with stack count
       const serveButton = cellDiv.querySelector(".serve-button");
@@ -431,11 +566,22 @@ class LevelManager {
     e.stopPropagation();
 
     const pancakeId = e.target.dataset.pancakeId;
-    if (!pancakeId) return;
+    const itemType = e.target.dataset.itemType; // for ingredients
 
+    if (pancakeId) {
+      // Dragging a pancake
+      this.startPancakeDrag(e, pancakeId);
+    } else if (itemType) {
+      // Dragging an ingredient or batter
+      this.startItemDrag(e, itemType);
+    }
+  }
+
+  startPancakeDrag(e, pancakeId) {
     // Set dragging state
     this.isDragging = true;
-    this.draggedPancakeId = pancakeId;
+    this.draggedItemType = "pancake";
+    this.draggedItemId = pancakeId;
 
     // Add visual feedback to original pancake
     e.target.classList.add("dragging");
@@ -446,18 +592,76 @@ class LevelManager {
     draggedPancake.className = "dragged-pancake";
     draggedPancake.src = "images/plain-pancake-cooked.png";
     draggedPancake.alt = "Dragged pancake";
-    draggedPancake.id = "draggedPancakeVisual";
+    draggedPancake.id = "draggedItemVisual";
     document.body.appendChild(draggedPancake);
 
-    // Add drag effect to valid drop zones
+    // Add drag effect to valid drop zones (plates)
     document.querySelectorAll(".cell.plate").forEach((plate) => {
       plate.classList.add("drag-target");
     });
 
+    this.setupDragEventListeners(e);
+  }
+
+  startItemDrag(e, itemType) {
+    // Check if we have the item
+    if (itemType === "batter" && this.batter <= 0) return;
+    if (itemType === "butter" && this.butter <= 0) return;
+    if (itemType === "banana" && this.banana <= 0) return;
+
+    // Set dragging state
+    this.isDragging = true;
+    this.draggedItemType = itemType;
+    this.draggedItemId = null;
+
+    // Add visual feedback
+    e.target.classList.add("dragging");
+    e.target.style.cursor = "grabbing";
+
+    // Create dragged item visual
+    const draggedItem = document.createElement("img");
+    draggedItem.className = "dragged-item";
+    draggedItem.id = "draggedItemVisual";
+
+    if (itemType === "batter") {
+      draggedItem.src = "images/batter-bowl.png";
+      draggedItem.alt = "Dragged batter";
+      // Add drag effect to empty grills
+      document.querySelectorAll(".cell.grill").forEach((grill) => {
+        const cellIndex = parseInt(grill.dataset.cellIndex);
+        if (!this.grid[cellIndex].cookingPancake) {
+          grill.classList.add("drag-target");
+        }
+      });
+    } else if (itemType === "butter") {
+      draggedItem.src = "images/ingredient-butter.png";
+      draggedItem.alt = "Dragged butter";
+      // Add drag effect to cooking pancakes that can still accept ingredients
+      document
+        .querySelectorAll(".cell.grill.ingredient-drop-zone")
+        .forEach((grill) => {
+          grill.classList.add("drag-target");
+        });
+    } else if (itemType === "banana") {
+      draggedItem.src = "images/ingredient-banana.png";
+      draggedItem.alt = "Dragged banana";
+      // Add drag effect to cooking pancakes that can still accept ingredients
+      document
+        .querySelectorAll(".cell.grill.ingredient-drop-zone")
+        .forEach((grill) => {
+          grill.classList.add("drag-target");
+        });
+    }
+
+    document.body.appendChild(draggedItem);
+    this.setupDragEventListeners(e);
+  }
+
+  setupDragEventListeners(e) {
     // Add mouse move and up listeners
     const handleMouseMove = (moveEvent) => {
-      // Update dragged pancake position
-      const draggedElement = document.getElementById("draggedPancakeVisual");
+      // Update dragged item position
+      const draggedElement = document.getElementById("draggedItemVisual");
       if (draggedElement) {
         draggedElement.style.left = moveEvent.clientX - 24 + "px";
         draggedElement.style.top = moveEvent.clientY - 24 + "px";
@@ -465,56 +669,12 @@ class LevelManager {
     };
 
     const handleMouseUp = (upEvent) => {
-      // Reset dragging state
-      this.isDragging = false;
-
-      // Remove dragged pancake visual
-      const draggedElement = document.getElementById("draggedPancakeVisual");
-      if (draggedElement) {
-        draggedElement.remove();
-      }
-
-      // Clean up drag effects
-      document.querySelectorAll(".pancake.dragging").forEach((pancake) => {
-        pancake.classList.remove("dragging");
-        pancake.style.cursor = "grab";
-      });
-      document.querySelectorAll(".cell.plate.drag-target").forEach((plate) => {
-        plate.classList.remove("drag-target");
-      });
-      document.querySelectorAll(".cell.plate.drag-over").forEach((plate) => {
-        plate.classList.remove("drag-over");
-      });
-
-      // Clean up any remaining paused indicators
-      document
-        .querySelectorAll(".progress-bar.cooking-paused-specific")
-        .forEach((bar) => {
-          bar.classList.remove("cooking-paused-specific");
-        });
-
-      // Find the drop target
-      const elementUnderMouse = document.elementFromPoint(
-        upEvent.clientX,
-        upEvent.clientY
-      );
-      const plateCell = elementUnderMouse?.closest(".cell.plate");
-
-      if (plateCell && this.draggedPancakeId) {
-        const targetCellIndex = parseInt(plateCell.dataset.cellIndex);
-        this.movePancake(parseInt(this.draggedPancakeId), targetCellIndex);
-      }
-
-      this.draggedPancakeId = null;
-
-      // Remove event listeners
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
+      this.endDrag(upEvent);
     };
 
-    // Set initial position of dragged pancake
+    // Set initial position of dragged item
     const rect = e.target.getBoundingClientRect();
-    const draggedElement = document.getElementById("draggedPancakeVisual");
+    const draggedElement = document.getElementById("draggedItemVisual");
     if (draggedElement) {
       draggedElement.style.left = rect.left + rect.width / 2 - 24 + "px";
       draggedElement.style.top = rect.top + rect.height / 2 - 24 + "px";
@@ -525,23 +685,100 @@ class LevelManager {
     document.addEventListener("mouseup", handleMouseUp);
 
     // Add hover effects for drop targets
-    document.querySelectorAll(".cell.plate").forEach((plate) => {
-      const handleMouseEnter = () => plate.classList.add("drag-over");
-      const handleMouseLeave = () => plate.classList.remove("drag-over");
+    document.querySelectorAll(".drag-target").forEach((target) => {
+      const handleMouseEnter = () => target.classList.add("drag-over");
+      const handleMouseLeave = () => target.classList.remove("drag-over");
 
-      plate.addEventListener("mouseenter", handleMouseEnter);
-      plate.addEventListener("mouseleave", handleMouseLeave);
+      target.addEventListener("mouseenter", handleMouseEnter);
+      target.addEventListener("mouseleave", handleMouseLeave);
 
       // Clean up these listeners when drag ends
       document.addEventListener(
         "mouseup",
         () => {
-          plate.removeEventListener("mouseenter", handleMouseEnter);
-          plate.removeEventListener("mouseleave", handleMouseLeave);
+          target.removeEventListener("mouseenter", handleMouseEnter);
+          target.removeEventListener("mouseleave", handleMouseLeave);
         },
         { once: true }
       );
     });
+  }
+
+  endDrag(upEvent) {
+    // Find the drop target
+    const elementUnderMouse = document.elementFromPoint(
+      upEvent.clientX,
+      upEvent.clientY
+    );
+    const targetCell = elementUnderMouse?.closest(".cell");
+
+    if (targetCell && this.draggedItemType) {
+      const targetCellIndex = parseInt(targetCell.dataset.cellIndex);
+
+      if (this.draggedItemType === "pancake" && this.draggedItemId) {
+        if (targetCell.classList.contains("plate")) {
+          this.movePancake(parseInt(this.draggedItemId), targetCellIndex);
+        }
+      } else if (this.draggedItemType === "batter") {
+        if (
+          targetCell.classList.contains("grill") &&
+          !this.grid[targetCellIndex].cookingPancake
+        ) {
+          this.startCooking(targetCellIndex);
+        }
+      } else if (
+        this.draggedItemType === "butter" ||
+        this.draggedItemType === "banana"
+      ) {
+        if (targetCell.classList.contains("grill")) {
+          const cell = this.grid[targetCellIndex];
+          if (
+            cell.cookingPancake &&
+            !cell.cookingPancake.ingredientDeadlinePassed
+          ) {
+            this.addIngredientToPancake(
+              cell.cookingPancake.id,
+              this.draggedItemType
+            );
+          }
+        }
+      }
+    }
+
+    // Reset dragging state
+    this.isDragging = false;
+
+    // Remove dragged item visual
+    const draggedElement = document.getElementById("draggedItemVisual");
+    if (draggedElement) {
+      draggedElement.remove();
+    }
+
+    // Clean up drag effects
+    document.querySelectorAll(".dragging").forEach((item) => {
+      item.classList.remove("dragging");
+      item.style.cursor = "grab";
+    });
+    document.querySelectorAll(".drag-target").forEach((target) => {
+      target.classList.remove("drag-target");
+    });
+    document.querySelectorAll(".drag-over").forEach((target) => {
+      target.classList.remove("drag-over");
+    });
+
+    // Clean up any remaining paused indicators
+    document
+      .querySelectorAll(".progress-bar.cooking-paused-specific")
+      .forEach((bar) => {
+        bar.classList.remove("cooking-paused-specific");
+      });
+
+    this.draggedItemType = null;
+    this.draggedItemId = null;
+
+    // Remove event listeners
+    document.removeEventListener("mousemove", arguments.callee);
+    document.removeEventListener("mouseup", arguments.callee);
   }
 
   handleDragStart(e) {
@@ -603,6 +840,7 @@ class LevelManager {
       targetCell.pancakes.push({
         id: pancakeId,
         type: "plain",
+        ingredients: sourcePancake.ingredients || [],
       });
 
       // Add move effect
@@ -855,6 +1093,42 @@ class LevelManager {
     this.updateUI();
   }
 
+  buyButter() {
+    if (this.game.gameState !== "playing" || !this.gameRunning) return;
+    if (this.money < this.levelConfig.butterCost) return;
+
+    this.money -= this.levelConfig.butterCost;
+    this.butter += this.levelConfig.butterPurchaseAmount;
+
+    // Add purchase effect
+    const buyButton = document.getElementById("buyButter");
+    buyButton?.classList.add("success-glow");
+    setTimeout(
+      () => buyButton?.classList.remove("success-glow"),
+      GAME_CONFIG.animations.successGlow
+    );
+
+    this.updateUI();
+  }
+
+  buyBanana() {
+    if (this.game.gameState !== "playing" || !this.gameRunning) return;
+    if (this.money < this.levelConfig.bananaCost) return;
+
+    this.money -= this.levelConfig.bananaCost;
+    this.banana += this.levelConfig.bananaPurchaseAmount;
+
+    // Add purchase effect
+    const buyButton = document.getElementById("buyBanana");
+    buyButton?.classList.add("success-glow");
+    setTimeout(
+      () => buyButton?.classList.remove("success-glow"),
+      GAME_CONFIG.animations.successGlow
+    );
+
+    this.updateUI();
+  }
+
   updateUI() {
     const timeSeconds = Math.ceil(this.timeRemaining / 1000);
     const timerEl = document.getElementById("timer");
@@ -877,7 +1151,22 @@ class LevelManager {
       this.levelConfig.batterCost;
     document.getElementById("moneyDisplay").textContent = `${this.money}`;
 
-    // Update store section styling based on batter count
+    // Update ingredient counts if they exist
+    const butterCount = document.getElementById("butterCount");
+    const butterCost = document.getElementById("butterCost");
+    if (butterCount && butterCost) {
+      butterCount.textContent = this.butter;
+      butterCost.textContent = this.levelConfig.butterCost || 0;
+    }
+
+    const bananaCount = document.getElementById("bananaCount");
+    const bananaCost = document.getElementById("bananaCost");
+    if (bananaCount && bananaCost) {
+      bananaCount.textContent = this.banana;
+      bananaCost.textContent = this.levelConfig.bananaCost || 0;
+    }
+
+    // Update store section styling based on item counts
     const storeSection = document.getElementById("storeSection");
     const buyButton = document.getElementById("buyBatter");
 
@@ -889,6 +1178,18 @@ class LevelManager {
 
     // Update buy button availability
     buyButton.disabled = this.money < this.levelConfig.batterCost;
+
+    const buyButterButton = document.getElementById("buyButter");
+    if (buyButterButton) {
+      buyButterButton.disabled =
+        this.money < (this.levelConfig.butterCost || 0);
+    }
+
+    const buyBananaButton = document.getElementById("buyBanana");
+    if (buyBananaButton) {
+      buyBananaButton.disabled =
+        this.money < (this.levelConfig.bananaCost || 0);
+    }
   }
 
   gameLoop() {

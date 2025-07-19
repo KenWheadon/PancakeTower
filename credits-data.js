@@ -9,7 +9,7 @@ const CREDITS = {
     fullImage:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
     description:
-      "Alex conceptualized the core mechanics of the Pancake Stack Game, focusing on creating an engaging and intuitive cooking simulation experience. With over 8 years in game design, Alex specializes in casual gaming experiences that are easy to learn but challenging to master.",
+      "Alex conceptualized the core mechanics of Pancake Tower, focusing on creating an engaging and intuitive cooking simulation experience. With over 8 years in game design, Alex specializes in casual gaming experiences that are easy to learn but challenging to master.",
   },
 
   "lead-developer": {

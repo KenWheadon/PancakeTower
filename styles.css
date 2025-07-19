@@ -245,13 +245,6 @@ body::before {
   box-shadow: 0 6px 20px rgba(116, 185, 255, 0.4);
 }
 
-.levels-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-  margin-top: 20px;
-}
-
 .level-card {
   background: linear-gradient(145deg, #ffffff, #f5f5f5);
   border-radius: 20px;
@@ -268,13 +261,6 @@ body::before {
   transform: translateY(-5px);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
   border-color: #ffb347;
-}
-
-.level-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
 }
 
 .level-number {
@@ -316,18 +302,9 @@ body::before {
   text-align: center;
 }
 
-.level-description {
-  color: #666;
-  font-size: 14px;
-  text-align: center;
-  margin-bottom: 20px;
-  line-height: 1.4;
-}
-
 .stars-label {
   font-size: 12px;
   color: #666;
-  margin-bottom: 8px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -361,10 +338,10 @@ body::before {
 .level-details {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 20px;
-  padding: 15px;
+  margin-bottom: 6px;
+  padding: 8px;
   background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
 .level-detail {
