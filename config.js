@@ -6,7 +6,7 @@ const GAME_CONFIG = {
   // Level configurations
   levels: {
     1: {
-      name: "Breakfast Rush",
+      name: "Learning the Ropes",
       description: "Learn the basics of pancake cooking!",
       difficulty: "Easy",
       gridLayout: [
@@ -20,20 +20,19 @@ const GAME_CONFIG = {
         "grill",
         "plate",
       ],
-      cookingTime: 3000, // 3 seconds to 80%
-      ingredientTime: 1500, // 1.5 seconds - deadline for adding ingredients
-      burntTime: 6000, // 6 seconds to 100%
-      timeLimit: 60000, // 60 seconds
-      // UPDATED: Orders now specify pancake types and quantities
+      cookingTime: 7000,
+      ingredientTime: 5000,
+      burntTime: 10000,
+      timeLimit: 60000,
       orders: [{ plain: 1 }, { plain: 2 }, { plain: 1 }, { plain: 3 }],
-      starThresholds: [3, 8, 12], // thresholds for 1, 2, 3 stars
+      starThresholds: [1, 4, 10],
       initialBatter: 0,
-      initialMoney: 5,
+      initialMoney: 1,
       batterCost: 1,
       batterPurchaseAmount: 3,
-      pancakeReward: 1, // $ per correct pancake
-      pancakePenalty: 1, // $ penalty per extra pancake
-      availableIngredients: [], // no special ingredients in level 1
+      pancakeReward: 1,
+      pancakePenalty: 0,
+      availableIngredients: [],
     },
 
     2: {

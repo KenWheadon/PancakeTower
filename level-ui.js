@@ -601,21 +601,18 @@ class LevelUI {
       timerEl.classList.remove("urgent");
     }
 
-    // Show typed order requirements
+    // Show typed order requirements in human-readable format
     const currentOrder = this.levelManager.getCurrentOrder();
-    let orderText = "";
     const orderParts = [];
 
     Object.entries(currentOrder).forEach(([type, count]) => {
       if (count > 0) {
-        const typeIcon =
-          type === "plain" ? "🥞" : type === "butter" ? "🧈🥞" : "🍌🥞";
-        orderParts.push(`${count}${typeIcon}`);
+        const typeName = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize first letter
+        orderParts.push(`${count}x ${typeName}`);
       }
     });
 
-    document.getElementById("currentOrder").textContent =
-      orderParts.join(" + ");
+    document.getElementById("currentOrder").textContent = orderParts.join(" ");
 
     document.getElementById("batterCount").textContent =
       this.levelManager.batter;
