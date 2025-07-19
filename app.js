@@ -24,7 +24,9 @@ class PancakeStackGame {
     this.cacheDOMElements();
     await this.initializeComponents();
     this.setupEventListeners();
-    this.loadingManager.showLoadingScreen();
+
+    // Start the loading process - this will handle both audio and images
+    await this.loadingManager.showLoadingScreen();
   }
 
   injectHTML() {
@@ -340,7 +342,9 @@ class PancakeStackGame {
     this.levelSelectScreen = new LevelSelectScreen(this);
     this.levelManager = new LevelManager(this);
 
-    await this.audioManager.init();
+    // Initialize audio manager but don't wait for it here - the loading manager will handle it
+    // We still need to call init() to start the loading process
+    this.audioManager.init();
     this.setupAudioControls();
   }
 

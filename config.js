@@ -1,7 +1,7 @@
 // Game Configuration
 const GAME_CONFIG = {
   // Loading configuration
-  MINIMUM_LOADING_TIME: 3000, // Minimum time in milliseconds for loading screen
+  MINIMUM_LOADING_TIME: 1500, // Minimum time in milliseconds for loading screen
 
   // Audio configuration
   audio: {
