@@ -427,10 +427,19 @@ class PancakeStackGame {
     else if (finalScore >= this.levelConfig.starThresholds[1]) stars = 2;
     else if (finalScore >= this.levelConfig.starThresholds[0]) stars = 1;
 
+    console.log(
+      `Game ended - Level: ${this.currentLevel}, Score: ${finalScore}, Stars: ${stars}`
+    );
+
     const isNewRecord = this.starManager.saveStarsForLevel(
       this.currentLevel,
       stars
     );
+
+    // Force the level select screen to refresh its star manager
+    if (this.levelSelectScreen && this.levelSelectScreen.starManager) {
+      this.levelSelectScreen.starManager = new StarManager();
+    }
 
     this.domElements.starsDisplay.textContent =
       "⭐".repeat(stars) + "☆".repeat(3 - stars);

@@ -205,7 +205,7 @@ class AudioManager {
     audioSettings.style.display = "none";
     audioSettings.innerHTML = `
       <div class="audio-control-group">
-        <span class="audio-label">🎵 Music</span>
+        <span class="audio-label">Music</span>
         <button class="audio-mute-btn" id="musicMuteBtn">${
           this.musicMuted ? "🔇" : "🔊"
         }</button>
@@ -213,7 +213,7 @@ class AudioManager {
                min="0" max="1" step="0.1" value="${this.musicVolume}">
       </div>
       <div class="audio-control-group">
-        <span class="audio-label">🔊 Effects</span>
+        <span class="audio-label">Sound Effects</span>
         <button class="audio-mute-btn" id="sfxMuteBtn">${
           this.sfxMuted ? "🔇" : "🔊"
         }</button>

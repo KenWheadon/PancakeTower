@@ -12,6 +12,8 @@ class LevelSelectScreen {
     document.getElementById("htpPopup").classList.add("hidden");
     document.getElementById("levelSelectScreen").classList.remove("hidden");
 
+    // Always reload the star manager and regenerate cards when showing
+    this.starManager = new StarManager();
     this.generateLevelCards();
   }
 

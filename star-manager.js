@@ -1,8 +1,9 @@
 // Star Manager - Handles saving and loading star progress with fallbacks
 class StarManager {
   constructor() {
-    this.stars = this.loadStars();
+    this.stars = {};
     this.storageAvailable = this.testStorageAvailable();
+    this.loadStars();
 
     // Add debug logging
     console.log("StarManager initialized:", {
@@ -25,38 +26,45 @@ class StarManager {
   }
 
   loadStars() {
+    // Always try to reload from storage to get latest data
+    let loadedStars = null;
+
     // Try localStorage first
-    if (this.testStorageAvailable()) {
+    if (this.storageAvailable) {
       const saved = localStorage.getItem("pancakeGameStars");
       if (saved) {
         try {
-          const parsed = JSON.parse(saved);
-          console.log("Loaded stars from localStorage:", parsed);
-          return parsed;
+          loadedStars = JSON.parse(saved);
+          console.log("Loaded stars from localStorage:", loadedStars);
         } catch (e) {
           console.error("Failed to load stars from localStorage:", e);
         }
       }
     }
 
-    // Fallback to cookies
-    const cookieStars = this.loadFromCookies();
-    if (cookieStars) {
-      console.log("Loaded stars from cookies:", cookieStars);
-      return cookieStars;
+    // If localStorage failed, try cookies
+    if (!loadedStars) {
+      loadedStars = this.loadFromCookies();
+      if (loadedStars) {
+        console.log("Loaded stars from cookies:", loadedStars);
+      }
     }
 
-    // Default stars object
-    const defaultStars = {
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0,
-      5: 0,
-      6: 0,
-    };
-    console.log("Using default stars:", defaultStars);
-    return defaultStars;
+    // Use loaded stars or default
+    if (loadedStars) {
+      this.stars = loadedStars;
+    } else {
+      // Default stars object
+      this.stars = {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0,
+      };
+      console.log("Using default stars:", this.stars);
+    }
   }
 
   loadFromCookies() {
@@ -77,6 +85,9 @@ class StarManager {
   }
 
   saveStarsForLevel(levelNum, stars) {
+    // Always reload first to get the latest data from storage
+    this.loadStars();
+
     const previousStars = this.stars[levelNum] || 0;
     this.stars[levelNum] = Math.max(previousStars, stars);
 
@@ -87,38 +98,49 @@ class StarManager {
       allStars: this.stars,
     });
 
+    // Always save to BOTH localStorage AND cookies for redundancy
+    let saveSuccess = false;
+
     // Try localStorage first
     if (this.storageAvailable) {
       try {
         localStorage.setItem("pancakeGameStars", JSON.stringify(this.stars));
         console.log("Successfully saved to localStorage");
+        saveSuccess = true;
       } catch (e) {
-        console.warn("Failed to save to localStorage, trying cookies:", e);
-        this.saveToCookies();
+        console.warn("Failed to save to localStorage:", e);
       }
-    } else {
-      // Fallback to cookies
+    }
+
+    // Always try cookies as backup (or primary if localStorage failed)
+    try {
       this.saveToCookies();
+      console.log("Successfully saved to cookies");
+      saveSuccess = true;
+    } catch (e) {
+      console.error("Failed to save to cookies:", e);
+    }
+
+    if (!saveSuccess) {
+      console.error("Failed to save stars to both localStorage and cookies!");
     }
 
     return stars > previousStars; // Return true if new record
   }
 
   saveToCookies() {
-    try {
-      const cookieValue = encodeURIComponent(JSON.stringify(this.stars));
-      // Set cookie to expire in 1 year
-      const expirationDate = new Date();
-      expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+    const cookieValue = encodeURIComponent(JSON.stringify(this.stars));
+    // Set cookie to expire in 1 year
+    const expirationDate = new Date();
+    expirationDate.setFullYear(expirationDate.getFullYear() + 1);
 
-      document.cookie = `pancakeGameStars=${cookieValue}; expires=${expirationDate.toUTCString()}; path=/; SameSite=Lax`;
-      console.log("Successfully saved to cookies");
-    } catch (e) {
-      console.error("Failed to save to cookies:", e);
-    }
+    document.cookie = `pancakeGameStars=${cookieValue}; expires=${expirationDate.toUTCString()}; path=/; SameSite=Lax`;
   }
 
   getStarsForLevel(levelNum) {
+    // Always reload from storage before getting stars to ensure we have the latest data
+    this.loadStars();
+
     const stars = this.stars[levelNum] || 0;
     console.log(`Getting stars for level ${levelNum}:`, stars);
     return stars;
