@@ -457,8 +457,28 @@ class PancakeStackGame {
   }
 
   restart() {
+    console.log("Restarting game - cleaning up and reinitializing");
+
+    // Hide the game over screen
     this.domElements.gameOverScreen.classList.add("hidden");
+
+    // Completely stop and cleanup the current level
+    if (this.levelManager) {
+      this.levelManager.stopGame();
+    }
+
+    // Create a fresh level manager instance to ensure clean state
+    this.levelManager = new LevelManager(this);
+
+    // Start the level fresh
+    this.gameState = "playing";
     this.levelManager.startLevel(this.currentLevel, this.levelConfig);
+
+    // Play appropriate audio
+    this.audioManager.playSfx("startLevel");
+    this.audioManager.playBackgroundMusic(`level${this.currentLevel}`);
+
+    console.log("Game restart complete");
   }
 
   addTimeout(timeoutId) {

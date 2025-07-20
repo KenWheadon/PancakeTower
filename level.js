@@ -20,7 +20,7 @@ class LevelManager {
     this.cachedElements = {};
 
     this.timeWarning15Played = false;
-    this.timeTickingStarted = false;
+    this.lastTickSecond = null;
 
     this.pancakeCooking = new PancakeCooking(this);
     this.levelUI = new LevelUI(this);
@@ -50,41 +50,71 @@ class LevelManager {
   }
 
   startLevel(levelNum, levelConfig) {
+    console.log(`Starting level ${levelNum}`);
+
     this.levelConfig = levelConfig;
 
+    // Show game screen and hide others
     this.cacheElement("loadingScreen").classList.add("hidden");
     this.cacheElement("startScreen").classList.add("hidden");
     this.cacheElement("levelSelectScreen").classList.add("hidden");
     this.cacheElement("gameScreen").classList.remove("hidden");
     this.cacheElement("htpPopup").classList.add("hidden");
 
+    // Initialize the game with fresh state
     this.initializeGame();
+
+    // Start the game loop
     this.gameLoop();
+
+    console.log(`Level ${levelNum} started successfully`);
   }
 
   stopGame() {
+    console.log("Stopping game and cleaning up");
     this.gameRunning = false;
     this.cleanup();
   }
 
   cleanup() {
+    console.log("Cleaning up level manager");
+
+    // Clear all timeouts
     this.activeTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
     this.activeTimeouts.clear();
 
+    // Remove all event listeners
     this.eventListeners.forEach(({ element, event, handler }) => {
       element.removeEventListener(event, handler);
     });
     this.eventListeners = [];
 
-    this.pancakeCooking.cleanup();
-    this.levelUI.stopTutorialCycling();
+    // Cleanup sub-components
+    if (this.pancakeCooking) {
+      this.pancakeCooking.cleanup();
+    }
+    if (this.levelUI) {
+      this.levelUI.stopTutorialCycling();
+      this.levelUI.removeAllEventListeners();
+    }
+    if (this.dragDrop) {
+      this.dragDrop.cleanupDragState();
+    }
 
+    // Clear cached elements
     this.cachedElements = {};
+
+    console.log("Level manager cleanup complete");
   }
 
   initializeGame() {
+    console.log("Initializing game state");
+
+    // Set game state
     this.game.gameState = "playing";
     this.gameRunning = true;
+
+    // Reset all game variables to initial state
     this.timeRemaining = this.levelConfig.timeLimit;
     this.batter = this.levelConfig.initialBatter;
     this.butter = this.levelConfig.initialButter;
@@ -94,63 +124,112 @@ class LevelManager {
     this.totalOrdersCompleted = 0;
     this.combo = 0;
 
+    // Reset timing flags
     this.timeWarning15Played = false;
-    this.timeTickingStarted = false;
+    this.lastTickSecond = null;
 
+    // Create fresh grid
     this.grid = new Array(9).fill(null).map((_, index) => ({
       type: this.levelConfig.gridLayout[index],
       pancakes: [],
       cookingPancake: null,
     }));
 
+    // Reinitialize all components with fresh state
     this.pancakeCooking.initialize();
+
+    // Recreate the UI completely
     this.levelUI.createGrid();
     this.levelUI.updateUI();
+
+    // Setup fresh event listeners for game interactions
     this.setupGameEventListeners();
+
+    console.log("Game initialization complete", {
+      batter: this.batter,
+      butter: this.butter,
+      banana: this.banana,
+      money: this.money,
+      timeRemaining: this.timeRemaining,
+    });
   }
 
   setupGameEventListeners() {
-    const buyBatterBtn = this.cacheElement("buyBatter");
-    const buyButterBtn = this.cacheElement("buyButter");
-    const buyBananaBtn = this.cacheElement("buyBanana");
+    console.log("Setting up game event listeners");
+
+    // Get button elements fresh each time
+    const buyBatterBtn = document.getElementById("buyBatter");
+    const buyButterBtn = document.getElementById("buyButter");
+    const buyBananaBtn = document.getElementById("buyBanana");
 
     if (buyBatterBtn) {
-      this.addEventListener(buyBatterBtn, "click", () =>
-        this.buyIngredient("batter")
-      );
+      this.addEventListener(buyBatterBtn, "click", () => {
+        console.log("Buy batter clicked");
+        this.buyIngredient("batter");
+      });
       this.addEventListener(buyBatterBtn, "mouseenter", () =>
         this.game.audioManager.playSfx("buttonHover")
       );
     }
+
     if (buyButterBtn) {
-      this.addEventListener(buyButterBtn, "click", () =>
-        this.buyIngredient("butter")
-      );
+      this.addEventListener(buyButterBtn, "click", () => {
+        console.log("Buy butter clicked");
+        this.buyIngredient("butter");
+      });
       this.addEventListener(buyButterBtn, "mouseenter", () =>
         this.game.audioManager.playSfx("buttonHover")
       );
     }
+
     if (buyBananaBtn) {
-      this.addEventListener(buyBananaBtn, "click", () =>
-        this.buyIngredient("banana")
-      );
+      this.addEventListener(buyBananaBtn, "click", () => {
+        console.log("Buy banana clicked");
+        this.buyIngredient("banana");
+      });
       this.addEventListener(buyBananaBtn, "mouseenter", () =>
         this.game.audioManager.playSfx("buttonHover")
       );
     }
+
+    console.log("Event listeners setup complete");
   }
 
   buyIngredient(type) {
-    if (this.game.gameState !== "playing" || !this.gameRunning) return;
+    if (this.game.gameState !== "playing" || !this.gameRunning) {
+      console.log("Cannot buy ingredient - game not running");
+      return;
+    }
+
+    console.log(`Attempting to buy ${type}`, {
+      currentMoney: this.money,
+      currentAmount: this[type],
+    });
 
     const config = this.getIngredientConfig(type);
-    if (this.money < config.cost) return;
+    if (this.money < config.cost) {
+      console.log(
+        `Not enough money to buy ${type}. Need ${config.cost}, have ${this.money}`
+      );
+      return;
+    }
 
+    // Deduct money and add ingredient
     this.money -= config.cost;
     this[type] += config.purchaseAmount;
 
+    console.log(`Successfully bought ${type}`, {
+      newMoney: this.money,
+      newAmount: this[type],
+      cost: config.cost,
+      purchased: config.purchaseAmount,
+    });
+
+    // Play sound and visual effects
     this.game.audioManager.playSfx("buttonClick");
     this.addPurchaseEffect(config.buttonId);
+
+    // Update UI to reflect changes
     this.levelUI.updateUI();
   }
 
@@ -176,7 +255,7 @@ class LevelManager {
   }
 
   addPurchaseEffect(buttonId) {
-    const button = this.cacheElement(buttonId);
+    const button = document.getElementById(buttonId);
     if (!button) return;
 
     button.classList.add("success-glow");
@@ -335,6 +414,7 @@ class LevelManager {
 
     this.game.audioManager.playSfx("orderServed");
 
+    // Play earnMoney sound for ANY positive payment (including bonuses)
     if (totalPayment > 0) {
       this.game.audioManager.playSfx("earnMoney");
     }
@@ -365,16 +445,19 @@ class LevelManager {
   }
 
   handleTimeWarnings() {
-    const timeInSeconds = this.timeRemaining / 1000;
+    const timeInSeconds = Math.ceil(this.timeRemaining / 1000);
 
     if (timeInSeconds <= 15 && !this.timeWarning15Played) {
       this.timeWarning15Played = true;
       this.game.audioManager.playSfx("timeWarning15");
     }
 
-    if (timeInSeconds <= 10 && !this.timeTickingStarted) {
-      this.timeTickingStarted = true;
-      this.game.audioManager.playSfx("timeTicking");
+    // Play tick sound each second from 10 seconds down to 1
+    if (timeInSeconds <= 10 && timeInSeconds > 0) {
+      if (!this.lastTickSecond || this.lastTickSecond !== timeInSeconds) {
+        this.lastTickSecond = timeInSeconds;
+        this.game.audioManager.playSfx("timeTicking");
+      }
     }
   }
 
