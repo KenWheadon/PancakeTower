@@ -13,6 +13,12 @@ class LoadingManager {
       // Logo
       "images/logo.png",
 
+      // Winner image (shown when all levels completed)
+      "images/winner.png",
+
+      // Company logo for credits
+      "images/company-logo.png",
+
       // Grid items
       "images/item-grill.png",
       "images/item-plate-1.png",

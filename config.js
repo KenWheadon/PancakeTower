@@ -59,7 +59,7 @@ const GAME_CONFIG = {
       burntTime: 10000,
       timeLimit: 60000,
       orders: [{ plain: 1 }, { plain: 2 }, { plain: 1 }, { plain: 3 }],
-      starThresholds: [10, 100, 250],
+      starThresholds: [25, 150, 350],
       initialBatter: 0,
       initialMoney: 0,
       batterCost: 0,
